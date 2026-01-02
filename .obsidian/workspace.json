@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/DarkWeb_Weed_in_Hungury_2026-01-02.md",
+                "file": "Reports/Sherriff_LLC_in_Transnistria_Report_2026-01-02.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "DarkWeb_Weed_in_Hungury_2026-01-02"
+              "title": "Sherriff_LLC_in_Transnistria_Report_2026-01-02"
             }
           }
         ]
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Reports/DarkWeb_Weed_in_Hungury_2026-01-02.md",
+                "file": "Reports/Sherriff_LLC_in_Transnistria_Report_2026-01-02.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of DarkWeb_Weed_in_Hungury_2026-01-02"
+              "title": "Outline of Sherriff_LLC_in_Transnistria_Report_2026-01-02"
             }
           },
           {
@@ -174,9 +174,19 @@
               "icon": "message-square",
               "title": "OSINT Copilot"
             }
+          },
+          {
+            "id": "31816bc58bfea6ac",
+            "type": "leaf",
+            "state": {
+              "type": "graph_copilot-graph-view",
+              "state": {},
+              "icon": "git-fork",
+              "title": "OSINTCopilot Graph"
+            }
           }
         ],
-        "currentTab": 5
+        "currentTab": 6
       }
     ],
     "direction": "horizontal",
@@ -197,35 +207,36 @@
   },
   "active": "1c62a4b9dcd9b57f",
   "lastOpenFiles": [
+    "Reports/DarkWeb_Tell_me_about_the_weapon_market_in_Moldova_and_Rom_2026-01-02.md",
+    "OSINTCopilot/Event/Sheriff LLC Investigation.md",
+    "OSINTCopilot/Person/Person.md",
+    "OSINTCopilot/Location/11102, NY, Astoria, 10 Hallets Point, Penthouse 2201.md",
+    "OSINTCopilot/Location/10075, NY, New York, 404 East 79th Street, #31-G.md",
+    "OSINTCopilot/Location/11003, NY, Elmont, 156 Louis Ave.md",
+    "OSINTCopilot/Location/str. Şevcenco, nr. 81-11.md",
+    "OSINTCopilot/Company/SHERIFF SECURITY LLC.md",
+    "OSINTCopilot/Company/SHERIFF ENTERPRISES LLC.md",
+    "OSINTCopilot/Company/SHERIFF SAFE HANDS DAYCARE, LLC.md",
+    "OSINTCopilot/Company/Sheriff SRL.md",
+    "Reports/Sherriff_LLC_in_Transnistria_Report_2026-01-02.md",
+    "OSINTCopilot/Event/Dark Web Weapon Market Investigation.md",
+    "OSINTCopilot/Email/Email.md",
+    "OSINTCopilot/Company/Midgard Marketplace.md",
+    "OSINTCopilot/Company/Deep Market.md",
+    "OSINTCopilot/Company/Black Market - BMG - Black Market Guns.md",
+    "OSINTCopilot/Company/Arms Consortium Market.md",
+    "OSINTCopilot/Company/German Arms.md",
+    "OSINTCopilot/Company/Tor Guns.md",
+    "OSINTCopilot/Company/Firearms72.md",
+    "OSINTCopilot/Company/Desert Guns.md",
+    "OSINTCopilot/Location/Location.md",
+    "USER_GUIDE.md",
+    "Reports/Sheriff_company_and_its_owners_Report_2026-01-02.md",
+    "Reports/DarkWeb_Weed_in_Hungury_2026-01-02.md",
     "LICENSE",
-    "QUICK_REFERENCE.md",
-    "SUBMODULE_CONVERSION_COMPLETE.md",
-    "LICENSE.md",
-    "SUBMODULE_WORKFLOW.md",
     "PLUGIN_SUBMODULE_SETUP.md~",
     "setup.sh",
     "README.md~",
-    "PLUGIN_SUBMODULE_SETUP.md",
-    "PUBLISH_CHECKLIST.md",
-    "CONTRIBUTING.md",
-    "README.md",
-    "Reports/Sheriff_company_and_its_owners_Report_2026-01-02.md",
-    "OSINTCopilot/Email/Email.md",
-    "OSINTCopilot/Company/ProtonMail.md",
-    "OSINTCopilot/Company/Hidden Answers.md",
-    "OSINTCopilot/Company/HeLL Forum.md",
-    "OSINTCopilot/Company/changee.md",
-    "OSINTCopilot/Company/Blender.io.md",
-    "OSINTCopilot/Company/Shadow Market.md",
-    "OSINTCopilot/Event/Dark Web Investigation- Weed in Hungary.md",
-    "OSINTCopilot/Website/Website.md",
-    "Reports/DarkWeb_Weed_in_Hungury_2026-01-02.md",
-    "OSINTCopilot/Company/Mercedes-Benz.md",
-    "OSINTCopilot/Company/Renewal Party.md",
-    "OSINTCopilot/Person/Person.md",
-    "OSINTCopilot/Company/Sheriff.md",
-    "OSINTCopilot/Company/Salloon Sheriff Inh. Serif Küpe.md",
-    "OSINTCopilot/Company/International Sheriff Association.md",
     "OSINTCopilot/Connections",
     "OSINTCopilot/Text",
     "OSINTCopilot/Image",

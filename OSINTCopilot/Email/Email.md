@@ -1,16 +1,19 @@
 ---
-id: "203086bc-1416-4a8f-a6dc-11727635b3ff"
+id: "75590c33-1322-4ccc-92e6-8e65af757c9d"
 type: Email
 label: "Email"
-domain: "TorMail"
-notes: "Referenced in Darknet News snippet for law enforcement retaining emails historically."
+address: "72fa@dnmx.cc"
+domain: "dnmx.cc"
+notes: "Email associated with Firearms72, a darknet vendor."
+source: "Dark Web Investigation Document"
 ---
 
 # Email
 
 ## Properties
 
-- **domain**: TorMail
+- **address**: 72fa@dnmx.cc
+- **domain**: dnmx.cc
 
 ## Relationships
 
@@ -18,4 +21,4 @@ notes: "Referenced in Darknet News snippet for law enforcement retaining emails 
 
 ## Notes
 
-Referenced in Darknet News snippet for law enforcement retaining emails historically.
+Email associated with Firearms72, a darknet vendor.

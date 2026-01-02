@@ -1,16 +1,21 @@
 ---
-id: "6b6d331d-f2e7-4d9b-ab96-6b465f9f164a"
+id: "cae14b8b-0fa7-4e46-b7f9-9390fdac1425"
 type: Person
 label: "Person"
-full_name: "Pharoah"
-notes: "Incognito Market Administrator arrested as referenced in Darknet News."
+full_name: "Ilya Kazmaly"
+nationality: "Transnistrian"
+occupation: "Founder of Sheriff SRL, Politician"
+notes: "Ex-KGB officer, co-founder of Sheriff SRL, elected to Transnistrian parliament in 2000. No sanctions directly linked."
+source: "https://profiles.rise.md/connection.php?id=200923230455, https://profiles.rise.md/connection.php?id=200301072221"
 ---
 
 # Person
 
 ## Properties
 
-- **full_name**: Pharoah
+- **full_name**: Ilya Kazmaly
+- **nationality**: Transnistrian
+- **occupation**: Founder of Sheriff SRL, Politician
 
 ## Relationships
 
@@ -18,4 +23,4 @@ notes: "Incognito Market Administrator arrested as referenced in Darknet News."
 
 ## Notes
 
-Incognito Market Administrator arrested as referenced in Darknet News.
+Ex-KGB officer, co-founder of Sheriff SRL, elected to Transnistrian parliament in 2000. No sanctions directly linked.
