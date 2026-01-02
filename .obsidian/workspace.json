@@ -166,7 +166,7 @@
             }
           },
           {
-            "id": "6a947aba68255e34",
+            "id": "1c62a4b9dcd9b57f",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
@@ -195,7 +195,7 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "5f85b75d3384f4f2",
+  "active": "1c62a4b9dcd9b57f",
   "lastOpenFiles": [
     "LICENSE",
     "QUICK_REFERENCE.md",
