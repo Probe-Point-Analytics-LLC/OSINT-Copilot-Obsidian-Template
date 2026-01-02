@@ -205,8 +205,9 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "1c62a4b9dcd9b57f",
+  "active": "31816bc58bfea6ac",
   "lastOpenFiles": [
+    "README.md~",
     "Reports/DarkWeb_Tell_me_about_the_weapon_market_in_Moldova_and_Rom_2026-01-02.md",
     "OSINTCopilot/Event/Sheriff LLC Investigation.md",
     "OSINTCopilot/Person/Person.md",
@@ -232,11 +233,9 @@
     "OSINTCopilot/Location/Location.md",
     "USER_GUIDE.md",
     "Reports/Sheriff_company_and_its_owners_Report_2026-01-02.md",
-    "Reports/DarkWeb_Weed_in_Hungury_2026-01-02.md",
     "LICENSE",
     "PLUGIN_SUBMODULE_SETUP.md~",
     "setup.sh",
-    "README.md~",
     "OSINTCopilot/Connections",
     "OSINTCopilot/Text",
     "OSINTCopilot/Image",

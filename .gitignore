@@ -6,9 +6,6 @@
 **/data.json
 !**/data.json.template
 
-# OSINT Copilot - Conversation History (may contain sensitive investigation data)
-.osint-copilot/
-**/.osint-copilot/
 
 # Plugin development files (if you're developing the plugin)
 .obsidian/plugins/Obsidian-OSINT-Copilot-plugin/.git/
