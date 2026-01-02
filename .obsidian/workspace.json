@@ -197,10 +197,17 @@
   },
   "active": "5f85b75d3384f4f2",
   "lastOpenFiles": [
+    "LICENSE",
+    "QUICK_REFERENCE.md",
+    "SUBMODULE_CONVERSION_COMPLETE.md",
+    "LICENSE.md",
+    "SUBMODULE_WORKFLOW.md",
+    "PLUGIN_SUBMODULE_SETUP.md~",
+    "setup.sh",
     "README.md~",
+    "PLUGIN_SUBMODULE_SETUP.md",
     "PUBLISH_CHECKLIST.md",
     "CONTRIBUTING.md",
-    "setup.sh",
     "README.md",
     "Reports/Sheriff_company_and_its_owners_Report_2026-01-02.md",
     "OSINTCopilot/Email/Email.md",
@@ -219,18 +226,11 @@
     "OSINTCopilot/Company/Sheriff.md",
     "OSINTCopilot/Company/Salloon Sheriff Inh. Serif Küpe.md",
     "OSINTCopilot/Company/International Sheriff Association.md",
-    "OSINTCopilot/Company/Sheriff Acquisition Co.md",
-    "OSINTCopilot/Event/Founding of Sheriff.md",
-    "Welcome.md",
-    "OSINTCopilot/Location/Location.md",
     "OSINTCopilot/Connections",
     "OSINTCopilot/Text",
     "OSINTCopilot/Image",
     "OSINTCopilot/Evidence",
     "OSINTCopilot/Website",
-    "OSINTCopilot/Vehicle",
-    "OSINTCopilot/Username",
-    "OSINTCopilot/Phone",
-    "Reports/Tell_about_Lukoil_in_Serbia_Report_2026-01-02.md"
+    "OSINTCopilot/Vehicle"
   ]
 }
