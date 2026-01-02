@@ -1,0 +1,13 @@
+{
+  "systemPrompt": "You are a vault assistant. Answer questions clearly and concisely based on the provided notes. Cite note paths in-line where useful.",
+  "maxNotes": 15,
+  "reportApiKey": "YOUR_LICENSE_KEY_HERE",
+  "reportOutputDir": "Reports",
+  "graphApiUrl": "https://api.osint-copilot.com",
+  "entityBasePath": "OSINTCopilot",
+  "enableGraphFeatures": true,
+  "autoRefreshGraph": true,
+  "autoOpenGraphOnEntityCreation": false,
+  "conversationFolder": ".osint-copilot/conversations"
+}
+
