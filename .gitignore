@@ -1,13 +1,5 @@
 # Obsidian workspace and cache files
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/cache
-.obsidian/workspace
-.obsidian/hotkeys.json
-.obsidian/graph.json
-.obsidian/app.json
-.obsidian/appearance.json
-.obsidian/core-plugins.json
+
 
 # OSINT Copilot Plugin - Sensitive Data
 # IMPORTANT: This file contains API keys and should NEVER be committed
@@ -21,8 +13,6 @@
 # Plugin development files (if you're developing the plugin)
 .obsidian/plugins/Obsidian-OSINT-Copilot-plugin/.git/
 .obsidian/plugins/Obsidian-OSINT-Copilot-plugin/node_modules/
-.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/*.js.map
-.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/src/
 
 # Trash
 .trash/

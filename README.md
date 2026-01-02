@@ -59,17 +59,8 @@ cd OSINT-Copilot-Obsidian-Template
 
 ### Step 3: Configure Your License Key
 
-**Option A: Using the Setup Script (Recommended)**
-```bash
-./setup.sh
-```
 
 **Option B: Manual Setup**
-1. Copy the configuration template:
-   ```bash
-   cp .obsidian/plugins/Obsidian-OSINT-Copilot-plugin/data.json.template .obsidian/plugins/Obsidian-OSINT-Copilot-plugin/data.json
-   ```
-
 2. Open Obsidian **Settings** (gear icon in bottom-left)
 3. Navigate to **Community Plugins** → **OSINT Copilot**
 4. Enter your **Premium License Key** in the "Report API Key" field
