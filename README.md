@@ -39,16 +39,24 @@ Before using this template, ensure you have:
 
 ### Step 1: Get the Template
 
-**Option A: Clone with Git**
+**Option A: Clone with Git (Recommended)**
 ```bash
-git clone git@github.com:Probe-Point-Analytics-LLC/OSINT-Copilot-Obsidian-Template.git
+# Clone the template with submodules (includes the plugin)
+git clone --recursive git@github.com:Probe-Point-Analytics-LLC/OSINT-Copilot-Obsidian-Template.git
 cd OSINT-Copilot-Obsidian-Template
+```
+
+**If you already cloned without `--recursive`:**
+```bash
+# Initialize and update submodules
+git submodule update --init --recursive
 ```
 
 **Option B: Download ZIP**
 1. Click the green "Code" button above
 2. Select "Download ZIP"
 3. Extract to your desired location
+4. **Important**: You'll need to manually download the plugin from [the plugin repository](https://github.com/Probe-Point-Analytics-LLC/Obsidian-OSINT-Copilot-plugin) and place it in `.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/`
 
 ### Step 2: Open in Obsidian
 
@@ -97,6 +105,24 @@ OSINT-Copilot-Obsidian-Template/
 ├── Reports/                   # Generated investigation reports
 ├── Welcome.md                 # Getting started guide
 └── README.md                  # This file
+```
+
+## 🔄 Updating the Plugin
+
+The OSINT Copilot plugin is included as a git submodule. To update to the latest version:
+
+```bash
+# Update the plugin submodule to the latest version
+git submodule update --remote .obsidian/plugins/Obsidian-OSINT-Copilot-plugin
+
+# Commit the update
+git add .obsidian/plugins/Obsidian-OSINT-Copilot-plugin
+git commit -m "Update OSINT Copilot plugin to latest version"
+```
+
+Alternatively, you can update all submodules at once:
+```bash
+git submodule update --remote
 ```
 
 ## 📖 Usage Guide
