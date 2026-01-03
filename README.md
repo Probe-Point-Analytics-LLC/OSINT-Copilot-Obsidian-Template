@@ -120,6 +120,8 @@ git submodule update --init --recursive
 
 ![OSINT Copilot Settings](.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/screenshots/Copilot%20Obsidian%20settings.png)
 
+![OSINT Copilot Plugin Enabled](.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/screenshots/Copilot%20Obsidian%20settings%20enabled%20plugin.png)
+
 1. Open Obsidian **Settings** (gear icon in bottom-left)
 2. Navigate to **Community Plugins** → **OSINT Copilot**
 3. Enter your **Premium License Key** in the "Report API Key" field
@@ -209,6 +211,8 @@ What TTPs are associated with Lazarus Group?
 ### 2. Entity Graph View
 
 ![Entity Graph](.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/screenshots/Copilot%20Generated%20entites%20graph%20view.png)
+
+![Entity Graph Alternative View](.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/screenshots/Graph%20Screenshot%202.png)
 
 **Purpose**: Visualize relationships between entities (threat actors, infrastructure, campaigns) as an interactive graph.
 
@@ -398,6 +402,8 @@ The plugin supports FollowTheMoney relationship types:
 ### 7. Map View
 
 ![Map View](.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/screenshots/Copilot%20map%20view.png)
+
+![Map View Alternative](.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/screenshots/Map%20Screenshot.png)
 
 **Purpose**: Visualize Location entities geographically using interactive maps.
 
@@ -756,5 +762,5 @@ Open this vault in Obsidian, configure your license key, and explore the example
 
 ---
 
-*Last updated: 2026-01-02*
+*Last updated: 2026-01-03*
 

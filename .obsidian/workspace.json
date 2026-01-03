@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/taxID_7842121055_Report_2026-01-03_20-52-19.md",
+                "file": "Reports/Panama_Papers_Mossack_Fonseca_Investigation.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "taxID_7842121055_Report_2026-01-03_20-52-19"
+              "title": "Panama_Papers_Mossack_Fonseca_Investigation"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "5cdd0121b0d64c3d",
@@ -171,10 +172,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "Reports/taxID_7842121055_Report_2026-01-03_20-52-19.md"
+                "file": "Reports/Panama_Papers_Mossack_Fonseca_Investigation.md"
               },
               "icon": "lucide-info",
-              "title": "File properties for taxID_7842121055_Report_2026-01-03_20-52-19"
+              "title": "File properties for Panama_Papers_Mossack_Fonseca_Investigation"
             }
           },
           {
@@ -186,13 +187,33 @@
               "icon": "message-square",
               "title": "OSINT Copilot"
             }
+          },
+          {
+            "id": "50b0c5c3798afe45",
+            "type": "leaf",
+            "state": {
+              "type": "graph_copilot-graph-view",
+              "state": {},
+              "icon": "git-fork",
+              "title": "OSINTCopilot Graph"
+            }
+          },
+          {
+            "id": "3acfaeca79e9e05b",
+            "type": "leaf",
+            "state": {
+              "type": "graph_copilot-map-view",
+              "state": {},
+              "icon": "map-pin",
+              "title": "OSINTCopilot Map"
+            }
           }
         ],
         "currentTab": 6
       }
     ],
     "direction": "horizontal",
-    "width": 1052.5
+    "width": 1278.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -207,43 +228,42 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "88d97ee59d55e0e3",
+  "active": "50b0c5c3798afe45",
   "lastOpenFiles": [
-    "Reports/taxID_7842121055_Report_2026-01-03_20-49-49.md",
-    "Reports/taxID_7842121055_Report_2026-01-03_20-52-19.md",
-    "Reports/7714386779_Report_2026-01-03_20-48-56.md",
-    "Reports/7714386779_Report_2026-01-03.md",
-    "Reports/taxID_7838027959_Report_2026-01-03.md",
-    "Reports/7716987736_Report_2026-01-03.md",
-    "Reports/taxID_9724047962_Report_2026-01-03-1.md",
-    "Reports/taxID_9724047962_Report_2026-01-03.md",
-    "Reports/taxID_2543174660_Report_2026-01-03.md",
-    "OSINTCopilot/Person/Person.md",
-    "OSINTCopilot/Location/129343, г. Москва, проезд Серебрякова, д. 14, стр. 15.md",
-    "OSINTCopilot/Company/ООО АЛМАЗБИО.md",
-    "OSINTCopilot/Company/ООО АГ.md",
-    "OSINTCopilot/Company/ООО СУМ.md",
-    "OSINTCopilot/Company/ООО ТЕХНИК.md",
-    "OSINTCopilot/Company/ООО БИМ.md",
-    "OSINTCopilot/Company/АО ММЗ СКОРОСТЬ.md",
-    "OSINTCopilot/Company/ООО ДРОНМОТОРС.md",
-    "OSINTCopilot/Email/Email.md",
-    "OSINTCopilot/Location/Кишинев.md",
-    "OSINTCopilot/Location/str. Şevcenco, nr. 81-11.md",
-    "OSINTCopilot/Location/Location.md",
-    "OSINTCopilot/Company/Sheriff SRL.md",
-    "OSINTCopilot/Address/TEST.md",
-    "OSINTCopilot/Address/Waldowallee 14,Berlin.md",
-    "OSINTCopilot/Address/Waldowalee 14.md",
-    "OSINTCopilot/Address",
     "README.md~",
+    "OSINTCopilot/Company/Mossack Fonseca.md",
+    "OSINTCopilot/Location/British Virgin Islands.md",
+    "OSINTCopilot/Location/Panama City.md",
+    "OSINTCopilot/Connections/Mogilevich_associated_Solntsevskaya.md",
+    "OSINTCopilot/Connections/Lazarus_conducts_Bybit.md",
+    "OSINTCopilot/Connections/APT29_conducts_SolarWinds.md",
+    "OSINTCopilot/Event/Bangladesh Bank Heist.md",
+    "Reports/Dark_Web_Investigation_Lazarus_Cryptocurrency.md",
+    "OSINTCopilot/Company/PANAMA PAPERS LTD.md",
+    "OSINTCopilot/Company/APT28 (Fancy Bear).md",
+    "OSINTCopilot/Person/Ramón Fonseca.md",
+    "OSINTCopilot/Person/Jürgen Mossack.md",
+    "OSINTCopilot/Website/freescanonline.com.md",
+    "OSINTCopilot/Website/avsvmcloud.com.md",
+    "OSINTCopilot/Person/Alimzhan Tokhtakhounov.md",
+    "OSINTCopilot/Company/Reconnaissance General Bureau.md",
+    "OSINTCopilot/Company/Solntsevskaya Bratva.md",
+    "OSINTCopilot/Location/Pyongyang.md",
+    "OSINTCopilot/Location/Moscow.md",
+    "OSINTCopilot/Event/Panama Papers Leak.md",
+    "OSINTCopilot/Event/Ronin Network Hack.md",
+    "OSINTCopilot/Event/Bybit Exchange Hack.md",
+    "OSINTCopilot/Event/SolarWinds Supply Chain Attack.md",
+    "OSINTCopilot/Person/Semion Mogilevich.md",
+    "OSINTCopilot/Company/Lazarus Group (APT38).md",
+    "Reports/APT29_Cozy_Bear_Threat_Profile_2026-01-03.md~",
+    "Reports/DarkWeb_Ransomware_Marketplace_Investigation_2026-01-03.md~",
+    "Reports/Incident_2026-001_IOC_Analysis_2026-01-03.md~",
+    "Reports/APT29_Threat_Actor_Profile_2026-01-03.md~",
+    "EXAMPLE_QUERIES.md~",
+    "OSINTCopilot/Address",
     "LICENSE",
     "PLUGIN_SUBMODULE_SETUP.md~",
-    "setup.sh",
-    "OSINTCopilot/Connections",
-    "OSINTCopilot/Text",
-    "OSINTCopilot/Image",
-    "OSINTCopilot/Evidence",
-    "OSINTCopilot/Website"
+    "setup.sh"
   ]
 }
