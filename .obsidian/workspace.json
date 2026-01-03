@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "dc4b03b0a8679e21",
+        "id": "38a4fcadbede6bf1",
         "type": "tabs",
         "children": [
           {
-            "id": "1ec52d15830b6332",
+            "id": "88d97ee59d55e0e3",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "OSINTCopilot/Person/Person.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Person"
+              "title": "New tab"
             }
           }
         ]
@@ -156,17 +152,26 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "OSINTCopilot/Person/Person.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Person"
+              "title": "Outline"
             }
           },
           {
-            "id": "fdb59884c5c43ae3",
+            "id": "7f336ff4ab811a4a",
+            "type": "leaf",
+            "state": {
+              "type": "file-properties",
+              "state": {},
+              "icon": "lucide-info",
+              "title": "File properties"
+            }
+          },
+          {
+            "id": "0ece23b74fc012ec",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
@@ -174,23 +179,13 @@
               "icon": "message-square",
               "title": "OSINT Copilot"
             }
-          },
-          {
-            "id": "0db14e27d8464514",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-graph-view",
-              "state": {},
-              "icon": "git-fork",
-              "title": "OSINTCopilot Graph"
-            }
           }
         ],
         "currentTab": 6
       }
     ],
     "direction": "horizontal",
-    "width": 526.5
+    "width": 1377.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -205,8 +200,18 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "1ec52d15830b6332",
+  "active": "0ece23b74fc012ec",
   "lastOpenFiles": [
+    "OSINTCopilot/Person/Person.md",
+    "Reports/7716987736_Report_2026-01-03.md",
+    "OSINTCopilot/Location/129343, г. Москва, проезд Серебрякова, д. 14, стр. 15.md",
+    "OSINTCopilot/Company/ООО АЛМАЗБИО.md",
+    "OSINTCopilot/Company/ООО АГ.md",
+    "OSINTCopilot/Company/ООО СУМ.md",
+    "OSINTCopilot/Company/ООО ТЕХНИК.md",
+    "OSINTCopilot/Company/ООО БИМ.md",
+    "OSINTCopilot/Company/АО ММЗ СКОРОСТЬ.md",
+    "OSINTCopilot/Company/ООО ДРОНМОТОРС.md",
     "OSINTCopilot/Email/Email.md",
     "OSINTCopilot/Location/Кишинев.md",
     "OSINTCopilot/Location/str. Şevcenco, nr. 81-11.md",
@@ -225,16 +230,6 @@
     "README.md~",
     "Reports/DarkWeb_Tell_me_about_the_weapon_market_in_Moldova_and_Rom_2026-01-02.md",
     "OSINTCopilot/Event/Sheriff LLC Investigation.md",
-    "OSINTCopilot/Person/Person.md",
-    "OSINTCopilot/Location/11102, NY, Astoria, 10 Hallets Point, Penthouse 2201.md",
-    "OSINTCopilot/Location/10075, NY, New York, 404 East 79th Street, #31-G.md",
-    "OSINTCopilot/Location/11003, NY, Elmont, 156 Louis Ave.md",
-    "OSINTCopilot/Company/SHERIFF SAFE HANDS DAYCARE, LLC.md",
-    "OSINTCopilot/Event/Dark Web Weapon Market Investigation.md",
-    "OSINTCopilot/Company/Midgard Marketplace.md",
-    "OSINTCopilot/Company/Deep Market.md",
-    "OSINTCopilot/Company/Black Market - BMG - Black Market Guns.md",
-    "OSINTCopilot/Company/German Arms.md",
     "LICENSE",
     "PLUGIN_SUBMODULE_SETUP.md~",
     "setup.sh",

@@ -1,24 +1,22 @@
 ---
-id: cea07176-b9b3-4a8e-b3a6-b2f3605f8983
+id: "b373c02d-e533-483b-8534-b19697f43733"
 type: Person
-label: Person
-full_name: Victor Gusan
-notes: Detected in multiple databases with variations in name spelling. Associated emails and login details found in different databases.
-source: "OSINT Search Results for query: 'Victor Gusan'"
+label: "Person"
+full_name: "ИП Крещук Светлана Жоржевна"
+notes: "Related via contractor or financial interactions with ООО ДРОНМОТОРС."
+source: "OSINT due-diligence report"
 ---
 
 # Person
 
 ## Properties
 
-- **full_name**: Victor Gusan
+- **full_name**: ИП Крещук Светлана Жоржевна
 
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
-- [[Person]] HAS_EMAIL [[Email]]
-- [[Person]] ASSOCIATED_WITH_LOCATION [[Кишинев]]
 
 ## Notes
 
-Detected in multiple databases with variations in name spelling. Associated emails and login details found in different databases.
+Related via contractor or financial interactions with ООО ДРОНМОТОРС.
