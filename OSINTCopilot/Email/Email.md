@@ -1,19 +1,17 @@
 ---
-id: "75590c33-1322-4ccc-92e6-8e65af757c9d"
+id: "72c964a8-a343-4e16-a955-694a5ff37f48"
 type: Email
 label: "Email"
-address: "72fa@dnmx.cc"
-domain: "dnmx.cc"
-notes: "Email associated with Firearms72, a darknet vendor."
-source: "Dark Web Investigation Document"
+address: "dizzel@mail.md"
+notes: "Email associated with Victor Gusan found in 'VK.com' user database."
+source: "OSINT Search Results for query: 'Victor Gusan'"
 ---
 
 # Email
 
 ## Properties
 
-- **address**: 72fa@dnmx.cc
-- **domain**: dnmx.cc
+- **address**: dizzel@mail.md
 
 ## Relationships
 
@@ -21,4 +19,4 @@ source: "Dark Web Investigation Document"
 
 ## Notes
 
-Email associated with Firearms72, a darknet vendor.
+Email associated with Victor Gusan found in 'VK.com' user database.
