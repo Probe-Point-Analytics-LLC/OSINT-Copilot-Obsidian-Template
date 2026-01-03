@@ -54,3 +54,4 @@ $RECYCLE.BIN/
 # Node modules (if developing the plugin)
 node_modules/
 
+/.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/node_modules/

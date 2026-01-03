@@ -11,10 +11,14 @@
             "id": "88d97ee59d55e0e3",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Reports/taxID_7842121055_Report_2026-01-03_20-52-19.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "taxID_7842121055_Report_2026-01-03_20-52-19"
             }
           }
         ]
@@ -152,12 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Reports/7714386779_Report_2026-01-03.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of 7714386779_Report_2026-01-03"
             }
           },
           {
@@ -165,13 +170,15 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {},
+              "state": {
+                "file": "Reports/taxID_7842121055_Report_2026-01-03_20-52-19.md"
+              },
               "icon": "lucide-info",
-              "title": "File properties"
+              "title": "File properties for taxID_7842121055_Report_2026-01-03_20-52-19"
             }
           },
           {
-            "id": "0ece23b74fc012ec",
+            "id": "d7013a84c99cb85a",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
@@ -185,7 +192,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 1377.5
+    "width": 1052.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -200,10 +207,18 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "0ece23b74fc012ec",
+  "active": "88d97ee59d55e0e3",
   "lastOpenFiles": [
-    "OSINTCopilot/Person/Person.md",
+    "Reports/taxID_7842121055_Report_2026-01-03_20-49-49.md",
+    "Reports/taxID_7842121055_Report_2026-01-03_20-52-19.md",
+    "Reports/7714386779_Report_2026-01-03_20-48-56.md",
+    "Reports/7714386779_Report_2026-01-03.md",
+    "Reports/taxID_7838027959_Report_2026-01-03.md",
     "Reports/7716987736_Report_2026-01-03.md",
+    "Reports/taxID_9724047962_Report_2026-01-03-1.md",
+    "Reports/taxID_9724047962_Report_2026-01-03.md",
+    "Reports/taxID_2543174660_Report_2026-01-03.md",
+    "OSINTCopilot/Person/Person.md",
     "OSINTCopilot/Location/129343, г. Москва, проезд Серебрякова, д. 14, стр. 15.md",
     "OSINTCopilot/Company/ООО АЛМАЗБИО.md",
     "OSINTCopilot/Company/ООО АГ.md",
@@ -220,16 +235,8 @@
     "OSINTCopilot/Address/TEST.md",
     "OSINTCopilot/Address/Waldowallee 14,Berlin.md",
     "OSINTCopilot/Address/Waldowalee 14.md",
-    "OSINTCopilot/Address/Wadlwodallee 14.md",
     "OSINTCopilot/Address",
-    "OSINTCopilot/Company/SHERIFF SECURITY LLC.md",
-    "OSINTCopilot/Company/SHERIFF ENTERPRISES LLC.md",
-    "OSINTCopilot/Company/Firearms72.md",
-    "OSINTCopilot/Company/Arms Consortium Market.md",
-    "Reports/Sherriff_LLC_in_Transnistria_Report_2026-01-02.md",
     "README.md~",
-    "Reports/DarkWeb_Tell_me_about_the_weapon_market_in_Moldova_and_Rom_2026-01-02.md",
-    "OSINTCopilot/Event/Sheriff LLC Investigation.md",
     "LICENSE",
     "PLUGIN_SUBMODULE_SETUP.md~",
     "setup.sh",

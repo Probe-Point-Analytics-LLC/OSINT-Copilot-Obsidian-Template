@@ -1043,9 +1043,10 @@ export default class VaultAIPlugin extends Plugin {
           // Build request body - include conversation_id if we have one
           const requestBody: any = {
             description: description,
-            vault_context: "" // Can be extended to include vault context
+            vault_context: "", // Can be extended to include vault context
+            force_new_report: true // Always create new reports instead of overwriting
           };
-          
+
           // Include conversation_id only if we have a saved one
           if (savedConversationId) {
             requestBody.conversation_id = savedConversationId;
@@ -1602,7 +1603,10 @@ export default class VaultAIPlugin extends Plugin {
   }
 
   async saveReportToVault(reportContent: string, description: string, originalFilename?: string): Promise<string> {
-    const date = new Date().toISOString().split("T")[0];
+    const now = new Date();
+    const date = now.toISOString().split("T")[0];
+    // Add timestamp (HH-MM-SS) for uniqueness to prevent overwrites
+    const timestamp = now.toISOString().split("T")[1].split(".")[0].replace(/:/g, "-");
 
     // Extract entity name from description for meaningful filename
     // Common patterns: "Tell me about X", "Corporate Report on X", "Who is X", "What is X", etc.
@@ -1627,9 +1631,10 @@ export default class VaultAIPlugin extends Plugin {
       .trim()
       .replace(/\s+/g, "_");
 
-    // Create filename: EntityName_Report_YYYY-MM-DD.md
-    const baseFilename = sanitizedEntity ? `${sanitizedEntity}_Report` : "Corporate Report";
-    const fileName = `${this.settings.reportOutputDir}/${baseFilename}_${date}.md`;
+    // Create filename with timestamp: EntityName_Report_YYYY-MM-DD_HH-MM-SS.md
+    // This ensures each report is unique and maintains chronological order
+    const baseFilename = sanitizedEntity ? `${sanitizedEntity}_Report` : "Corporate_Report";
+    const fileName = `${this.settings.reportOutputDir}/${baseFilename}_${date}_${timestamp}.md`;
 
     // Ensure Reports folder exists
     const reportsFolder = this.app.vault.getAbstractFileByPath(this.settings.reportOutputDir);
@@ -1640,26 +1645,32 @@ export default class VaultAIPlugin extends Plugin {
     // Add metadata header to the report
     let content = `---\n`;
     content += `report_description: "${description.replace(/"/g, '\\"')}"\n`;
-    content += `generated: ${new Date().toISOString()}\n`;
+    content += `generated: ${now.toISOString()}\n`;
     content += `source: OpenDossier API\n`;
     content += `---\n\n`;
     content += reportContent;
 
-    // Check if file exists, if so add a counter to create unique filename
+    // Check if file exists (unlikely with timestamp, but add counter as fallback)
+    // This provides an additional safety layer to prevent any potential overwrites
     let finalFileName = fileName;
     let counter = 1;
     while (this.app.vault.getAbstractFileByPath(finalFileName)) {
-      finalFileName = `${this.settings.reportOutputDir}/${baseFilename}_${date}-${counter}.md`;
+      finalFileName = `${this.settings.reportOutputDir}/${baseFilename}_${date}_${timestamp}-${counter}.md`;
       counter++;
     }
 
-    // Create new file
+    // Create new file - guaranteed to be unique
     await this.app.vault.create(finalFileName, content);
+
+    console.log(`[OSINT Copilot] Report saved to: ${finalFileName}`);
     return finalFileName;
   }
 
   async saveDarkWebReportToVault(reportContent: string, query: string, jobId: string): Promise<string> {
-    const date = new Date().toISOString().split("T")[0];
+    const now = new Date();
+    const date = now.toISOString().split("T")[0];
+    // Add timestamp (HH-MM-SS) for uniqueness to prevent overwrites
+    const timestamp = now.toISOString().split("T")[1].split(".")[0].replace(/:/g, "-");
 
     // Sanitize query for filename: replace spaces with underscores, remove special chars
     const sanitizedQuery = query
@@ -1668,9 +1679,10 @@ export default class VaultAIPlugin extends Plugin {
       .trim()
       .replace(/\s+/g, "_");
 
-    // Create filename: DarkWeb_QueryTopic_YYYY-MM-DD.md
+    // Create filename with timestamp: DarkWeb_QueryTopic_YYYY-MM-DD_HH-MM-SS.md
+    // This ensures each dark web investigation is unique and maintains chronological order
     const baseFilename = sanitizedQuery ? `DarkWeb_${sanitizedQuery}` : `DarkWeb_Investigation`;
-    const fileName = `${this.settings.reportOutputDir}/${baseFilename}_${date}.md`;
+    const fileName = `${this.settings.reportOutputDir}/${baseFilename}_${date}_${timestamp}.md`;
 
     // Ensure Reports folder exists
     const reportsFolder = this.app.vault.getAbstractFileByPath(this.settings.reportOutputDir);
@@ -1682,21 +1694,24 @@ export default class VaultAIPlugin extends Plugin {
     let content = `---\n`;
     content += `investigation_query: "${query.replace(/"/g, '\\"')}"\n`;
     content += `job_id: "${jobId}"\n`;
-    content += `generated: ${new Date().toISOString()}\n`;
+    content += `generated: ${now.toISOString()}\n`;
     content += `source: Dark Web Investigation\n`;
     content += `---\n\n`;
     content += reportContent;
 
-    // Check if file exists, if so add a counter to create unique filename
+    // Check if file exists (unlikely with timestamp, but add counter as fallback)
+    // This provides an additional safety layer to prevent any potential overwrites
     let finalFileName = fileName;
     let counter = 1;
     while (this.app.vault.getAbstractFileByPath(finalFileName)) {
-      finalFileName = `${this.settings.reportOutputDir}/${baseFilename}_${date}-${counter}.md`;
+      finalFileName = `${this.settings.reportOutputDir}/${baseFilename}_${date}_${timestamp}-${counter}.md`;
       counter++;
     }
 
-    // Create new file
+    // Create new file - guaranteed to be unique
     await this.app.vault.create(finalFileName, content);
+
+    console.log(`[OSINT Copilot] Dark web report saved to: ${finalFileName}`);
     return finalFileName;
   }
 
