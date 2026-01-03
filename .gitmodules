@@ -1,4 +1,4 @@
-[submodule ".obsidian/plugins/Obsidian-OSINT-Copilot-plugin"]
-	path = .obsidian/plugins/Obsidian-OSINT-Copilot-plugin
-	url = git@github.com:Probe-Point-Analytics-LLC/Obsidian-OSINT-Copilot-plugin.git
-	branch = main
+; [submodule ".obsidian/plugins/Obsidian-OSINT-Copilot-plugin"]
+; 	path = .obsidian/plugins/Obsidian-OSINT-Copilot-plugin
+; 	url = git@github.com:Probe-Point-Analytics-LLC/Obsidian-OSINT-Copilot-plugin.git
+; 	branch = main
