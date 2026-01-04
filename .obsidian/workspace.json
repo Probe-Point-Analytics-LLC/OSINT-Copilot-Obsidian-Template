@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "38a4fcadbede6bf1",
+        "id": "18e05bf74193a59b",
         "type": "tabs",
         "children": [
           {
-            "id": "88d97ee59d55e0e3",
+            "id": "48b91e8b83791c4c",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/Panama_Papers_Mossack_Fonseca_Investigation.md",
+                "file": "OSINTCopilot/Company/APT29 (Cozy Bear).md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Panama_Papers_Mossack_Fonseca_Investigation"
+              "title": "APT29 (Cozy Bear)"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "5cdd0121b0d64c3d",
@@ -172,10 +171,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "Reports/Panama_Papers_Mossack_Fonseca_Investigation.md"
+                "file": "OSINTCopilot/Company/APT29 (Cozy Bear).md"
               },
               "icon": "lucide-info",
-              "title": "File properties for Panama_Papers_Mossack_Fonseca_Investigation"
+              "title": "File properties for APT29 (Cozy Bear)"
             }
           },
           {
@@ -199,7 +198,17 @@
             }
           },
           {
-            "id": "3acfaeca79e9e05b",
+            "id": "53f1254175637438",
+            "type": "leaf",
+            "state": {
+              "type": "graph_copilot-timeline-view",
+              "state": {},
+              "icon": "calendar-clock",
+              "title": "OSINTCopilot Timeline"
+            }
+          },
+          {
+            "id": "50b93ebbe3d26245",
             "type": "leaf",
             "state": {
               "type": "graph_copilot-map-view",
@@ -213,7 +222,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 1278.5
+    "width": 1020.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -230,9 +239,16 @@
   },
   "active": "50b0c5c3798afe45",
   "lastOpenFiles": [
+    "OSINTCopilot/Location/Moscow.md",
+    "OSINTCopilot/Location/British Virgin Islands.md",
+    "Reports/taxID_7842121055_Report_2026-01-04_00-25-58.md",
+    "OSINTCopilot/Connections/SolarWinds Supply Chain Attack - Directorship - Semion Mogilevich.md",
+    "OSINTCopilot/Company/Министерство здравоохранения Ростовской области.md",
+    "OSINTCopilot/Person/Person.md",
+    "OSINTCopilot/Company/ООО «ЛЮМОС».md",
+    "Reports/Panama_Papers_Mossack_Fonseca_Investigation.md",
     "README.md~",
     "OSINTCopilot/Company/Mossack Fonseca.md",
-    "OSINTCopilot/Location/British Virgin Islands.md",
     "OSINTCopilot/Location/Panama City.md",
     "OSINTCopilot/Connections/Mogilevich_associated_Solntsevskaya.md",
     "OSINTCopilot/Connections/Lazarus_conducts_Bybit.md",
@@ -249,13 +265,7 @@
     "OSINTCopilot/Company/Reconnaissance General Bureau.md",
     "OSINTCopilot/Company/Solntsevskaya Bratva.md",
     "OSINTCopilot/Location/Pyongyang.md",
-    "OSINTCopilot/Location/Moscow.md",
     "OSINTCopilot/Event/Panama Papers Leak.md",
-    "OSINTCopilot/Event/Ronin Network Hack.md",
-    "OSINTCopilot/Event/Bybit Exchange Hack.md",
-    "OSINTCopilot/Event/SolarWinds Supply Chain Attack.md",
-    "OSINTCopilot/Person/Semion Mogilevich.md",
-    "OSINTCopilot/Company/Lazarus Group (APT38).md",
     "Reports/APT29_Cozy_Bear_Threat_Profile_2026-01-03.md~",
     "Reports/DarkWeb_Ransomware_Marketplace_Investigation_2026-01-03.md~",
     "Reports/Incident_2026-001_IOC_Analysis_2026-01-03.md~",

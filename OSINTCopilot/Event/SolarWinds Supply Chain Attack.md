@@ -34,6 +34,7 @@ modified: "2026-01-03T23:15:00.000Z"
 - [[U.S. Treasury Department]] - VICTIM
 - [[U.S. Department of Commerce]] - VICTIM
 - [[FireEye]] - DISCOVERED_BY
+- [[SolarWinds Supply Chain Attack]] DIRECTORSHIP [[Semion Mogilevich]]
 
 ## Notes
 

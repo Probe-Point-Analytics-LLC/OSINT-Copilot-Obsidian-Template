@@ -6,8 +6,13 @@
  * - All other features (entity CRUD, connections, graph, map) work locally
  * - Uses local API at http://localhost:5000 by default for development
  * - Can be configured to use remote API for production
+ *
+ * NOTE: Uses Obsidian's requestUrl to bypass CORS restrictions in Electron.
+ * The browser's fetch API is blocked by CORS when making requests from
+ * the app://obsidian.md origin to external APIs.
  */
 
+import { requestUrl, RequestUrlResponse } from 'obsidian';
 import { Entity, ProcessTextResponse } from '../entities/types';
 
 export interface ApiHealthResponse {
@@ -155,33 +160,35 @@ export class GraphApiService {
      * Check if the AI API is online.
      * This only affects the "Generate Entities from Text" feature.
      * All other features work locally without the API.
+     *
+     * Uses Obsidian's requestUrl to bypass CORS restrictions.
      */
     async checkHealth(): Promise<ApiHealthResponse | null> {
         try {
-            // Try the health endpoint first
-            const response = await fetch(`${this.baseUrl}/health`, {
+            // Try the health endpoint first using Obsidian's requestUrl (bypasses CORS)
+            const response: RequestUrlResponse = await requestUrl({
+                url: `${this.baseUrl}/health`,
                 method: 'GET',
                 headers: this.getHeaders(),
-                mode: 'cors',
-                credentials: 'omit'
+                throw: false // Don't throw on non-2xx status
             });
 
-            if (response.ok) {
+            if (response.status >= 200 && response.status < 300) {
                 this.isOnline = true;
-                return await response.json();
+                return response.json;
             }
 
             // Fallback: try root endpoint
-            const rootResponse = await fetch(`${this.baseUrl}/`, {
+            const rootResponse: RequestUrlResponse = await requestUrl({
+                url: `${this.baseUrl}/`,
                 method: 'GET',
                 headers: this.getHeaders(),
-                mode: 'cors',
-                credentials: 'omit'
+                throw: false
             });
 
-            if (rootResponse.ok) {
+            if (rootResponse.status >= 200 && rootResponse.status < 300) {
                 this.isOnline = true;
-                return await rootResponse.json();
+                return rootResponse.json;
             }
 
             this.isOnline = false;
@@ -202,43 +209,88 @@ export class GraphApiService {
     }
 
     /**
-     * Helper to create a fetch request with timeout.
+     * Response wrapper to provide a consistent interface for requestUrl responses.
+     * This mimics the browser's Response interface for compatibility with existing code.
+     */
+    private createResponseWrapper(response: RequestUrlResponse): {
+        ok: boolean;
+        status: number;
+        text: () => Promise<string>;
+        json: () => Promise<any>;
+    } {
+        return {
+            ok: response.status >= 200 && response.status < 300,
+            status: response.status,
+            text: async () => response.text,
+            json: async () => response.json
+        };
+    }
+
+    /**
+     * Helper to create a request with timeout using Obsidian's requestUrl.
+     * This bypasses CORS restrictions that affect the browser's fetch API.
+     *
+     * @param url - The URL to request
+     * @param options - Request options (method, headers, body)
+     * @param timeoutMs - Timeout in milliseconds (note: requestUrl doesn't support abort, so this is advisory)
+     * @returns A response wrapper compatible with the existing code
      */
     private async fetchWithTimeout(
         url: string,
         options: RequestInit,
         timeoutMs: number = 30000
-    ): Promise<Response> {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    ): Promise<{ ok: boolean; status: number; text: () => Promise<string>; json: () => Promise<any> }> {
+        // Create a timeout promise
+        const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => {
+                const error = new DOMException('Request timed out', 'AbortError');
+                reject(error);
+            }, timeoutMs);
+        });
 
-        try {
-            const response = await fetch(url, {
-                ...options,
-                signal: controller.signal
-            });
-            return response;
-        } finally {
-            clearTimeout(timeoutId);
-        }
+        // Create the request promise using Obsidian's requestUrl
+        const requestPromise = requestUrl({
+            url,
+            method: options.method as string || 'GET',
+            headers: options.headers as Record<string, string>,
+            body: options.body as string,
+            throw: false // Don't throw on non-2xx status, let us handle it
+        });
+
+        // Race between request and timeout
+        const response = await Promise.race([requestPromise, timeoutPromise]);
+
+        return this.createResponseWrapper(response);
     }
 
     /**
      * Determine if an error is a timeout error.
      */
     private isTimeoutError(error: unknown): boolean {
-        return error instanceof DOMException && error.name === 'AbortError';
+        // Check for our custom timeout error or AbortError
+        if (error instanceof DOMException && error.name === 'AbortError') {
+            return true;
+        }
+        // Also check for timeout-related error messages
+        if (error instanceof Error) {
+            const msg = error.message.toLowerCase();
+            return msg.includes('timeout') || msg.includes('timed out');
+        }
+        return false;
     }
 
     /**
      * Determine if an error is a network connectivity error.
      */
     private isNetworkError(error: unknown): boolean {
-        if (error instanceof TypeError) {
-            const errorStr = String(error).toLowerCase();
+        if (error instanceof Error) {
+            const errorStr = error.message.toLowerCase();
             return errorStr.includes('failed to fetch') ||
                    errorStr.includes('network') ||
-                   errorStr.includes('connection');
+                   errorStr.includes('connection') ||
+                   errorStr.includes('net::') ||
+                   errorStr.includes('econnrefused') ||
+                   errorStr.includes('enotfound');
         }
         return false;
     }
