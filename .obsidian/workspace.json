@@ -178,43 +178,13 @@
             }
           },
           {
-            "id": "d7013a84c99cb85a",
+            "id": "caeea1a1b2d4a3bf",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
               "state": {},
               "icon": "message-square",
               "title": "OSINT Copilot"
-            }
-          },
-          {
-            "id": "50b0c5c3798afe45",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-graph-view",
-              "state": {},
-              "icon": "git-fork",
-              "title": "OSINTCopilot Graph"
-            }
-          },
-          {
-            "id": "53f1254175637438",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-timeline-view",
-              "state": {},
-              "icon": "calendar-clock",
-              "title": "OSINTCopilot Timeline"
-            }
-          },
-          {
-            "id": "50b93ebbe3d26245",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-map-view",
-              "state": {},
-              "icon": "map-pin",
-              "title": "OSINTCopilot Map"
             }
           }
         ],
@@ -237,8 +207,10 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "50b0c5c3798afe45",
+  "active": "caeea1a1b2d4a3bf",
   "lastOpenFiles": [
+    "OSINTCopilot/Username/@gmail.md",
+    "OSINTCopilot/Email/Email.md",
     "OSINTCopilot/Location/Moscow.md",
     "OSINTCopilot/Location/British Virgin Islands.md",
     "Reports/taxID_7842121055_Report_2026-01-04_00-25-58.md",
@@ -264,8 +236,6 @@
     "OSINTCopilot/Person/Alimzhan Tokhtakhounov.md",
     "OSINTCopilot/Company/Reconnaissance General Bureau.md",
     "OSINTCopilot/Company/Solntsevskaya Bratva.md",
-    "OSINTCopilot/Location/Pyongyang.md",
-    "OSINTCopilot/Event/Panama Papers Leak.md",
     "Reports/APT29_Cozy_Bear_Threat_Profile_2026-01-03.md~",
     "Reports/DarkWeb_Ransomware_Marketplace_Investigation_2026-01-03.md~",
     "Reports/Incident_2026-001_IOC_Analysis_2026-01-03.md~",
