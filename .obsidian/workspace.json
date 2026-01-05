@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "OSINTCopilot/Company/APT29 (Cozy Bear).md",
+                "file": "OSINTCopilot/Company/APT28 (Fancy Bear).md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "APT29 (Cozy Bear)"
+              "title": "APT28 (Fancy Bear)"
             }
           }
         ]
@@ -171,14 +171,14 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "OSINTCopilot/Company/APT29 (Cozy Bear).md"
+                "file": "OSINTCopilot/Company/APT28 (Fancy Bear).md"
               },
               "icon": "lucide-info",
-              "title": "File properties for APT29 (Cozy Bear)"
+              "title": "File properties for APT28 (Fancy Bear)"
             }
           },
           {
-            "id": "caeea1a1b2d4a3bf",
+            "id": "769947b570c46865",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
@@ -192,7 +192,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 1020.5
+    "width": 1077.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -207,8 +207,9 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "caeea1a1b2d4a3bf",
+  "active": "769947b570c46865",
   "lastOpenFiles": [
+    "OSINTCopilot/Company/APT29 (Cozy Bear).md",
     "OSINTCopilot/Username/@gmail.md",
     "OSINTCopilot/Email/Email.md",
     "OSINTCopilot/Location/Moscow.md",
@@ -235,7 +236,6 @@
     "OSINTCopilot/Website/avsvmcloud.com.md",
     "OSINTCopilot/Person/Alimzhan Tokhtakhounov.md",
     "OSINTCopilot/Company/Reconnaissance General Bureau.md",
-    "OSINTCopilot/Company/Solntsevskaya Bratva.md",
     "Reports/APT29_Cozy_Bear_Threat_Profile_2026-01-03.md~",
     "Reports/DarkWeb_Ransomware_Marketplace_Investigation_2026-01-03.md~",
     "Reports/Incident_2026-001_IOC_Analysis_2026-01-03.md~",

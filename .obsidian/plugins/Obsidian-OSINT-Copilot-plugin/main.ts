@@ -11,6 +11,8 @@ import {
   WorkspaceLeaf,
   MarkdownRenderer,
   Component,
+  requestUrl,
+  RequestUrlResponse,
 } from "obsidian";
 
 // Graph plugin imports
@@ -662,84 +664,33 @@ export default class VaultAIPlugin extends Plugin {
       };
 
 
-      const response = await fetch(endpoint, {
+      // Use Obsidian's requestUrl to bypass CORS restrictions
+      const response: RequestUrlResponse = await requestUrl({
+        url: endpoint,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.settings.reportApiKey}`,
         },
         body: JSON.stringify(requestBody),
-        mode: "cors",
-        credentials: "omit",
+        throw: false,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text().catch(() => "");
+      if (response.status < 200 || response.status >= 300) {
+        const errorText = response.text || "";
         console.error("[callRemoteModel] API error:", response.status, errorText);
         throw new Error(
           `API request failed (${response.status}): ${errorText.substring(0, 200)}`
         );
       }
 
-      // Non-streaming endpoint always returns JSON
-      if (!stream) {
-        const jsonData = await response.json();
-        const content = jsonData.choices?.[0]?.message?.content || 
-                       jsonData.choices?.[0]?.text || 
-                       jsonData.content || 
-                       "";
-        return content || "No answer received.";
-      }
-
-      // If streaming (SSE response)
-      if (!response.body) {
-        throw new Error("Response body is null");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let fullResponse = "";
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        buffer += chunk;
-
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed.startsWith("data:")) continue;
-
-          const dataPart = trimmed.slice("data:".length).trim();
-          if (dataPart === "[DONE]") {
-            continue;
-          }
-
-          try {
-            const parsed = JSON.parse(dataPart);
-            const deltaContent = parsed.choices?.[0]?.delta?.content;
-            const messageContent = parsed.choices?.[0]?.message?.content;
-
-            const content = deltaContent ?? messageContent ?? "";
-            if (content) {
-              fullResponse += content;
-            }
-          } catch (e) {
-            console.warn("Failed to parse SSE chunk:", e, trimmed);
-          }
-        }
-      }
-
-      if (!fullResponse) {
-        fullResponse = "No answer received.";
-      }
-
-      return fullResponse;
+      // requestUrl doesn't support streaming, so always parse as JSON
+      const jsonData = response.json;
+      const content = jsonData.choices?.[0]?.message?.content ||
+                     jsonData.choices?.[0]?.text ||
+                     jsonData.content ||
+                     "";
+      return content || "No answer received.";
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Model call failed: ${error.message}`);
@@ -776,76 +727,19 @@ export default class VaultAIPlugin extends Plugin {
 
   /**
    * Execute a streaming fetch request (single attempt)
+   * Note: Obsidian's requestUrl doesn't support streaming, so we use non-streaming
+   * and deliver the full response at once via onDelta callback.
    */
   private async executeStreamingFetch(
     endpoint: string,
     messages: ChatMessage[],
     onDelta?: (text: string) => void
   ): Promise<string> {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.settings.reportApiKey}`,
-      },
-      body: JSON.stringify({
-        model: CHAT_MODEL,
-        messages,
-        stream: true,
-      }),
-      mode: "cors",
-      credentials: "omit",
-    });
-
-    if (!response.ok) {
-      // Fallback to non-streaming on any error (e.g., org not verified for streaming)
-      const full = await this.callRemoteModel(messages);
-      if (onDelta) onDelta(full);
-      return full;
-    }
-
-    // Fallback if streaming body is not available
-    if (!response.body || !("getReader" in response.body)) {
-      const full = await this.callRemoteModel(messages);
-      if (onDelta) onDelta(full);
-      return full;
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-
-    let fullText = "";
-    let buffer = "";
-
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-
-      const lines = buffer.split("\n");
-      buffer = lines.pop() ?? "";
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith("data:")) continue;
-        const data = trimmed.slice(5).trim();
-        if (data === "[DONE]") {
-          return fullText;
-        }
-        try {
-          const parsed = JSON.parse(data);
-          const delta: string = parsed?.choices?.[0]?.delta?.content ?? "";
-          if (delta) {
-            fullText += delta;
-            onDelta?.(delta);
-          }
-        } catch {
-          // ignore JSON parse errors for keep-alive lines
-        }
-      }
-    }
-
-    return fullText;
+    // Obsidian's requestUrl doesn't support streaming responses,
+    // so we fall back to non-streaming and deliver the full response at once
+    const full = await this.callRemoteModel(messages);
+    if (onDelta) onDelta(full);
+    return full;
   }
 
   async callRemoteModelStream(
@@ -1055,19 +949,19 @@ export default class VaultAIPlugin extends Plugin {
             console.log('[OSINT Copilot] Sending first request (no conversation_id)');
           }
 
-          const generateResponse = await fetch(`${baseUrl}/api/generate-report`, {
+          const generateResponse: RequestUrlResponse = await requestUrl({
+            url: `${baseUrl}/api/generate-report`,
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${reportApiKey}`,
             },
             body: JSON.stringify(requestBody),
-            mode: 'cors',
-            credentials: 'omit',
+            throw: false,
           });
 
-          if (!generateResponse.ok) {
-            const errorText = await generateResponse.text();
+          if (generateResponse.status < 200 || generateResponse.status >= 300) {
+            const errorText = generateResponse.text || "";
 
             // Handle quota exhaustion specifically - don't retry these
             if (generateResponse.status === 403) {
@@ -1094,7 +988,7 @@ export default class VaultAIPlugin extends Plugin {
             );
           }
 
-          const generateData = await generateResponse.json();
+          const generateData = generateResponse.json;
           jobId = generateData.job_id;
 
           if (!jobId) {
@@ -1150,33 +1044,21 @@ export default class VaultAIPlugin extends Plugin {
         statusCallback?.(`Checking report status... (${elapsedSecs}s elapsed)`);
 
         try {
-          // Add timeout to prevent hanging on network issues
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+          // Use Obsidian's requestUrl to bypass CORS restrictions
+          const statusResponse: RequestUrlResponse = await requestUrl({
+            url: `${baseUrl}/api/report-status/${jobId}`,
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${reportApiKey}`,
+            },
+            throw: false,
+          });
 
-          let statusResponse: Response;
-          try {
-            statusResponse = await fetch(`${baseUrl}/api/report-status/${jobId}`, {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${reportApiKey}`,
-              },
-              mode: 'cors',
-              credentials: 'omit',
-              signal: controller.signal,
-            });
-
-            clearTimeout(timeoutId);
-
-            if (!statusResponse.ok) {
-              throw new Error(`Failed to check job status: ${statusResponse.status}`);
-            }
-          } catch (fetchError) {
-            clearTimeout(timeoutId);
-            throw fetchError;
+          if (statusResponse.status < 200 || statusResponse.status >= 300) {
+            throw new Error(`Failed to check job status: ${statusResponse.status}`);
           }
 
-          const statusData = await statusResponse.json();
+          const statusData = statusResponse.json;
           jobStatus = statusData.status;
 
           // Reset consecutive error counter on successful fetch
@@ -1315,22 +1197,22 @@ export default class VaultAIPlugin extends Plugin {
 
       for (let downloadAttempt = 1; downloadAttempt <= maxDownloadRetries; downloadAttempt++) {
         try {
-          const downloadResponse = await fetch(`${baseUrl}/api/download-report/${jobId}`, {
+          const downloadResponse: RequestUrlResponse = await requestUrl({
+            url: `${baseUrl}/api/download-report/${jobId}`,
             method: "GET",
             headers: {
               Authorization: `Bearer ${reportApiKey}`,
             },
-            mode: 'cors',
-            credentials: 'omit',
+            throw: false,
           });
 
-          if (!downloadResponse.ok) {
-            const errorText = await downloadResponse.text();
+          if (downloadResponse.status < 200 || downloadResponse.status >= 300) {
+            const errorText = downloadResponse.text || "";
             throw new Error(`Failed to download report: ${downloadResponse.status} - ${errorText}`);
           }
 
           // Get the raw response text
-          const rawContent = await downloadResponse.text();
+          const rawContent = downloadResponse.text;
 
           // Check if the response is JSON and extract markdown content if so
           reportContent = this.extractMarkdownFromResponse(rawContent);
@@ -1391,18 +1273,18 @@ export default class VaultAIPlugin extends Plugin {
 
     for (const endpoint of possibleEndpoints) {
       try {
-        const response = await fetch(`${baseUrl}${endpoint}`, {
+        const response: RequestUrlResponse = await requestUrl({
+          url: `${baseUrl}${endpoint}`,
           method: "GET",
           headers: {
             Authorization: `Bearer ${apiKey}`,
           },
-          mode: 'cors',
-          credentials: 'omit',
+          throw: false,
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.json;
+
           // Try different response structures
           let messages: any[] = [];
           if (Array.isArray(data)) {
@@ -1412,12 +1294,12 @@ export default class VaultAIPlugin extends Plugin {
           } else if (data.conversation && Array.isArray(data.conversation.messages)) {
             messages = data.conversation.messages;
           }
-          
+
           // Find last assistant message
           const lastAssistantMessage = messages
             .filter((msg: any) => msg.role === 'assistant' || msg.role === 'AI')
             .pop();
-          
+
           if (lastAssistantMessage && lastAssistantMessage.content) {
             return lastAssistantMessage.content;
           }
@@ -4015,7 +3897,8 @@ class ChatView extends ItemView {
 
         // Start DarkWeb investigation
         const endpoint = `${REPORT_API_BASE_URL}/api/darkweb/investigate`;
-        const response = await fetch(endpoint, {
+        const response: RequestUrlResponse = await requestUrl({
+          url: endpoint,
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -4026,12 +3909,11 @@ class ChatView extends ItemView {
             model: DARKWEB_MODEL,
             threads: 8,
           }),
-          mode: "cors",
-          credentials: "omit",
+          throw: false,
         });
 
-        if (!response.ok) {
-          const errorText = await response.text().catch(() => "");
+        if (response.status < 200 || response.status >= 300) {
+          const errorText = response.text || "";
 
           // Handle quota exhaustion specifically - don't retry these
           if (response.status === 403) {
@@ -4057,7 +3939,7 @@ class ChatView extends ItemView {
         }
 
         updateProgress("Processing API response...", 15);
-        const result = await response.json();
+        const result = response.json;
         const jobId = result.job_id;
 
         if (!jobId) {
@@ -4163,56 +4045,44 @@ class ChatView extends ItemView {
       try {
         const endpoint = `${REPORT_API_BASE_URL}/api/darkweb/status/${jobId}`;
 
-        // Add timeout to prevent hanging on network issues
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        // Use Obsidian's requestUrl to bypass CORS restrictions
+        const response: RequestUrlResponse = await requestUrl({
+          url: endpoint,
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${this.plugin.settings.reportApiKey}`,
+          },
+          throw: false,
+        });
 
-        let response: Response;
-        try {
-          response = await fetch(endpoint, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${this.plugin.settings.reportApiKey}`,
-            },
-            mode: "cors",
-            credentials: "omit",
-            signal: controller.signal,
-          });
+        if (response.status < 200 || response.status >= 300) {
+          // Handle 404 - job not found (backend lost job status, likely Redis issue)
+          if (response.status === 404) {
+            this.pollingIntervals.delete(jobId);
+            console.warn(`[OSINT Copilot] Job ${jobId} not found in backend (404). Attempting to fetch results directly...`);
 
-          clearTimeout(timeoutId);
-
-          if (!response.ok) {
-            // Handle 404 - job not found (backend lost job status, likely Redis issue)
-            if (response.status === 404) {
-              this.pollingIntervals.delete(jobId);
-              console.warn(`[OSINT Copilot] Job ${jobId} not found in backend (404). Attempting to fetch results directly...`);
-
-              // Try to fetch results directly from summary endpoint
-              // The job may have completed but status was lost
-              try {
-                await this.fetchDarkWebResults(jobId, messageIndex, query);
-                return; // Success - results fetched
-              } catch (summaryError) {
-                console.error('[OSINT Copilot] Failed to fetch results after 404:', summaryError);
-                this.chatHistory[messageIndex] = {
-                  role: "assistant",
-                  content: `⚠️ Investigation status unavailable\n\n**Job ID:** ${jobId}\n\nThe backend lost track of this investigation (likely due to a Redis connection issue).\n\nThe investigation may have completed, but the results are not accessible. Please try starting a new investigation.`,
-                  jobId: jobId,
-                  status: "failed",
-                  progress: undefined,
-                };
-                this.renderMessages();
-                return;
-              }
+            // Try to fetch results directly from summary endpoint
+            // The job may have completed but status was lost
+            try {
+              await this.fetchDarkWebResults(jobId, messageIndex, query);
+              return; // Success - results fetched
+            } catch (summaryError) {
+              console.error('[OSINT Copilot] Failed to fetch results after 404:', summaryError);
+              this.chatHistory[messageIndex] = {
+                role: "assistant",
+                content: `⚠️ Investigation status unavailable\n\n**Job ID:** ${jobId}\n\nThe backend lost track of this investigation (likely due to a Redis connection issue).\n\nThe investigation may have completed, but the results are not accessible. Please try starting a new investigation.`,
+                jobId: jobId,
+                status: "failed",
+                progress: undefined,
+              };
+              this.renderMessages();
+              return;
             }
-            throw new Error(`Status check failed (${response.status})`);
           }
-        } catch (fetchError) {
-          clearTimeout(timeoutId);
-          throw fetchError;
+          throw new Error(`Status check failed (${response.status})`);
         }
 
-        const statusData = await response.json();
+        const statusData = response.json;
         const status = statusData.status;
 
         // Reset error counter on success
@@ -4338,20 +4208,20 @@ class ChatView extends ItemView {
   async fetchDarkWebResults(jobId: string, messageIndex: number, query: string) {
     try {
       const endpoint = `${REPORT_API_BASE_URL}/api/darkweb/summary/${jobId}`;
-      const response = await fetch(endpoint, {
+      const response: RequestUrlResponse = await requestUrl({
+        url: endpoint,
         method: "GET",
         headers: {
           Authorization: `Bearer ${this.plugin.settings.reportApiKey}`,
         },
-        mode: "cors",
-        credentials: "omit",
+        throw: false,
       });
 
-      if (!response.ok) {
+      if (response.status < 200 || response.status >= 300) {
         throw new Error(`Failed to fetch results (${response.status})`);
       }
 
-      const summary = await response.json();
+      const summary = response.json;
       console.log(`[OSINT Copilot] Dark web investigation completed. Job ID: ${jobId}`);
 
       // Format the results as markdown for both display and saving
@@ -4686,19 +4556,21 @@ class VaultAISettingTab extends PluginSettingTab {
     }
 
     try {
-      const response = await fetch("https://api.osint-copilot.com/api/key/info", {
+      const response: RequestUrlResponse = await requestUrl({
+        url: "https://api.osint-copilot.com/api/key/info",
         method: "GET",
         headers: {
           "Authorization": `Bearer ${this.plugin.settings.reportApiKey}`,
           "Content-Type": "application/json",
         },
+        throw: false,
       });
 
-      if (!response.ok) {
+      if (response.status < 200 || response.status >= 300) {
         return null;
       }
 
-      return await response.json();
+      return response.json;
     } catch (error) {
       console.error("Failed to fetch license key info:", error);
       return null;
