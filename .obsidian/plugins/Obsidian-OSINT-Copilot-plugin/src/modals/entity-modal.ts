@@ -863,9 +863,8 @@ export class ConnectionQuickModal extends Modal {
         placeholderOption.disabled = true;
         placeholderOption.selected = true;
 
-        // Get FTM interval types and populate dropdown
+        // Get FTM interval types and populate dropdown (pre-sorted with UnknownLink first)
         const intervalTypes = getAvailableFTMIntervalTypes();
-        intervalTypes.sort((a, b) => a.label.localeCompare(b.label));
 
         for (const intervalType of intervalTypes) {
             const option = select.createEl('option', {
@@ -1818,10 +1817,8 @@ export class FTMEntityTypeSelectorModal extends Modal {
 
         this.gridContainer = scrollContainer.createDiv({ cls: 'graph_copilot-entity-type-grid' });
 
+        // getAvailableFTMEntityTypes() returns types pre-sorted with LegalEntity first
         this.entityTypes = getAvailableFTMEntityTypes();
-
-        // Sort entity types alphabetically
-        this.entityTypes.sort((a, b) => a.label.localeCompare(b.label));
 
         this.renderEntityTypes(this.entityTypes);
 
@@ -2614,10 +2611,8 @@ export class FTMIntervalTypeSelectorModal extends Modal {
 
         this.gridContainer = scrollContainer.createDiv({ cls: 'graph_copilot-entity-type-grid' });
 
+        // getAvailableFTMIntervalTypes() returns types pre-sorted with UnknownLink first
         this.intervalTypes = getAvailableFTMIntervalTypes();
-
-        // Sort interval types alphabetically
-        this.intervalTypes.sort((a, b) => a.label.localeCompare(b.label));
 
         this.renderIntervalTypes(this.intervalTypes);
 

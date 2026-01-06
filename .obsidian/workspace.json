@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "OSINTCopilot/Company/APT28 (Fancy Bear).md",
+                "file": "OSINTCopilot/Person/Person.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "APT28 (Fancy Bear)"
+              "title": "Person"
             }
           }
         ]
@@ -171,14 +171,24 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "OSINTCopilot/Company/APT28 (Fancy Bear).md"
+                "file": "OSINTCopilot/Person/Person.md"
               },
               "icon": "lucide-info",
-              "title": "File properties for APT28 (Fancy Bear)"
+              "title": "File properties for Person"
             }
           },
           {
-            "id": "769947b570c46865",
+            "id": "bb6f5a491e17ed83",
+            "type": "leaf",
+            "state": {
+              "type": "graph_copilot-graph-view",
+              "state": {},
+              "icon": "git-fork",
+              "title": "OSINTCopilot Graph"
+            }
+          },
+          {
+            "id": "b961bc2a73a8d89d",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
@@ -192,7 +202,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 1077.5
+    "width": 828.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -207,35 +217,36 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "769947b570c46865",
+  "active": "48b91e8b83791c4c",
   "lastOpenFiles": [
+    "Reports/Wagner_Group_and_Evgenii_Progozhin_Report_2026-01-06_00-45-35.md",
+    "OSINTCopilot/Location/Location.md",
+    "Reports/Wagner_Group_and_Evgenii_Progozhin_Report_2026-01-06_00-06-57.md",
+    "OSINTCopilot/Location/Pardubická 53352 Srch.md",
+    "OSINTCopilot/Location/Zastavskaya Street 3-A.md",
+    "OSINTCopilot/Location/15 Zolnaya Street.md",
+    "OSINTCopilot/Company/Africa Corps.md",
+    "OSINTCopilot/Person/Person.md",
+    "OSINTCopilot/Company/Wagner Group Inc.md",
+    "OSINTCopilot/Company/Wagner Group.md",
+    "OSINTCopilot/Connections/test - UnknownLink - test.md",
+    "OSINTCopilot/Address/test.md",
+    "OSINTCopilot/LegalEntity/test.md",
+    "OSINTCopilot/LegalEntity",
+    "Reports/Victor_Gusan_Report_2026-01-05_23-53-30.md",
+    "OSINTCopilot/Location/Pardubická 53352.md",
+    "OSINTCopilot/Location/Zastavska Street 3-A.md",
+    "OSINTCopilot/Event/Wagner Group Offensive Operations.md",
+    "OSINTCopilot/Company/APT28 (Fancy Bear).md",
+    "OSINTCopilot/Event/Ukrainian Asset Freeze on Victor Gushan.md",
+    "OSINTCopilot/Company/FC Sheriff.md",
+    "OSINTCopilot/Company/Obnovlenie (Renewal).md",
+    "OSINTCopilot/Company/Sheriff Holding Company.md",
     "OSINTCopilot/Company/APT29 (Cozy Bear).md",
     "OSINTCopilot/Username/@gmail.md",
     "OSINTCopilot/Email/Email.md",
     "OSINTCopilot/Location/Moscow.md",
-    "OSINTCopilot/Location/British Virgin Islands.md",
-    "Reports/taxID_7842121055_Report_2026-01-04_00-25-58.md",
-    "OSINTCopilot/Connections/SolarWinds Supply Chain Attack - Directorship - Semion Mogilevich.md",
-    "OSINTCopilot/Company/Министерство здравоохранения Ростовской области.md",
-    "OSINTCopilot/Person/Person.md",
-    "OSINTCopilot/Company/ООО «ЛЮМОС».md",
-    "Reports/Panama_Papers_Mossack_Fonseca_Investigation.md",
     "README.md~",
-    "OSINTCopilot/Company/Mossack Fonseca.md",
-    "OSINTCopilot/Location/Panama City.md",
-    "OSINTCopilot/Connections/Mogilevich_associated_Solntsevskaya.md",
-    "OSINTCopilot/Connections/Lazarus_conducts_Bybit.md",
-    "OSINTCopilot/Connections/APT29_conducts_SolarWinds.md",
-    "OSINTCopilot/Event/Bangladesh Bank Heist.md",
-    "Reports/Dark_Web_Investigation_Lazarus_Cryptocurrency.md",
-    "OSINTCopilot/Company/PANAMA PAPERS LTD.md",
-    "OSINTCopilot/Company/APT28 (Fancy Bear).md",
-    "OSINTCopilot/Person/Ramón Fonseca.md",
-    "OSINTCopilot/Person/Jürgen Mossack.md",
-    "OSINTCopilot/Website/freescanonline.com.md",
-    "OSINTCopilot/Website/avsvmcloud.com.md",
-    "OSINTCopilot/Person/Alimzhan Tokhtakhounov.md",
-    "OSINTCopilot/Company/Reconnaissance General Bureau.md",
     "Reports/APT29_Cozy_Bear_Threat_Profile_2026-01-03.md~",
     "Reports/DarkWeb_Ransomware_Marketplace_Investigation_2026-01-03.md~",
     "Reports/Incident_2026-001_IOC_Analysis_2026-01-03.md~",
@@ -243,7 +254,6 @@
     "EXAMPLE_QUERIES.md~",
     "OSINTCopilot/Address",
     "LICENSE",
-    "PLUGIN_SUBMODULE_SETUP.md~",
-    "setup.sh"
+    "PLUGIN_SUBMODULE_SETUP.md~"
   ]
 }

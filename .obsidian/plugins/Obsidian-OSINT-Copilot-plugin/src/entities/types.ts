@@ -111,26 +111,42 @@ export function getFTMEntityConfig(schemaName: string): FTMEntityConfig | null {
 
 /**
  * Get all available FTM entity types for entity creation.
+ * LegalEntity is prioritized to appear first in the list.
  */
 export function getAvailableFTMEntityTypes(): Array<{ name: string; label: string; description: string; color: string }> {
-    return ftmSchemaService.getEntitySchemas().map(schema => ({
+    const types = ftmSchemaService.getEntitySchemas().map(schema => ({
         name: schema.name,
         label: schema.label,
         description: schema.description,
         color: schema.color || '#607D8B',
     }));
+
+    // Sort with LegalEntity first, then alphabetically
+    return types.sort((a, b) => {
+        if (a.name === 'LegalEntity') return -1;
+        if (b.name === 'LegalEntity') return 1;
+        return a.label.localeCompare(b.label);
+    });
 }
 
 /**
  * Get all available FTM interval/relationship types for connection creation.
+ * UnknownLink is prioritized to appear first in the list.
  */
 export function getAvailableFTMIntervalTypes(): Array<{ name: string; label: string; description: string; color: string }> {
-    return ftmSchemaService.getIntervalSchemas().map(schema => ({
+    const types = ftmSchemaService.getIntervalSchemas().map(schema => ({
         name: schema.name,
         label: schema.label,
         description: schema.description,
         color: schema.color || '#607D8B',
     }));
+
+    // Sort with UnknownLink first, then alphabetically
+    return types.sort((a, b) => {
+        if (a.name === 'UnknownLink') return -1;
+        if (b.name === 'UnknownLink') return 1;
+        return a.label.localeCompare(b.label);
+    });
 }
 
 export const ENTITY_CONFIGS: Record<EntityType, EntityConfig> = {
