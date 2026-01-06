@@ -194,22 +194,27 @@ export default class VaultAIPlugin extends Plugin {
 
     // Add ribbon icons for all OSINT Copilot features (grouped together)
     // Chat icon is always shown, but requires license key to use
-    this.addRibbonIcon("message-square", "OSINT Copilot Chat", async () => {
-      await this.openChatView();
+    // Ctrl/Cmd+click opens a new instance in a split pane for side-by-side viewing
+    const chatRibbon = this.addRibbonIcon("message-square", "OSINT Copilot Chat (Ctrl+click for new pane)", async (evt: MouseEvent) => {
+      const forceNew = evt.ctrlKey || evt.metaKey;
+      await this.openChatView(forceNew);
     });
 
     // Graph features icons (Entity Graph, Timeline, Map) - shown when graph features are enabled
     if (this.settings.enableGraphFeatures) {
-      this.addRibbonIcon("git-fork", "Entity Graph", async () => {
-        await this.openGraphView();
+      const graphRibbon = this.addRibbonIcon("git-fork", "Entity Graph (Ctrl+click for new pane)", async (evt: MouseEvent) => {
+        const forceNew = evt.ctrlKey || evt.metaKey;
+        await this.openGraphView(forceNew);
       });
 
-      this.addRibbonIcon("calendar", "Timeline", async () => {
-        await this.openTimelineView();
+      const timelineRibbon = this.addRibbonIcon("calendar", "Timeline (Ctrl+click for new pane)", async (evt: MouseEvent) => {
+        const forceNew = evt.ctrlKey || evt.metaKey;
+        await this.openTimelineView(forceNew);
       });
 
-      this.addRibbonIcon("map-pin", "Location Map", async () => {
-        await this.openMapView();
+      const mapRibbon = this.addRibbonIcon("map-pin", "Location Map (Ctrl+click for new pane)", async (evt: MouseEvent) => {
+        const forceNew = evt.ctrlKey || evt.metaKey;
+        await this.openMapView(forceNew);
       });
     }
 
@@ -250,9 +255,21 @@ export default class VaultAIPlugin extends Plugin {
     });
 
     this.addCommand({
+      id: "open-chat-view-new-pane",
+      name: "Open Chat in New Pane",
+      callback: async () => await this.openChatView(true),
+    });
+
+    this.addCommand({
       id: "open-graph-view",
       name: "Open Entity Graph",
       callback: async () => await this.openGraphView(),
+    });
+
+    this.addCommand({
+      id: "open-graph-view-new-pane",
+      name: "Open Entity Graph in New Pane",
+      callback: async () => await this.openGraphView(true),
     });
 
     this.addCommand({
@@ -262,9 +279,21 @@ export default class VaultAIPlugin extends Plugin {
     });
 
     this.addCommand({
+      id: "open-timeline-view-new-pane",
+      name: "Open Timeline in New Pane",
+      callback: async () => await this.openTimelineView(true),
+    });
+
+    this.addCommand({
       id: "open-map-view",
       name: "Open Location Map",
       callback: async () => await this.openMapView(),
+    });
+
+    this.addCommand({
+      id: "open-map-view-new-pane",
+      name: "Open Location Map in New Pane",
+      callback: async () => await this.openMapView(true),
     });
 
     // Utility commands
@@ -328,20 +357,80 @@ export default class VaultAIPlugin extends Plugin {
   // GRAPH VIEW METHODS
   // ============================================================================
 
-  async openGraphView() {
+  /**
+   * Get or create a leaf in the main editor area for OSINT views.
+   * This replaces note editors and uses the main workspace area.
+   * @param viewType The view type to check for existing instances
+   * @param forceNew If true, creates a new split pane even if one exists
+   * @returns A workspace leaf in the main editor area
+   */
+  private getMainEditorLeaf(viewType: string, forceNew: boolean): WorkspaceLeaf | null {
+    // Check for existing OSINT views in the main area
+    const osintViewTypes = [GRAPH_VIEW_TYPE, TIMELINE_VIEW_TYPE, MAP_VIEW_TYPE, CHAT_VIEW_TYPE];
+
+    // Find all leaves in the main editor area (not sidebars)
+    const mainLeaves: WorkspaceLeaf[] = [];
+    this.app.workspace.iterateAllLeaves((leaf) => {
+      // Check if leaf is in the main editor area (root split)
+      const root = leaf.getRoot();
+      if (root === this.app.workspace.rootSplit) {
+        mainLeaves.push(leaf);
+      }
+    });
+
+    // Find existing OSINT views in main area
+    const existingOsintLeaves = mainLeaves.filter(leaf =>
+      osintViewTypes.includes(leaf.view?.getViewType() || '')
+    );
+
+    // Find note editor leaves in main area
+    const noteEditorLeaves = mainLeaves.filter(leaf =>
+      leaf.view?.getViewType() === 'markdown' || leaf.view?.getViewType() === 'empty'
+    );
+
+    // If forceNew and there's an existing OSINT view, split from it
+    if (forceNew && existingOsintLeaves.length > 0) {
+      return this.app.workspace.createLeafBySplit(existingOsintLeaves[0], 'vertical');
+    }
+
+    // If there's a note editor, replace it
+    if (noteEditorLeaves.length > 0) {
+      return noteEditorLeaves[0];
+    }
+
+    // If there's an existing OSINT view and not forcing new, split from it
+    if (existingOsintLeaves.length > 0) {
+      return this.app.workspace.createLeafBySplit(existingOsintLeaves[0], 'vertical');
+    }
+
+    // Otherwise, get a new leaf in the main area
+    return this.app.workspace.getLeaf('tab');
+  }
+
+  /**
+   * Open the Graph View in the main editor area.
+   * @param forceNew If true, creates a new instance in a split pane even if one already exists.
+   *                 This allows multiple views to be open simultaneously.
+   */
+  async openGraphView(forceNew: boolean = false) {
     if (!this.settings.enableGraphFeatures) {
       new Notice('Graph features are disabled. Enable them in Settings → OSINT Copilot → Enable Graph Features', 5000);
       console.warn('[VaultAIPlugin] Attempted to open graph view but graph features are disabled');
       return;
     }
-    
-    console.log('[VaultAIPlugin] Opening graph view');
+
+    console.log('[VaultAIPlugin] Opening graph view, forceNew:', forceNew);
     const existing = this.app.workspace.getLeavesOfType(GRAPH_VIEW_TYPE);
-    if (existing.length > 0) {
+
+    // If not forcing new and one exists, reveal it
+    if (!forceNew && existing.length > 0) {
       this.app.workspace.revealLeaf(existing[0]);
       return existing[0];
     }
-    const leaf = this.app.workspace.getRightLeaf(false);
+
+    // Get a leaf in the main editor area
+    const leaf = this.getMainEditorLeaf(GRAPH_VIEW_TYPE, forceNew);
+
     if (leaf) {
       await leaf.setViewState({ type: GRAPH_VIEW_TYPE, active: true });
       this.app.workspace.revealLeaf(leaf);
@@ -409,26 +498,46 @@ export default class VaultAIPlugin extends Plugin {
     }
   }
 
-  async openTimelineView() {
+  /**
+   * Open the Timeline View in the main editor area.
+   * @param forceNew If true, creates a new instance in a split pane even if one already exists.
+   *                 This allows multiple views to be open simultaneously.
+   */
+  async openTimelineView(forceNew: boolean = false) {
     const existing = this.app.workspace.getLeavesOfType(TIMELINE_VIEW_TYPE);
-    if (existing.length > 0) {
+
+    // If not forcing new and one exists, reveal it
+    if (!forceNew && existing.length > 0) {
       this.app.workspace.revealLeaf(existing[0]);
       return;
     }
-    const leaf = this.app.workspace.getRightLeaf(false);
+
+    // Get a leaf in the main editor area
+    const leaf = this.getMainEditorLeaf(TIMELINE_VIEW_TYPE, forceNew);
+
     if (leaf) {
       await leaf.setViewState({ type: TIMELINE_VIEW_TYPE, active: true });
       this.app.workspace.revealLeaf(leaf);
     }
   }
 
-  async openMapView() {
+  /**
+   * Open the Map View in the main editor area.
+   * @param forceNew If true, creates a new instance in a split pane even if one already exists.
+   *                 This allows multiple views to be open simultaneously.
+   */
+  async openMapView(forceNew: boolean = false) {
     const existing = this.app.workspace.getLeavesOfType(MAP_VIEW_TYPE);
-    if (existing.length > 0) {
+
+    // If not forcing new and one exists, reveal it
+    if (!forceNew && existing.length > 0) {
       this.app.workspace.revealLeaf(existing[0]);
       return;
     }
-    const leaf = this.app.workspace.getRightLeaf(false);
+
+    // Get a leaf in the main editor area
+    const leaf = this.getMainEditorLeaf(MAP_VIEW_TYPE, forceNew);
+
     if (leaf) {
       await leaf.setViewState({ type: MAP_VIEW_TYPE, active: true });
       this.app.workspace.revealLeaf(leaf);
@@ -1609,7 +1718,12 @@ export default class VaultAIPlugin extends Plugin {
     new AskModal(this.app, this).open();
   }
 
-  async openChatView() {
+  /**
+   * Open the Chat View in the main editor area.
+   * @param forceNew If true, creates a new instance in a split pane even if one already exists.
+   *                 This allows multiple views to be open simultaneously.
+   */
+  async openChatView(forceNew: boolean = false) {
     // License key validation - Chat feature requires a valid license key
     if (!this.settings.reportApiKey) {
       new Notice("A valid license key is required to use the Chat feature. Please purchase a license key to enable this functionality.", 8000);
@@ -1623,12 +1737,16 @@ export default class VaultAIPlugin extends Plugin {
     }
 
     const existing = this.app.workspace.getLeavesOfType(CHAT_VIEW_TYPE);
-    if (existing.length > 0) {
+
+    // If not forcing new and one exists, reveal it
+    if (!forceNew && existing.length > 0) {
       this.app.workspace.revealLeaf(existing[0]);
       return;
     }
 
-    const leaf = this.app.workspace.getRightLeaf(false);
+    // Get a leaf in the main editor area
+    const leaf = this.getMainEditorLeaf(CHAT_VIEW_TYPE, forceNew);
+
     if (leaf) {
       await leaf.setViewState({
         type: CHAT_VIEW_TYPE,
