@@ -1,10 +1,10 @@
 ---
-id: "26a7f8b4-9cc5-4080-a315-18d0c716cc13"
+id: "fa1098ef-db04-4f9e-9f07-e5615dccf13b"
 type: Company
 label: "Wagner Group"
 name: "Wagner Group"
-description: "Russian state-supported private military entity"
-notes: "Involved in international sanctions, armed conflicts, and human rights abuses."
+description: "Private Military Company / Transnational Criminal Organization"
+notes: "Known under various aliases including PMC Wagner, Africa Corps, and Russian Expeditionary Corps."
 ---
 
 # Wagner Group
@@ -12,15 +12,21 @@ notes: "Involved in international sanctions, armed conflicts, and human rights a
 ## Properties
 
 - **name**: Wagner Group
-- **description**: Russian state-supported private military entity
+- **description**: Private Military Company / Transnational Criminal Organization
 
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
+- [[Wagner Group]] PARTICIPATED_IN [[Founding of Wagner Group]]
+- [[Wagner Group]] PARTICIPATED_IN [[Rebranding to Africa Corps and Russian Expeditionary Corps]]
+- [[Wagner Group]] PARTICIPATED_IN [[Designation as Significant Transnational Criminal Organization]]
+- [[Wagner Group]] PARTICIPATED_IN [[EU Sanctions Against Wagner Group]]
+- [[Wagner Group]] PARTICIPATED_IN [[Withdrawal from Mali]]
+- [[Wagner Group]] LOCATED_AT [[Location]]
+- [[Wagner Group]] LOCATED_AT [[Pardubická 53352]]
 - [[Wagner Group]] LOCATED_AT [[15 Zolnaya Street]]
-- [[Wagner Group]] LOCATED_AT [[Zastavskaya Street 3-A]]
-- [[Wagner Group]] OPERATES_IN [[Location]]
+- [[Wagner Group]] LOCATED_AT [[3A Zastavskaya Street]]
 
 ## Notes
 
-Involved in international sanctions, armed conflicts, and human rights abuses.
+Known under various aliases including PMC Wagner, Africa Corps, and Russian Expeditionary Corps.

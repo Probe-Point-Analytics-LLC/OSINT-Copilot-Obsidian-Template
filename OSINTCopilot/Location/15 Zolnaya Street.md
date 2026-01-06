@@ -1,5 +1,5 @@
 ---
-id: "d36180aa-a55e-440c-bd45-781756670b48"
+id: "b6016850-bb17-4746-a39b-137d5a7f3350"
 type: Location
 label: "15 Zolnaya Street"
 address: "15 Zolnaya Street"
@@ -9,8 +9,7 @@ country: "Russia"
 postal_code: "195213"
 latitude: 59.9606739
 longitude: 30.1586551
-location_type: "office"
-notes: "Address connected to Wagner Group for registration/shadow purposes"
+location_type: "unknown"
 ---
 
 # 15 Zolnaya Street
@@ -24,7 +23,7 @@ notes: "Address connected to Wagner Group for registration/shadow purposes"
 - **postal_code**: 195213
 - **latitude**: 59.9606739
 - **longitude**: 30.1586551
-- **location_type**: office
+- **location_type**: unknown
 
 ## Relationships
 
@@ -32,4 +31,4 @@ notes: "Address connected to Wagner Group for registration/shadow purposes"
 
 ## Notes
 
-Address connected to Wagner Group for registration/shadow purposes
+

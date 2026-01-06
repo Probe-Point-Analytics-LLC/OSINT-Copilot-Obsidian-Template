@@ -1,28 +1,27 @@
 ---
-id: "fb0245a1-8136-4ec8-a3c8-7c304886c142"
+id: "7f092e0a-498f-4557-aad3-ac4c9c908fab"
 type: Location
-label: "Zastavskaya Street 3-A"
-address: "Zastavskaya Street 3-A"
+label: "3A Zastavskaya Street"
+address: "3A Zastavskaya Street"
 city: "Saint Petersburg"
 state: "Saint Petersburg"
 country: "Russia"
 latitude: 59.9606739
 longitude: 30.1586551
-location_type: "office"
-notes: "Address connected to Wagner Group for registration/shadow purposes"
+location_type: "unknown"
 ---
 
-# Zastavskaya Street 3-A
+# 3A Zastavskaya Street
 
 ## Properties
 
-- **address**: Zastavskaya Street 3-A
+- **address**: 3A Zastavskaya Street
 - **city**: Saint Petersburg
 - **state**: Saint Petersburg
 - **country**: Russia
 - **latitude**: 59.9606739
 - **longitude**: 30.1586551
-- **location_type**: office
+- **location_type**: unknown
 
 ## Relationships
 
@@ -30,4 +29,4 @@ notes: "Address connected to Wagner Group for registration/shadow purposes"
 
 ## Notes
 
-Address connected to Wagner Group for registration/shadow purposes
+

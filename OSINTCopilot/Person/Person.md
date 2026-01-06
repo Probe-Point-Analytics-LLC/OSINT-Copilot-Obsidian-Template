@@ -1,10 +1,10 @@
 ---
-id: "7edb6f65-8fea-41d8-b239-2ed41ccbac63"
+id: "29aa1b36-2ade-468e-a85e-d3b3252eb023"
 type: Person
 label: "Person"
 full_name: "Vladimir Putin"
 occupation: "President of Russia"
-notes: "Close association with Wagner Group leadership."
+notes: "Political linkage with Wagner Group."
 ---
 
 # Person
@@ -17,9 +17,12 @@ notes: "Close association with Wagner Group leadership."
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
-- [[Person]] WORKS_WITH [[Wagner Group]]
-- [[Person]] ASSOCIATED_WITH [[Wagner Group]]
+- [[Person]] FOUNDED [[Wagner Group]]
+- [[Person]] MANAGES [[Wagner Group]]
+- [[Person]] STATE_SPONSORSHIP [[Wagner Group]]
+- [[Person]] PARTICIPATED_IN [[Leadership Transfer to Pavel Prigozhin]]
+- [[Person]] PARTICIPATED_IN [[Post-Prigozhin Leadership Transition]]
 
 ## Notes
 
-Close association with Wagner Group leadership.
+Political linkage with Wagner Group.

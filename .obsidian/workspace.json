@@ -196,13 +196,23 @@
               "icon": "message-square",
               "title": "OSINT Copilot"
             }
+          },
+          {
+            "id": "80f42af088b41c19",
+            "type": "leaf",
+            "state": {
+              "type": "graph_copilot-timeline-view",
+              "state": {},
+              "icon": "calendar-clock",
+              "title": "OSINTCopilot Timeline"
+            }
           }
         ],
         "currentTab": 6
       }
     ],
     "direction": "horizontal",
-    "width": 828.5
+    "width": 1092.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -217,35 +227,35 @@
       "osint-copilot:Location Map": false
     }
   },
-  "active": "48b91e8b83791c4c",
+  "active": "80f42af088b41c19",
   "lastOpenFiles": [
-    "Reports/Wagner_Group_and_Evgenii_Progozhin_Report_2026-01-06_00-45-35.md",
+    "Reports/Wagner_Group_and_Engenii_Prigozhin_Report_2026-01-06_00-53-26.md",
+    "OSINTCopilot/Location/3A Zastavskaya Street.md",
+    "OSINTCopilot/Location/15 Zolnaya Street.md",
+    "OSINTCopilot/Location/Pardubická 53352.md",
     "OSINTCopilot/Location/Location.md",
+    "OSINTCopilot/Company/Rusich.md",
+    "OSINTCopilot/Company/Russian Expeditionary Corps.md",
+    "OSINTCopilot/Company/Africa Corps.md",
+    "OSINTCopilot/Person/Person.md",
+    "OSINTCopilot/Company/Wagner Group.md",
+    "OSINTCopilot/Event/Post-Prigozhin Leadership Transition.md",
+    "OSINTCopilot/Event/Withdrawal from Mali.md",
+    "OSINTCopilot/Event/EU Sanctions Against Wagner Group.md",
+    "OSINTCopilot/Event/Designation as Significant Transnational Criminal Organization.md",
+    "OSINTCopilot/Event/Rebranding to Africa Corps and Russian Expeditionary Corps.md",
+    "OSINTCopilot/Event/Leadership Transfer to Pavel Prigozhin.md",
+    "OSINTCopilot/Event/Founding of Wagner Group.md",
+    "Reports/APT29_Cozy_Bear_Threat_Profile.md",
+    "Reports/Victor_Gusan_Report_2026-01-05_23-53-30.md",
+    "Reports/Wagner_Group_and_Evgenii_Progozhin_Report_2026-01-06_00-45-35.md",
     "Reports/Wagner_Group_and_Evgenii_Progozhin_Report_2026-01-06_00-06-57.md",
     "OSINTCopilot/Location/Pardubická 53352 Srch.md",
     "OSINTCopilot/Location/Zastavskaya Street 3-A.md",
-    "OSINTCopilot/Location/15 Zolnaya Street.md",
-    "OSINTCopilot/Company/Africa Corps.md",
-    "OSINTCopilot/Person/Person.md",
     "OSINTCopilot/Company/Wagner Group Inc.md",
-    "OSINTCopilot/Company/Wagner Group.md",
     "OSINTCopilot/Connections/test - UnknownLink - test.md",
     "OSINTCopilot/Address/test.md",
-    "OSINTCopilot/LegalEntity/test.md",
     "OSINTCopilot/LegalEntity",
-    "Reports/Victor_Gusan_Report_2026-01-05_23-53-30.md",
-    "OSINTCopilot/Location/Pardubická 53352.md",
-    "OSINTCopilot/Location/Zastavska Street 3-A.md",
-    "OSINTCopilot/Event/Wagner Group Offensive Operations.md",
-    "OSINTCopilot/Company/APT28 (Fancy Bear).md",
-    "OSINTCopilot/Event/Ukrainian Asset Freeze on Victor Gushan.md",
-    "OSINTCopilot/Company/FC Sheriff.md",
-    "OSINTCopilot/Company/Obnovlenie (Renewal).md",
-    "OSINTCopilot/Company/Sheriff Holding Company.md",
-    "OSINTCopilot/Company/APT29 (Cozy Bear).md",
-    "OSINTCopilot/Username/@gmail.md",
-    "OSINTCopilot/Email/Email.md",
-    "OSINTCopilot/Location/Moscow.md",
     "README.md~",
     "Reports/APT29_Cozy_Bear_Threat_Profile_2026-01-03.md~",
     "Reports/DarkWeb_Ransomware_Marketplace_Investigation_2026-01-03.md~",

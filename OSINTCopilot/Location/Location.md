@@ -1,22 +1,26 @@
 ---
-id: "9db51cf4-c9cd-497b-9006-83ec03d3a4ff"
+id: "1f6b34c0-58fc-4851-bc09-249f76e81148"
 type: Location
 label: "Location"
-country: "Mozambique"
-latitude: -19.302233
-longitude: 34.9144977
-location_type: "operational area"
-notes: "Wagner Group operations"
+city: "Delaware"
+state: "Delaware"
+country: "USA"
+latitude: 38.6920451
+longitude: -75.4013315
+location_type: "symbolic"
+notes: "Unverified address, likely false or for obfuscation"
 ---
 
 # Location
 
 ## Properties
 
-- **country**: Mozambique
-- **latitude**: -19.302233
-- **longitude**: 34.9144977
-- **location_type**: operational area
+- **city**: Delaware
+- **state**: Delaware
+- **country**: USA
+- **latitude**: 38.6920451
+- **longitude**: -75.4013315
+- **location_type**: symbolic
 
 ## Relationships
 
@@ -24,4 +28,4 @@ notes: "Wagner Group operations"
 
 ## Notes
 
-Wagner Group operations
+Unverified address, likely false or for obfuscation

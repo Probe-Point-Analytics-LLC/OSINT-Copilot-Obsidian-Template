@@ -1,23 +1,23 @@
 ---
-id: "d57e5d1d-79ed-4a38-9e89-3b47cc47e1cd"
+id: "63e5f5d8-6710-451a-8e56-cbd580622d4a"
 type: Company
-label: "Africa Corps"
-name: "Africa Corps"
+label: "Russian Expeditionary Corps"
+name: "Russian Expeditionary Corps"
 description: "Rebranded structure of Wagner Group"
 notes: "Part of the rebranding efforts post-Wagner Group."
 ---
 
-# Africa Corps
+# Russian Expeditionary Corps
 
 ## Properties
 
-- **name**: Africa Corps
+- **name**: Russian Expeditionary Corps
 - **description**: Rebranded structure of Wagner Group
 
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
-- [[Africa Corps]] OPERATIONAL_CONTINUATION [[Wagner Group]]
+- [[Russian Expeditionary Corps]] OPERATIONAL_CONTINUATION [[Wagner Group]]
 
 ## Notes
 
