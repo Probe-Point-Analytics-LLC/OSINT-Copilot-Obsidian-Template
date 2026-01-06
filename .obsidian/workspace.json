@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "18e05bf74193a59b",
+        "id": "ef5c24c31b09e4c9",
         "type": "tabs",
         "children": [
           {
-            "id": "48b91e8b83791c4c",
+            "id": "686ee92cede1eb10",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "OSINTCopilot/Person/Person.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Person"
+              "type": "vault-ai-chat-view",
+              "state": {},
+              "icon": "message-square",
+              "title": "OSINT Copilot"
             }
           }
         ]
@@ -170,75 +166,48 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "OSINTCopilot/Person/Person.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "File properties for Person"
-            }
-          },
-          {
-            "id": "bb6f5a491e17ed83",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-graph-view",
-              "state": {},
-              "icon": "git-fork",
-              "title": "OSINTCopilot Graph"
-            }
-          },
-          {
-            "id": "b961bc2a73a8d89d",
-            "type": "leaf",
-            "state": {
-              "type": "vault-ai-chat-view",
-              "state": {},
-              "icon": "message-square",
-              "title": "OSINT Copilot"
-            }
-          },
-          {
-            "id": "80f42af088b41c19",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-timeline-view",
-              "state": {},
-              "icon": "calendar-clock",
-              "title": "OSINTCopilot Timeline"
+              "title": "File properties"
             }
           }
         ],
-        "currentTab": 6
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 1092.5
+    "width": 200,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
       "switcher:Open quick switcher": false,
       "canvas:Create new canvas": false,
       "templates:Insert template": false,
+      "osint-copilot:OSINT Copilot Chat (Ctrl+click for new pane)": false,
       "command-palette:Open command palette": false,
       "bases:Create new base": false,
+      "osint-copilot:Entity Graph (Ctrl+click for new pane)": false,
       "osint-copilot:OSINT Copilot Chat": false,
       "osint-copilot:Entity Graph": false,
       "osint-copilot:Timeline": false,
-      "osint-copilot:Location Map": false
+      "osint-copilot:Location Map": false,
+      "osint-copilot:Timeline (Ctrl+click for new pane)": false,
+      "osint-copilot:Location Map (Ctrl+click for new pane)": false
     }
   },
-  "active": "80f42af088b41c19",
+  "active": "686ee92cede1eb10",
   "lastOpenFiles": [
     "Reports/Wagner_Group_and_Engenii_Prigozhin_Report_2026-01-06_00-53-26.md",
+    "OSINTCopilot/Company/Wagner Group.md",
+    "OSINTCopilot/Location/Pardubická 53352.md",
+    "OSINTCopilot/Person/Person.md",
     "OSINTCopilot/Location/3A Zastavskaya Street.md",
     "OSINTCopilot/Location/15 Zolnaya Street.md",
-    "OSINTCopilot/Location/Pardubická 53352.md",
     "OSINTCopilot/Location/Location.md",
     "OSINTCopilot/Company/Rusich.md",
     "OSINTCopilot/Company/Russian Expeditionary Corps.md",
     "OSINTCopilot/Company/Africa Corps.md",
-    "OSINTCopilot/Person/Person.md",
-    "OSINTCopilot/Company/Wagner Group.md",
     "OSINTCopilot/Event/Post-Prigozhin Leadership Transition.md",
     "OSINTCopilot/Event/Withdrawal from Mali.md",
     "OSINTCopilot/Event/EU Sanctions Against Wagner Group.md",

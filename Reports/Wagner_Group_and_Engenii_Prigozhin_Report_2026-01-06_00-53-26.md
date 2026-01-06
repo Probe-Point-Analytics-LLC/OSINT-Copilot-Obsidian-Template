@@ -22,8 +22,6 @@ No confirmed corporate registration numbers or tax identifiers have been found i
 Addresses associated with the entity appear symbolic, abandoned, or connected to related Russian defense contractors.
 
 Known addresses:
-• Delaware, USA (unverified — likely false/obfuscation)  
-• Pardubická 53352 Srch, Czech Republic  
 • 15 Zolnaya Street, Saint Petersburg, 195213, Russia  
 • 3A Zastavskaya Street, Saint Petersburg, Russia  
 
