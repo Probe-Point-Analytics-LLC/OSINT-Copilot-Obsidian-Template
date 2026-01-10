@@ -2449,9 +2449,9 @@ class ChatView extends ItemView {
     if (this.isEntityOnlyMode()) {
       return "🏷️ Entity-Only (ON)";
     } else if (this.entityGenerationMode) {
-      return "🏷️ Entities (ON)";
+      return "🏷️ Entity Generation (ON)";
     } else {
-      return "🏷️ Entities";
+      return "🏷️ Entity Generation";
     }
   }
 
