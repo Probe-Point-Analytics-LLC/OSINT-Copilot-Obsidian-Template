@@ -1,28 +1,36 @@
 ---
-id: "29aa1b36-2ade-468e-a85e-d3b3252eb023"
+id: "23a43378-dd2c-47e0-ace3-2459b08e7def"
 type: Person
 label: "Person"
-full_name: "Vladimir Putin"
-occupation: "President of Russia"
-notes: "Political linkage with Wagner Group."
+full_name: "Adis Ahmetović"
+nationality: "German, Bosnian"
+occupation: "Politician"
+notes: "Verified German politician, member of the Bundestag, chairman of SPD Hannover, Foreign Policy Spokesperson for SPD."
 ---
 
 # Person
 
 ## Properties
 
-- **full_name**: Vladimir Putin
-- **occupation**: President of Russia
+- **full_name**: Adis Ahmetović
+- **nationality**: German, Bosnian
+- **occupation**: Politician
 
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
-- [[Person]] FOUNDED [[Wagner Group]]
-- [[Person]] MANAGES [[Wagner Group]]
-- [[Person]] STATE_SPONSORSHIP [[Wagner Group]]
-- [[Person]] PARTICIPATED_IN [[Leadership Transfer to Pavel Prigozhin]]
-- [[Person]] PARTICIPATED_IN [[Post-Prigozhin Leadership Transition]]
+- [[Person]] WORKS_AT [[SPD]]
+- [[Person]] WORKS_AT [[SPD Hannover]]
+- [[Person]] WORKS_AT [[Bundestag]]
+- [[Person]] MEMBER_OF [[Business Forum of the SPD]]
+- [[Person]] MEMBER_OF [[Stiftung Wissenschaft und Politik (SWP)]]
+- [[Person]] MEMBER_OF [[DRK Schwesternschaft Clementinenhaus e.V.]]
+- [[Person]] FORMER_EMPLOYEE [[Lower Saxon State Chancellery]]
+- [[Person]] ALUMNUS_OF [[Leibniz University Hannover]]
+- [[Person]] ALUMNUS_OF [[Herschelschule]]
+- [[Person]] BORN_IN [[Location]]
+- [[Person]] RESIDES_AT [[Location]]
 
 ## Notes
 
-Political linkage with Wagner Group.
+Verified German politician, member of the Bundestag, chairman of SPD Hannover, Foreign Policy Spokesperson for SPD.

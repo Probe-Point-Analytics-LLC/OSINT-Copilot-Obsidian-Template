@@ -1409,17 +1409,17 @@
 }
 
 /* ============================================================================
-   OSINT Search Mode Styles
+   Leak Search Mode Styles
    ============================================================================ */
 
-/* OSINT Search toggle in header */
+/* Leak Search toggle in header */
 .vault-ai-osint-search-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-/* OSINT Search options panel */
+/* Leak Search options panel */
 .vault-ai-osint-search-options {
     display: flex;
     flex-direction: column;
@@ -1494,7 +1494,7 @@
     cursor: pointer;
 }
 
-/* Conversation list OSINT Search badge */
+/* Conversation list Leak Search badge */
 .vault-ai-conversation-osint-search {
     font-size: 12px;
     margin-left: 4px;

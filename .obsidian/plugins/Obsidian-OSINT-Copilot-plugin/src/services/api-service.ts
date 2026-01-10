@@ -623,7 +623,7 @@ export class GraphApiService {
         }
 
         if (!this.apiKey) {
-            throw new Error('License key required for OSINT Search. Configure in Settings → OSINT Copilot → API Key.');
+            throw new Error('License key required for Leak Search. Configure in Settings → OSINT Copilot → API Key.');
         }
 
         console.log('[GraphApiService] AI Search request:', request.query.substring(0, 100));
@@ -662,7 +662,7 @@ export class GraphApiService {
                             throw new Error('Authentication failed. Please check your API key in Settings.');
                         }
                         if (response.status === 404) {
-                            throw new Error('OSINT Search endpoint not found. Please check your API configuration.');
+                            throw new Error('Leak Search endpoint not found. Please check your API configuration.');
                         }
                         throw new Error(`API error (${response.status}): ${errorText}`);
                     }
@@ -724,12 +724,12 @@ export class GraphApiService {
         if (this.isTimeoutError(lastError)) {
             throw new Error('Search timed out. Try reducing the number of providers or simplifying your query.');
         } else if (lastStatusCode === 503) {
-            throw new Error('OSINT Search service is temporarily unavailable. Please try again later.');
+            throw new Error('Leak Search service is temporarily unavailable. Please try again later.');
         } else if (lastStatusCode === 504) {
             throw new Error('Search timed out. Try reducing the number of providers.');
         }
 
-        throw new Error(`OSINT Search failed after ${maxRetries} attempts: ${errorMessage}`);
+        throw new Error(`Leak Search failed after ${maxRetries} attempts: ${errorMessage}`);
     }
 }
 

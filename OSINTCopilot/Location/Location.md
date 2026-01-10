@@ -1,26 +1,26 @@
 ---
-id: "1f6b34c0-58fc-4851-bc09-249f76e81148"
+id: "0f1b287d-ab3d-425d-91a1-9ddfea18c6a7"
 type: Location
 label: "Location"
-city: "Delaware"
-state: "Delaware"
-country: "USA"
-latitude: 38.6920451
-longitude: -75.4013315
-location_type: "symbolic"
-notes: "Unverified address, likely false or for obfuscation"
+city: "Hannover"
+state: "Lower Saxony"
+country: "Germany"
+latitude: 52.3744779
+longitude: 9.7385532
+location_type: "birthplace"
+notes: "Alternative spelling of the place of birth for Adis Ahmetović"
 ---
 
 # Location
 
 ## Properties
 
-- **city**: Delaware
-- **state**: Delaware
-- **country**: USA
-- **latitude**: 38.6920451
-- **longitude**: -75.4013315
-- **location_type**: symbolic
+- **city**: Hannover
+- **state**: Lower Saxony
+- **country**: Germany
+- **latitude**: 52.3744779
+- **longitude**: 9.7385532
+- **location_type**: birthplace
 
 ## Relationships
 
@@ -28,4 +28,4 @@ notes: "Unverified address, likely false or for obfuscation"
 
 ## Notes
 
-Unverified address, likely false or for obfuscation
+Alternative spelling of the place of birth for Adis Ahmetović

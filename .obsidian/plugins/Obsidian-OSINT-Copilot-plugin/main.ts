@@ -1077,7 +1077,7 @@ export default class VaultAIPlugin extends Plugin {
               const lowerError = errorText.toLowerCase();
               if (lowerError.includes("quota") || lowerError.includes("exhausted")) {
                 throw new Error(
-                  "Corporate Report quota exhausted. Please upgrade your plan or wait for quota renewal. Visit https://osint-copilot.com/dashboard/ to manage your subscription."
+                  "Companies&People quota exhausted. Please upgrade your plan or wait for quota renewal. Visit https://osint-copilot.com/dashboard/ to manage your subscription."
                 );
               }
               if (lowerError.includes("expired")) {
@@ -1093,7 +1093,7 @@ export default class VaultAIPlugin extends Plugin {
             }
 
             throw new Error(
-              `Corporate Report generation request failed (${generateResponse.status}): ${errorText.substring(0, 200)}`
+              `Companies&People generation request failed (${generateResponse.status}): ${errorText.substring(0, 200)}`
             );
           }
 
@@ -1116,7 +1116,7 @@ export default class VaultAIPlugin extends Plugin {
           const isNetworkError = initError instanceof Error && this.isTransientNetworkError(initError);
 
           if (isNetworkError && initAttempt < maxInitialRetries) {
-            console.log(`[OSINT Copilot] Corporate Report init network error, retrying (${initAttempt}/${maxInitialRetries}):`, initError);
+            console.log(`[OSINT Copilot] Companies&People init network error, retrying (${initAttempt}/${maxInitialRetries}):`, initError);
             statusCallback?.(`Network interrupted, retrying... (attempt ${initAttempt}/${maxInitialRetries})`);
             await this.sleep(1000 * initAttempt); // Exponential backoff
           } else {
@@ -1125,7 +1125,7 @@ export default class VaultAIPlugin extends Plugin {
         }
       }
 
-      statusCallback?.(`Corporate Report generation started (Job ID: ${jobId}). Processing...`);
+      statusCallback?.(`Companies&People generation started (Job ID: ${jobId}). Processing...`);
 
       // Step 2: Poll for job status with adaptive polling and retry logic
       let attempts = 0;
@@ -1258,7 +1258,7 @@ export default class VaultAIPlugin extends Plugin {
               throw new Error("Backend service temporarily unavailable. Please try again in a few minutes.");
             }
 
-            throw new Error(`Corporate Report generation failed: ${backendError}`);
+            throw new Error(`Companies&People generation failed: ${backendError}`);
           }
         } catch (pollError) {
           // Check if this is a transient network error
@@ -1271,7 +1271,7 @@ export default class VaultAIPlugin extends Plugin {
             const errorType = pollError instanceof Error ? pollError.name : 'Unknown';
             const errorMsg = pollError instanceof Error ? pollError.message : String(pollError);
             console.log(
-              `[OSINT Copilot] Corporate Report status poll network error (${consecutiveNetworkErrors}/${maxConsecutiveNetworkErrors}):`,
+              `[OSINT Copilot] Companies&People status poll network error (${consecutiveNetworkErrors}/${maxConsecutiveNetworkErrors}):`,
               `Type: ${errorType}, Message: ${errorMsg}`
             );
 
@@ -1295,7 +1295,7 @@ export default class VaultAIPlugin extends Plugin {
       // Check if job completed or response is ready (for answers)
       // Note: response_ready case is handled inside the loop and returns early
       if (jobStatus !== "completed") {
-        throw new Error("Corporate Report generation timed out. Please try again.");
+        throw new Error("Companies&People generation timed out. Please try again.");
       }
 
       // Step 3: Download the report with retry logic
@@ -1331,7 +1331,7 @@ export default class VaultAIPlugin extends Plugin {
           const isNetworkError = downloadError instanceof Error && this.isTransientNetworkError(downloadError);
 
           if (isNetworkError && downloadAttempt < maxDownloadRetries) {
-            console.log(`[OSINT Copilot] Corporate Report download network error, retrying (${downloadAttempt}/${maxDownloadRetries}):`, downloadError);
+            console.log(`[OSINT Copilot] Companies&People download network error, retrying (${downloadAttempt}/${maxDownloadRetries}):`, downloadError);
             statusCallback?.(`Download interrupted, retrying... (attempt ${downloadAttempt}/${maxDownloadRetries})`);
             await this.sleep(1000 * downloadAttempt); // Exponential backoff
           } else {
@@ -1346,7 +1346,7 @@ export default class VaultAIPlugin extends Plugin {
         throw new Error("No content received from server");
       }
 
-      statusCallback?.("Corporate Report downloaded successfully!");
+      statusCallback?.("Companies&People downloaded successfully!");
 
       // Sanitize the markdown content
       const sanitizedContent = this.sanitizeMarkdownContent(reportContent);
@@ -1357,7 +1357,7 @@ export default class VaultAIPlugin extends Plugin {
       };
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Corporate Report generation failed: ${error.message}`);
+        throw new Error(`Companies&People generation failed: ${error.message}`);
       }
       throw error;
     }
@@ -1600,7 +1600,7 @@ export default class VaultAIPlugin extends Plugin {
     const timestamp = now.toISOString().split("T")[1].split(".")[0].replace(/:/g, "-");
 
     // Extract entity name from description for meaningful filename
-    // Common patterns: "Tell me about X", "Corporate Report on X", "Who is X", "What is X", etc.
+    // Common patterns: "Tell me about X", "Companies&People on X", "Who is X", "What is X", etc.
     let entityName = description;
     const patterns = [
       /(?:tell me about|report on|who is|what is|investigate|research|find|look up|search for)\s+(.+)/i,
@@ -1976,10 +1976,10 @@ class ChatView extends ItemView {
   localSearchMode: boolean = true; // Default mode (formerly "lookup mode")
   darkWebMode: boolean = false;
   reportGenerationMode: boolean = false;
-  osintSearchMode: boolean = false; // OSINT Search mode
+  osintSearchMode: boolean = false; // Leak Search mode
   // Mode dropdown element (replaces individual toggle checkboxes)
   modeDropdown!: HTMLSelectElement;
-  // OSINT Search options
+  // Leak Search options
   osintSearchOptionsVisible: boolean = false;
   osintSearchCountry: 'RU' | 'UA' | 'BY' | 'KZ' = 'RU';
   osintSearchMaxProviders: number = 3;
@@ -2116,7 +2116,7 @@ class ChatView extends ItemView {
 
     // === Main Mode Selection Dropdown (Mutually Exclusive - can be "none" for Entity-Only Mode) ===
     const modeSelectContainer = buttonGroup.createDiv("vault-ai-mode-select-container");
-    modeSelectContainer.setAttribute("title", "Select a mode, or choose 'Entity Only' for entity extraction without AI chat");
+    modeSelectContainer.setAttribute("title", "Select a mode, or choose 'Entity Generation' for entity extraction without AI chat");
 
     const modeLabel = modeSelectContainer.createEl("label", {
       text: "Mode:",
@@ -2133,9 +2133,9 @@ class ChatView extends ItemView {
     const modeOptions = [
       { value: "local", label: "🔍 Local Search", mode: "localSearchMode" },
       { value: "darkweb", label: "🕵️ Dark Web", mode: "darkWebMode" },
-      { value: "report", label: "📄 Corporate Report", mode: "reportGenerationMode" },
-      { value: "osint", label: "🔎 OSINT Search", mode: "osintSearchMode" },
-      { value: "none", label: "🏷️ Entity Only", mode: "none" },
+      { value: "report", label: "📄 Companies&People", mode: "reportGenerationMode" },
+      { value: "osint", label: "🔎 Leak Search", mode: "osintSearchMode" },
+      { value: "none", label: "🏷️ Entity Generation", mode: "none" },
     ];
 
     for (const option of modeOptions) {
@@ -2173,18 +2173,18 @@ class ChatView extends ItemView {
           break;
         case "report":
           this.reportGenerationMode = true;
-          new Notice("Corporate Report Mode enabled");
+          new Notice("Companies&People Mode enabled");
           break;
         case "osint":
           this.osintSearchMode = true;
-          new Notice("OSINT Search Mode enabled");
+          new Notice("Leak Search Mode enabled");
           break;
         case "none":
           // All modes off - Entity-Only Mode if entity generation is on
           if (this.entityGenerationMode) {
             new Notice("Entity-Only Mode enabled - extract entities from your text");
           } else {
-            // Enable entity generation automatically for Entity Only mode
+            // Enable entity generation automatically for Entity Generation mode
             this.entityGenerationMode = true;
             this.entityGenerationToggle.checked = true;
             this.updateEntityGenerationLabel();
@@ -2259,7 +2259,7 @@ class ChatView extends ItemView {
       }
     });
 
-    // OSINT Search Options Panel (shown when OSINT Search mode is active)
+    // Leak Search Options Panel (shown when Leak Search mode is active)
     if (this.osintSearchMode) {
       this.renderOSINTSearchOptions(inputContainer);
     }
@@ -2271,14 +2271,14 @@ class ChatView extends ItemView {
    */
   private getModeDisclaimer(): string | null {
     if (this.isEntityOnlyMode()) {
-      return "🏷️ <strong>Entity-Only Mode:</strong> Your text will be analyzed to extract and create entities (people, companies, locations, etc.) without AI chat.";
+      return "🏷️ <strong>Entity-Generation Mode:</strong> Your text will be analyzed to extract and create entities in the graph (people, companies, locations, etc.) without AI chat.";
     }
 
     if (this.osintSearchMode) {
       if (this.entityGenerationMode) {
-        return "🔎 <strong>OSINT Search + Entities:</strong> Search OSINT databases and automatically create entities from the results.";
+        return "🔎 <strong>Leak Search + Entities:</strong> Search leaked databases and automatically create entities from the results.";
       }
-      return "🔎 <strong>OSINT Search:</strong> Search multiple OSINT databases for information about people, emails, phones, and more.";
+      return "🔎 <strong>Leak Search:</strong> Search multiple leaked databases for information about people, emails, phones, and more.";
     }
 
     if (this.darkWebMode) {
@@ -2290,9 +2290,9 @@ class ChatView extends ItemView {
 
     if (this.reportGenerationMode) {
       if (this.entityGenerationMode) {
-        return "📄 <strong>Corporate Report + Entities:</strong> Generate comprehensive reports and automatically create entities from the content.";
+        return "📄 <strong>Persons&Companies + Entities:</strong> Generate comprehensive reports and automatically create entities from the content.";
       }
-      return "📄 <strong>Corporate Report:</strong> Generate detailed corporate intelligence reports about people and companies. Include data about sanctions and red flags";
+      return "📄 <strong>Persons&Companies:</strong> Generate detailed corporate intelligence reports about people and companies. Include data about sanctions and red flags";
     }
 
     if (this.localSearchMode) {
@@ -2306,7 +2306,7 @@ class ChatView extends ItemView {
   }
 
   /**
-   * Render the OSINT Search options panel.
+   * Render the Leak Search options panel.
    */
   private renderOSINTSearchOptions(container: HTMLElement) {
     const optionsPanel = container.createDiv("vault-ai-osint-search-options");
@@ -2536,7 +2536,7 @@ class ChatView extends ItemView {
       if (isEntityOnly) {
         meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entityonly", title: "Entity-Only Mode" });
       } else if (convOsintSearchMode) {
-        meta.createEl("span", { text: "🔎", cls: "vault-ai-conversation-osint-search", title: "OSINT Search Mode" });
+        meta.createEl("span", { text: "🔎", cls: "vault-ai-conversation-osint-search", title: "Leak Search Mode" });
         if (conv.entityGenerationMode) {
           meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entitygen", title: "Entity Generation" });
         }
@@ -2546,7 +2546,7 @@ class ChatView extends ItemView {
           meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entitygen", title: "Entity Generation" });
         }
       } else if (conv.reportGenerationMode) {
-        meta.createEl("span", { text: "📄", cls: "vault-ai-conversation-report", title: "Corporate Report Generation Mode" });
+        meta.createEl("span", { text: "📄", cls: "vault-ai-conversation-report", title: "Companies&People Generation Mode" });
         if (conv.entityGenerationMode) {
           meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entitygen", title: "Entity Generation" });
         }
@@ -2867,7 +2867,7 @@ class ChatView extends ItemView {
         `;
       }
 
-      // Show "Open Corporate Report" button for report generation messages
+      // Show "Open Companies&People" button for report generation messages
       if (item.role === "assistant" && item.reportFilePath) {
         const reportButtonContainer = messageDiv.createDiv("vault-ai-report-button-container");
         reportButtonContainer.style.cssText = `
@@ -2879,7 +2879,7 @@ class ChatView extends ItemView {
         `;
 
         const reportButton = reportButtonContainer.createEl("button", {
-          text: "📄 Open Corporate Report",
+          text: "📄 Open Companies&People",
           cls: "vault-ai-open-report-btn",
         });
         reportButton.style.cssText = `
@@ -2911,7 +2911,7 @@ class ChatView extends ItemView {
             await this.app.workspace.getLeaf().openFile(file);
             new Notice(`Opened report: ${item.reportFilePath}`);
           } else {
-            new Notice(`Corporate Report file not found: ${item.reportFilePath}`);
+            new Notice(`Companies&People file not found: ${item.reportFilePath}`);
           }
         });
 
@@ -3715,7 +3715,7 @@ class ChatView extends ItemView {
 
       // Update message with success header, file link, and full report content
       let finalContent =
-        `📄 **Corporate Report Generated Successfully!**\n\n` +
+        `📄 **Companies&People Generated Successfully!**\n\n` +
         `**Request:** ${description}\n\n` +
         `**Saved to:** \`${fileName}\`\n\n` +
         `---\n\n` +
@@ -3735,7 +3735,7 @@ class ChatView extends ItemView {
         await this.app.workspace.getLeaf().openFile(file);
       }
 
-      new Notice(`Corporate Report saved to ${fileName}`);
+      new Notice(`Companies&People saved to ${fileName}`);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
 
@@ -3747,7 +3747,7 @@ class ChatView extends ItemView {
         userMessage = "Backend service temporarily unavailable (SSL/certificate issue)";
         suggestion = "\n\n💡 **Suggestion:** This is a temporary server-side issue. Please try again in a few minutes.";
       } else if (errorMsg.toLowerCase().includes("timeout")) {
-        userMessage = "Corporate Report generation timed out";
+        userMessage = "Companies&People generation timed out";
         suggestion = "\n\n💡 **Suggestion:** The server may be busy. Please try again with a simpler query.";
       } else if (errorMsg.toLowerCase().includes("quota")) {
         suggestion = "\n\n💡 **Suggestion:** Visit https://osint-copilot.com/dashboard/ to check your quota.";
@@ -3760,16 +3760,16 @@ class ChatView extends ItemView {
       }
 
       this.chatHistory[messageIndex].content =
-        `📄 **Corporate Report Generation Failed**\n\n` +
+        `📄 **Companies&People Generation Failed**\n\n` +
         `**Request:** ${description}\n\n` +
         `**Error:** ${userMessage}${suggestion}`;
       this.renderMessages();
-      new Notice(`Corporate Report generation failed: ${userMessage}`);
+      new Notice(`Companies&People generation failed: ${userMessage}`);
     }
   }
 
   /**
-   * Handle OSINT Search Mode: AI-powered multi-provider OSINT search.
+   * Handle Leak Search Mode: AI-powered multi-provider OSINT search.
    */
   async handleOSINTSearch(query: string) {
     // Add processing placeholder with progress bar
@@ -3793,11 +3793,11 @@ class ChatView extends ItemView {
       if (!this.plugin.settings.reportApiKey) {
         this.chatHistory[messageIndex].progress = undefined;
         this.chatHistory[messageIndex].content =
-          `🔎 **OSINT Search Failed**\n\n` +
-          `**Error:** License key required for OSINT Search.\n\n` +
+          `🔎 **Leak Search Failed**\n\n` +
+          `**Error:** License key required for Leak Search.\n\n` +
           `Please configure your API key in Settings → OSINT Copilot → API Key.`;
         this.renderMessages();
-        new Notice("License key required for OSINT Search. Configure in settings.");
+        new Notice("License key required for Leak Search. Configure in settings.");
         return;
       }
 
@@ -3855,7 +3855,7 @@ class ChatView extends ItemView {
       }
 
     } catch (error) {
-      console.error('[ChatView] OSINT Search error:', error);
+      console.error('[ChatView] Leak Search error:', error);
       this.chatHistory[messageIndex].progress = undefined;
 
       let errorMessage = error instanceof Error ? error.message : String(error);
@@ -3870,11 +3870,11 @@ class ChatView extends ItemView {
       }
 
       this.chatHistory[messageIndex].content =
-        `🔎 **OSINT Search Failed**\n\n` +
+        `🔎 **Leak Search Failed**\n\n` +
         `**Query:** ${query}\n\n` +
         `**Error:** ${errorMessage}${suggestion}`;
       this.renderMessages();
-      new Notice(`OSINT Search failed: ${errorMessage}`);
+      new Notice(`Leak Search failed: ${errorMessage}`);
     }
   }
 
@@ -3886,7 +3886,7 @@ class ChatView extends ItemView {
     this.chatHistory[messageIndex].progress = undefined;
 
     // Build the result content
-    let content = `🔎 **OSINT Search Results**\n\n`;
+    let content = `🔎 **Leak Search Results**\n\n`;
     content += `**Query:** ${query}\n`;
     content += `⏱️ ${(result.execution_time_ms / 1000).toFixed(1)}s | 📊 ${result.total_results} result(s)\n\n`;
 
@@ -3938,7 +3938,7 @@ class ChatView extends ItemView {
    * Converts the JSON results into a text format suitable for the AI entity extraction.
    */
   private formatOSINTResultsForEntityExtraction(query: string, result: AISearchResponse): string {
-    let text = `OSINT Search Results for query: "${query}"\n\n`;
+    let text = `Leak Search Results for query: "${query}"\n\n`;
 
     // Include detected entities from the search
     if (result.detected_entities && result.detected_entities.length > 0) {
@@ -4601,9 +4601,9 @@ class VaultAISettingTab extends PluginSettingTab {
       });
     }
 
-    // Corporate Report Output Directory
+    // Companies&People Output Directory
     new Setting(containerEl)
-      .setName("Corporate Report Output Directory")
+      .setName("Companies&People Output Directory")
       .setDesc("Directory where generated reports will be saved")
       .addText((text) =>
         text

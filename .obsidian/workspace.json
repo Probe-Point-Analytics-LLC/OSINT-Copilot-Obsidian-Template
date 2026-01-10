@@ -4,11 +4,29 @@
     "type": "split",
     "children": [
       {
-        "id": "ef5c24c31b09e4c9",
+        "id": "fd499191ee34d660",
         "type": "tabs",
+        "dimension": 15.174506828528072,
         "children": [
           {
-            "id": "686ee92cede1eb10",
+            "id": "0403bb39e93f62b4",
+            "type": "leaf",
+            "state": {
+              "type": "graph_copilot-graph-view",
+              "state": {},
+              "icon": "git-fork",
+              "title": "OSINTCopilot Graph"
+            }
+          }
+        ]
+      },
+      {
+        "id": "d98d350cacc9174b",
+        "type": "tabs",
+        "dimension": 84.82549317147192,
+        "children": [
+          {
+            "id": "3a32483fc6873304",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
@@ -74,7 +92,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 558.5
   },
   "right": {
     "id": "5cdd0121b0d64c3d",
@@ -188,42 +206,38 @@
       "command-palette:Open command palette": false,
       "bases:Create new base": false,
       "osint-copilot:Entity Graph (Ctrl+click for new pane)": false,
-      "osint-copilot:OSINT Copilot Chat": false,
-      "osint-copilot:Entity Graph": false,
-      "osint-copilot:Timeline": false,
-      "osint-copilot:Location Map": false,
       "osint-copilot:Timeline (Ctrl+click for new pane)": false,
       "osint-copilot:Location Map (Ctrl+click for new pane)": false
     }
   },
-  "active": "686ee92cede1eb10",
+  "active": "3a32483fc6873304",
   "lastOpenFiles": [
-    "Reports/Wagner_Group_and_Engenii_Prigozhin_Report_2026-01-06_00-53-26.md",
-    "OSINTCopilot/Company/Wagner Group.md",
-    "OSINTCopilot/Location/Pardubická 53352.md",
-    "OSINTCopilot/Person/Person.md",
-    "OSINTCopilot/Location/3A Zastavskaya Street.md",
-    "OSINTCopilot/Location/15 Zolnaya Street.md",
+    "Reports/Adis_Ahmetovic_Report_2026-01-07_18-40-18.md",
+    "Reports/Lukoil_Report_2026-01-07_15-47-43.md",
+    "Reports/Суров Сергей Геннадьевич, Управление Президента РФ.md",
+    "Reports/DarkWeb_Crypto_Mixers_and_their_pricing_2026-01-07_15-22-35.md",
     "OSINTCopilot/Location/Location.md",
-    "OSINTCopilot/Company/Rusich.md",
-    "OSINTCopilot/Company/Russian Expeditionary Corps.md",
-    "OSINTCopilot/Company/Africa Corps.md",
-    "OSINTCopilot/Event/Post-Prigozhin Leadership Transition.md",
-    "OSINTCopilot/Event/Withdrawal from Mali.md",
-    "OSINTCopilot/Event/EU Sanctions Against Wagner Group.md",
-    "OSINTCopilot/Event/Designation as Significant Transnational Criminal Organization.md",
-    "OSINTCopilot/Event/Rebranding to Africa Corps and Russian Expeditionary Corps.md",
-    "OSINTCopilot/Event/Leadership Transfer to Pavel Prigozhin.md",
-    "OSINTCopilot/Event/Founding of Wagner Group.md",
-    "Reports/APT29_Cozy_Bear_Threat_Profile.md",
-    "Reports/Victor_Gusan_Report_2026-01-05_23-53-30.md",
-    "Reports/Wagner_Group_and_Evgenii_Progozhin_Report_2026-01-06_00-45-35.md",
-    "Reports/Wagner_Group_and_Evgenii_Progozhin_Report_2026-01-06_00-06-57.md",
-    "OSINTCopilot/Location/Pardubická 53352 Srch.md",
-    "OSINTCopilot/Location/Zastavskaya Street 3-A.md",
-    "OSINTCopilot/Company/Wagner Group Inc.md",
-    "OSINTCopilot/Connections/test - UnknownLink - test.md",
-    "OSINTCopilot/Address/test.md",
+    "OSINTCopilot/Event/Incorporation of Lukoil.md",
+    "OSINTCopilot/Company/Wagner Group.md",
+    "Reports/Corporate_Report_2026-01-07_19-04-20.md",
+    "Reports/Arne_Pohl_fron_Germany_hannover_Report_2026-01-07_19-00-11.md",
+    "OSINTCopilot/Company/Lukoil.md",
+    "Reports/Arne_Pohl_Report_2026-01-07_18-51-31.md",
+    "OSINTCopilot/Person/Person.md",
+    "Reports/Joachim_Gerhardy_Report_2026-01-07_18-19-04.md",
+    "OSINTCopilot/Company/Herschelschule.md",
+    "OSINTCopilot/Company/Leibniz University Hannover.md",
+    "OSINTCopilot/Company/Lower Saxon State Chancellery.md",
+    "OSINTCopilot/Company/DRK Schwesternschaft Clementinenhaus e.V..md",
+    "OSINTCopilot/Company/Stiftung Wissenschaft und Politik (SWP).md",
+    "OSINTCopilot/Company/Business Forum of the SPD.md",
+    "OSINTCopilot/Company/Bundestag.md",
+    "OSINTCopilot/Company/SPD Hannover.md",
+    "OSINTCopilot/Company/SPD.md",
+    "OSINTCopilot/Location/Sretensky Boulevard 11.md",
+    "OSINTCopilot/Company/Gunvor.md",
+    "OSINTCopilot/Company/Rosneft.md",
+    "OSINTCopilot/Company/LUKOIL Technology Services GmbH.md",
     "OSINTCopilot/LegalEntity",
     "README.md~",
     "Reports/APT29_Cozy_Bear_Threat_Profile_2026-01-03.md~",
