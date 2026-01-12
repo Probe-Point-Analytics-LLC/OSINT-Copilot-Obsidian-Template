@@ -4,35 +4,33 @@
     "type": "split",
     "children": [
       {
-        "id": "fd499191ee34d660",
+        "id": "a289e224bf54d8da",
         "type": "tabs",
-        "dimension": 15.174506828528072,
         "children": [
           {
-            "id": "0403bb39e93f62b4",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-graph-view",
-              "state": {},
-              "icon": "git-fork",
-              "title": "OSINTCopilot Graph"
-            }
-          }
-        ]
-      },
-      {
-        "id": "d98d350cacc9174b",
-        "type": "tabs",
-        "dimension": 84.82549317147192,
-        "children": [
-          {
-            "id": "3a32483fc6873304",
+            "id": "bdb1cf12b1a517ed",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
               "state": {},
               "icon": "message-square",
               "title": "OSINT Copilot"
+            }
+          }
+        ]
+      },
+      {
+        "id": "9501aaaaeab63b4a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "241a73a4bdd90810",
+            "type": "leaf",
+            "state": {
+              "type": "graph_copilot-graph-view",
+              "state": {},
+              "icon": "git-fork",
+              "title": "OSINTCopilot Graph"
             }
           }
         ]
@@ -92,7 +90,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 558.5
+    "width": 296.5
   },
   "right": {
     "id": "5cdd0121b0d64c3d",
@@ -202,42 +200,43 @@
       "switcher:Open quick switcher": false,
       "canvas:Create new canvas": false,
       "templates:Insert template": false,
-      "osint-copilot:OSINT Copilot Chat (Ctrl+click for new pane)": false,
       "command-palette:Open command palette": false,
       "bases:Create new base": false,
+      "osint-copilot:OSINT Copilot Chat (Ctrl+click for new pane)": false,
       "osint-copilot:Entity Graph (Ctrl+click for new pane)": false,
       "osint-copilot:Timeline (Ctrl+click for new pane)": false,
       "osint-copilot:Location Map (Ctrl+click for new pane)": false
     }
   },
-  "active": "3a32483fc6873304",
+  "active": "241a73a4bdd90810",
   "lastOpenFiles": [
-    "Reports/Adis_Ahmetovic_Report_2026-01-07_18-40-18.md",
-    "Reports/Lukoil_Report_2026-01-07_15-47-43.md",
-    "Reports/Суров Сергей Геннадьевич, Управление Президента РФ.md",
-    "Reports/DarkWeb_Crypto_Mixers_and_their_pricing_2026-01-07_15-22-35.md",
-    "OSINTCopilot/Location/Location.md",
-    "OSINTCopilot/Event/Incorporation of Lukoil.md",
-    "OSINTCopilot/Company/Wagner Group.md",
-    "Reports/Corporate_Report_2026-01-07_19-04-20.md",
-    "Reports/Arne_Pohl_fron_Germany_hannover_Report_2026-01-07_19-00-11.md",
-    "OSINTCopilot/Company/Lukoil.md",
-    "Reports/Arne_Pohl_Report_2026-01-07_18-51-31.md",
-    "OSINTCopilot/Person/Person.md",
-    "Reports/Joachim_Gerhardy_Report_2026-01-07_18-19-04.md",
-    "OSINTCopilot/Company/Herschelschule.md",
-    "OSINTCopilot/Company/Leibniz University Hannover.md",
-    "OSINTCopilot/Company/Lower Saxon State Chancellery.md",
-    "OSINTCopilot/Company/DRK Schwesternschaft Clementinenhaus e.V..md",
-    "OSINTCopilot/Company/Stiftung Wissenschaft und Politik (SWP).md",
-    "OSINTCopilot/Company/Business Forum of the SPD.md",
-    "OSINTCopilot/Company/Bundestag.md",
-    "OSINTCopilot/Company/SPD Hannover.md",
-    "OSINTCopilot/Company/SPD.md",
-    "OSINTCopilot/Location/Sretensky Boulevard 11.md",
-    "OSINTCopilot/Company/Gunvor.md",
-    "OSINTCopilot/Company/Rosneft.md",
-    "OSINTCopilot/Company/LUKOIL Technology Services GmbH.md",
+    "OSINTCopilot/Location/Location_6c624f02.md",
+    "OSINTCopilot/Location/Location_acdc51cf.md",
+    "OSINTCopilot/Location/Location_bdbfb25d.md",
+    "OSINTCopilot/Location/Location_01988eba.md",
+    "OSINTCopilot/Location/Bauman Moscow State Technical University_c449aeb5.md",
+    "OSINTCopilot/Company/Technicheskiye materialy_7b5c590e.md",
+    "OSINTCopilot/Company/Ksenon_1aea55a8.md",
+    "OSINTCopilot/Company/Tekhnologiya_7d49459d.md",
+    "OSINTCopilot/Company/Tekhmed_da3f12f0.md",
+    "OSINTCopilot/Company/Iskra Industry Co. Ltd._d8815cfb.md",
+    "OSINTCopilot/Company/UU Invest_eec26c47.md",
+    "OSINTCopilot/Company/Baytree Trading_fede777b.md",
+    "OSINTCopilot/Company/Criomec_98a739d0.md",
+    "OSINTCopilot/Company/Rem-Profi-Komplekt_e8c06039.md",
+    "OSINTCopilot/Company/Cryoin Europe_2ef6f41e.md",
+    "OSINTCopilot/Company/SG Special Gas Trading_439136f9.md",
+    "OSINTCopilot/Company/HE 24 ME GAZ_24881994.md",
+    "OSINTCopilot/Company/Business Management_7fa02fc7.md",
+    "OSINTCopilot/Company/Cryoin Engineering_2a0e913c.md",
+    "OSINTCopilot/Person/Alash Dadashov_0bec6cf6.md",
+    "OSINTCopilot/Person/Stanislav Komarovsky_411bf3cf.md",
+    "OSINTCopilot/Person/Sofia Goroshkova_84ba28ed.md",
+    "OSINTCopilot/Person/Sergey Goroshkov_7dc5e62c.md",
+    "OSINTCopilot/Person/Andrey Dubovskov_a8d91521.md",
+    "OSINTCopilot/Person/Alexander Bazvanov_c26cf10f.md",
+    "OSINTCopilot/Person/Petro Dalakov_5b9ec85f.md",
+    "OSINTCopilot/Image",
     "OSINTCopilot/LegalEntity",
     "README.md~",
     "Reports/APT29_Cozy_Bear_Threat_Profile_2026-01-03.md~",
@@ -246,7 +245,6 @@
     "Reports/APT29_Threat_Actor_Profile_2026-01-03.md~",
     "EXAMPLE_QUERIES.md~",
     "OSINTCopilot/Address",
-    "LICENSE",
-    "PLUGIN_SUBMODULE_SETUP.md~"
+    "LICENSE"
   ]
 }

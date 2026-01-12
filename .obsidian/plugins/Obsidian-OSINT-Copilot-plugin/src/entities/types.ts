@@ -370,6 +370,16 @@ export function getEntityLabel(type: EntityType | string, properties: Record<str
     if (config && properties[config.labelField]) {
         return String(properties[config.labelField]);
     }
+
+    // Try common label fields as fallbacks to avoid using type name as label
+    const fallbackFields = ['full_name', 'name', 'address', 'title', 'label', 'username', 'number'];
+    for (const field of fallbackFields) {
+        if (properties[field] && typeof properties[field] === 'string' && properties[field].trim()) {
+            return String(properties[field]);
+        }
+    }
+
+    // Last resort: return type name (but this should rarely happen)
     return type;
 }
 
@@ -549,7 +559,7 @@ export function legacyToFTMSchema(type: EntityType): string {
  * Generate a unique ID for entities.
  */
 export function generateId(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = Math.random() * 16 | 0;
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
