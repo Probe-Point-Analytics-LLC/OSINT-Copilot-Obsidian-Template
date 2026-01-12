@@ -138,6 +138,17 @@ svg.leaflet-zoom-animated{will-change:transform}
 .leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}
 .leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}
 @media print{.leaflet-control{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+/* Custom Layer Control Styles */
+.leaflet-control-layers-toggle {
+    background-size: cover;
+    border: 2px solid rgba(255,255,255,0.8);
+    background-color: #fff;
+    transition: background-image 0.2s ease;
+}
+.leaflet-retina .leaflet-control-layers-toggle {
+    background-size: cover;
+}
 `;
 
 interface MapLocation {
@@ -350,6 +361,32 @@ export class MapView extends ItemView {
             "Carto Light": cartoLayer
         };
         L.control.layers(baseMaps).addTo(this.map);
+
+        // Update layer control visual on change
+        const updateLayerControl = (layerName: string) => {
+            const container = this.container?.querySelector('.leaflet-control-layers-toggle') as HTMLElement;
+            if (container) {
+                // Use actual tiles as icons
+                if (layerName === 'Satellite') {
+                    // Esri Satellite tile (rich green/terrain)
+                    container.style.backgroundImage = 'url("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/5/8")';
+                } else if (layerName === 'Carto Light') {
+                    // Carto Light tile (clean/grey)
+                    container.style.backgroundImage = 'url("https://a.basemaps.cartocdn.com/light_all/5/15/12.png")';
+                } else {
+                    // Default OSM tile (standard map colors)
+                    container.style.backgroundImage = 'url("https://tile.openstreetmap.org/5/16/10.png")';
+                }
+            }
+        };
+
+        // Listen for layer changes
+        this.map.on('baselayerchange', (e: any) => {
+            updateLayerControl(e.name);
+        });
+
+        // Set initial state (OSM is default)
+        setTimeout(() => updateLayerControl('OpenStreetMap'), 100);
 
         // Fix map size after container is visible
         setTimeout(() => {

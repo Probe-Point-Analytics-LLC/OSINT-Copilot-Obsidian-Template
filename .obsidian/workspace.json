@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "a391349f7c232f71",
+        "id": "140743e9f9a760ef",
         "type": "tabs",
         "children": [
           {
-            "id": "0b25af1bd5937943",
+            "id": "1b5382dece494c63",
             "type": "leaf",
             "state": {
               "type": "graph_copilot-map-view",
@@ -192,7 +192,7 @@
       "osint-copilot:Location Map (Ctrl+click for new pane)": false
     }
   },
-  "active": "0b25af1bd5937943",
+  "active": "1b5382dece494c63",
   "lastOpenFiles": [
     "OSINTCopilot/Location/Location_01988eba.md",
     "OSINTCopilot/Location/Location_6c624f02.md",
