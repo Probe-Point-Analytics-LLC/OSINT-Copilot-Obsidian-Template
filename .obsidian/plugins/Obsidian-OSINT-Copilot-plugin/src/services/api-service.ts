@@ -286,11 +286,11 @@ export class GraphApiService {
         if (error instanceof Error) {
             const errorStr = error.message.toLowerCase();
             return errorStr.includes('failed to fetch') ||
-                   errorStr.includes('network') ||
-                   errorStr.includes('connection') ||
-                   errorStr.includes('net::') ||
-                   errorStr.includes('econnrefused') ||
-                   errorStr.includes('enotfound');
+                errorStr.includes('network') ||
+                errorStr.includes('connection') ||
+                errorStr.includes('net::') ||
+                errorStr.includes('econnrefused') ||
+                errorStr.includes('enotfound');
         }
         return false;
     }
@@ -362,7 +362,7 @@ export class GraphApiService {
     private getErrorMessage(error: unknown, statusCode?: number): string {
         // Timeout error
         if (this.isTimeoutError(error)) {
-            return 'Request timed out. The server may be busy or your connection is slow.';
+            return 'The request is taking longer than expected. Please wait a moment while we retry...';
         }
 
         // Network connectivity error
@@ -381,7 +381,7 @@ export class GraphApiService {
                 return 'Service temporarily unavailable. The server is overloaded or under maintenance.';
             }
             if (statusCode === 504) {
-                return 'Gateway timeout. The server took too long to respond.';
+                return 'The server is processing your request. Please wait a moment...';
             }
             return `Server error (${statusCode}). The service is temporarily unavailable.`;
         }
@@ -588,9 +588,9 @@ export class GraphApiService {
         console.error('[GraphApiService] All retries exhausted:', errorMessage);
 
         // Provide helpful message based on error type
-        let helpMessage = '💡 This may be a temporary network issue. Please try again in a moment.';
+        let helpMessage = '💡 Please wait a moment and try again. This is usually temporary.';
         if (this.isTimeoutError(lastError)) {
-            helpMessage = '💡 The request timed out. Try again when your connection is more stable, or the server may be under heavy load.';
+            helpMessage = '💡 The server is busy processing requests. Please wait a moment and try again.';
         } else if (this.isNetworkError(lastError)) {
             helpMessage = '💡 Network connection failed. Please check your internet connection and try again.';
         } else if (lastStatusCode && lastStatusCode >= 500) {

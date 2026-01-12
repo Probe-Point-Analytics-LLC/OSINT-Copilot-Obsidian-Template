@@ -207,14 +207,17 @@
 }
 
 .vault-ai-entity-gen-label.active {
-  color: var(--text-accent);
+  color: #000000;
   font-weight: 600;
+  background-color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .vault-ai-toggle-container:has(.vault-ai-entity-gen-checkbox:checked) {
   background-color: white;
-  border-color: var(--text-accent);
-  box-shadow: 0 0 0 1px var(--text-accent);
+  border-color: #000000;
+  box-shadow: 0 0 0 1px #000000;
 }
 
 /* Entity-Only Mode special styling */

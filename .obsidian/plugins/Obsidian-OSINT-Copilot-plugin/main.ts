@@ -765,7 +765,7 @@ export default class VaultAIPlugin extends Plugin {
     try {
       // Use provided model or default to CHAT_MODEL
       const modelToUse = model || CHAT_MODEL;
-      
+
       const requestBody: any = {
         model: modelToUse,
         messages,
@@ -796,9 +796,9 @@ export default class VaultAIPlugin extends Plugin {
       // requestUrl doesn't support streaming, so always parse as JSON
       const jsonData = response.json;
       const content = jsonData.choices?.[0]?.message?.content ||
-                     jsonData.choices?.[0]?.text ||
-                     jsonData.content ||
-                     "";
+        jsonData.choices?.[0]?.text ||
+        jsonData.content ||
+        "";
       return content || "No answer received.";
     } catch (error) {
       if (error instanceof Error) {
@@ -1036,7 +1036,7 @@ export default class VaultAIPlugin extends Plugin {
 
       let jobId = "";
       const maxInitialRetries = 3;
-      
+
       // Get conversation_id from current conversation (if exists)
       // Each conversation has its own conversation_id for report generation
       const savedConversationId = currentConversation?.reportConversationId || null;
@@ -1190,20 +1190,20 @@ export default class VaultAIPlugin extends Plugin {
           // ✅ Check response_ready for answers (new feature)
           if (statusData.response_ready) {
             statusCallback?.("Response ready, retrieving from conversation...");
-            
+
             const conversationId = currentConversation?.reportConversationId || statusData.conversation_id;
-            
+
             if (!conversationId) {
               throw new Error("Response ready but no conversation_id available");
             }
-            
+
             // Backend should return content in statusData when response_ready = true
             // Check multiple possible field names
-            let responseContent = statusData.content || 
-                                 statusData.response_content || 
-                                 statusData.message ||
-                                 statusData.response;
-            
+            let responseContent = statusData.content ||
+              statusData.response_content ||
+              statusData.message ||
+              statusData.response;
+
             // If not in statusData, try to get from conversation via API (fallback)
             if (!responseContent) {
               try {
@@ -1221,22 +1221,22 @@ export default class VaultAIPlugin extends Plugin {
                 );
               }
             }
-            
+
             if (!responseContent) {
               throw new Error(
                 `Response is ready but no content found. ` +
                 `Backend must return 'content' or 'response_content' in statusData when response_ready = true.`
               );
             }
-            
+
             // Save conversation_id if not already saved
             if (currentConversation && !currentConversation.reportConversationId) {
               currentConversation.reportConversationId = conversationId;
             }
-            
+
             // Sanitize the markdown content
             const sanitizedContent = this.sanitizeMarkdownContent(responseContent);
-            
+
             return {
               content: sanitizedContent,
               filename: `response_${jobId}.md`,
@@ -1253,8 +1253,8 @@ export default class VaultAIPlugin extends Plugin {
 
             // Check for common backend issues
             if (backendError.toLowerCase().includes("ssl") ||
-                backendError.toLowerCase().includes("certificate") ||
-                backendError.toLowerCase().includes("n8n")) {
+              backendError.toLowerCase().includes("certificate") ||
+              backendError.toLowerCase().includes("n8n")) {
               throw new Error("Backend service temporarily unavailable. Please try again in a few minutes.");
             }
 
@@ -1453,10 +1453,10 @@ export default class VaultAIPlugin extends Plugin {
 
     try {
       const text = await this.callRemoteModel(messages, false, ENTITY_EXTRACTION_MODEL); // Use OpenAI model for entity extraction
-      
+
       // Debug logging
       //console.log("[extractEntityFromQuery] Raw response:", text);
-      
+
       // Try strict JSON parse
       const match = text.trim();
       let obj: any = null;
@@ -1476,12 +1476,12 @@ export default class VaultAIPlugin extends Plugin {
           }
         }
       }
-      
+
       if (!obj) {
         //  console.error("[extractEntityFromQuery] No valid JSON found in response:", match);
         return { name: null, type: "unknown" };
       }
-      
+
       const allowed = ["person", "company", "asset", "event", "location", "unknown"];
       const t = (obj?.type || "unknown").toLowerCase();
       const type = allowed.includes(t) ? t : "unknown";
@@ -1489,7 +1489,7 @@ export default class VaultAIPlugin extends Plugin {
         typeof obj?.name === "string" && obj.name.trim().length > 0
           ? obj.name.trim()
           : null;
-      
+
       console.log("[extractEntityFromQuery] Extracted:", { name: nameVal, type });
       return { name: nameVal, type };
     } catch (error) {
@@ -1849,9 +1849,8 @@ class AskModal extends Modal {
         this.notesContainer.style.display = "block";
       }
     } catch (error) {
-      this.answerContainer.innerHTML = `<p style="color: var(--text-error);">Error: ${
-        error instanceof Error ? error.message : String(error)
-      }</p>`;
+      this.answerContainer.innerHTML = `<p style="color: var(--text-error);">Error: ${error instanceof Error ? error.message : String(error)
+        }</p>`;
     }
   }
 
@@ -1985,7 +1984,7 @@ class ChatView extends ItemView {
   osintSearchMaxProviders: number = 3;
   osintSearchParallel: boolean = true;
   // Entity generation is independent (can be enabled with any main mode, or alone for Entity-Only Mode)
-  entityGenerationMode: boolean = false;
+  entityGenerationMode: boolean = true;
   entityGenerationToggle!: HTMLInputElement;
   pollingIntervals: Map<string, number> = new Map();
   currentConversation: Conversation | null = null;
@@ -2019,11 +2018,25 @@ class ChatView extends ItemView {
       this.currentConversation = conversation;
       this.chatHistory = this.conversationMessagesToHistory(conversation.messages);
       this.darkWebMode = conversation.darkWebMode || false;
-      this.entityGenerationMode = conversation.entityGenerationMode || false;
       this.reportGenerationMode = conversation.reportGenerationMode || false;
       this.osintSearchMode = conversation.osintSearchMode || false;
-      // Local Search mode: true if no other main mode is active (backward compatibility)
-      this.localSearchMode = !this.darkWebMode && !this.reportGenerationMode && !this.osintSearchMode;
+
+      // Check if any main mode is explicitly set in the conversation
+      const hasMainMode = conversation.darkWebMode || conversation.reportGenerationMode || conversation.osintSearchMode || conversation.localSearchMode;
+
+      if (hasMainMode) {
+        // Use the saved modes
+        this.localSearchMode = conversation.localSearchMode || false;
+        this.entityGenerationMode = conversation.entityGenerationMode || false;
+      } else {
+        // No main mode set - default to Entity Generation mode
+        this.localSearchMode = false;
+        this.entityGenerationMode = true;
+      }
+    } else {
+      // No conversation - default to Entity Generation mode
+      this.localSearchMode = false;
+      this.entityGenerationMode = true;
     }
   }
 
@@ -2131,11 +2144,11 @@ class ChatView extends ItemView {
 
     // Add mode options
     const modeOptions = [
+      { value: "none", label: "🏷️ Entity Generation", mode: "none" },
       { value: "local", label: "🔍 Local Search", mode: "localSearchMode" },
       { value: "darkweb", label: "🕵️ Dark Web", mode: "darkWebMode" },
       { value: "report", label: "📄 Companies&People", mode: "reportGenerationMode" },
       { value: "osint", label: "🔎 Leak Search", mode: "osintSearchMode" },
-      { value: "none", label: "🏷️ Entity Generation", mode: "none" },
     ];
 
     for (const option of modeOptions) {
@@ -2143,12 +2156,12 @@ class ChatView extends ItemView {
         text: option.label,
         value: option.value,
       });
-      // Set selected based on current mode
-      if (option.value === "local" && this.localSearchMode) optEl.selected = true;
+      // Set selected based on current mode - check Entity-Only first since it's the default
+      if (option.value === "none" && this.isEntityOnlyMode()) optEl.selected = true;
+      else if (option.value === "local" && this.localSearchMode) optEl.selected = true;
       else if (option.value === "darkweb" && this.darkWebMode) optEl.selected = true;
       else if (option.value === "report" && this.reportGenerationMode) optEl.selected = true;
       else if (option.value === "osint" && this.osintSearchMode) optEl.selected = true;
-      else if (option.value === "none" && this.isEntityOnlyMode()) optEl.selected = true;
     }
 
     // Handle mode selection
@@ -2630,10 +2643,10 @@ class ChatView extends ItemView {
     }
     this.currentConversation = null;
     this.chatHistory = [];
-    // Reset mode toggles for new conversation (Local Search Mode is default)
-    this.localSearchMode = true;
+    // Reset mode toggles for new conversation (Entity Generation Mode is default)
+    this.localSearchMode = false;
     this.darkWebMode = false;
-    this.entityGenerationMode = false;
+    this.entityGenerationMode = true;
     this.reportGenerationMode = false;
     this.osintSearchMode = false;
     this.plugin.conversationService.setCurrentConversationId(null);
@@ -2939,21 +2952,21 @@ class ChatView extends ItemView {
     const messageDiv = this.messagesContainer.querySelector(
       `.vault-ai-chat-message[data-message-index="${messageIndex}"]`
     ) as HTMLElement;
-    
+
     if (!messageDiv) return;
 
     // Use progress from parameter, or fallback to saved progress in chatHistory
-    const currentProgress = progress || 
-      (messageIndex < this.chatHistory.length && 
-       this.chatHistory[messageIndex].progress && 
-       typeof this.chatHistory[messageIndex].progress === "object" && 
-       "percent" in this.chatHistory[messageIndex].progress
+    const currentProgress = progress ||
+      (messageIndex < this.chatHistory.length &&
+        this.chatHistory[messageIndex].progress &&
+        typeof this.chatHistory[messageIndex].progress === "object" &&
+        "percent" in this.chatHistory[messageIndex].progress
         ? this.chatHistory[messageIndex].progress as { message: string; percent: number }
         : undefined);
 
     // Find or create progress container FIRST (before updating content)
     let progressContainer = messageDiv.querySelector(".vault-ai-progress-container") as HTMLElement;
-    
+
     if (currentProgress) {
       if (!progressContainer) {
         // Create progress container if it doesn't exist - insert after contentDiv
@@ -2974,7 +2987,7 @@ class ChatView extends ItemView {
       // Create progress bar
       const progressBar = progressContainer.createDiv("vault-ai-progress-bar");
       progressBar.style.width = `${currentProgress.percent}%`;
-      
+
       // Create progress text
       const progressText = progressContainer.createEl("span", {
         cls: "vault-ai-progress-text",
@@ -2998,16 +3011,16 @@ class ChatView extends ItemView {
     }
 
     // Use intermediate results from parameter, or fallback to saved results in chatHistory
-    const currentIntermediateResults = intermediateResults || 
-      (messageIndex < this.chatHistory.length && 
-       this.chatHistory[messageIndex].intermediateResults && 
-       this.chatHistory[messageIndex].intermediateResults!.length > 0
+    const currentIntermediateResults = intermediateResults ||
+      (messageIndex < this.chatHistory.length &&
+        this.chatHistory[messageIndex].intermediateResults &&
+        this.chatHistory[messageIndex].intermediateResults!.length > 0
         ? this.chatHistory[messageIndex].intermediateResults!
         : undefined);
 
     // Update intermediate results
     let resultsContainer = messageDiv.querySelector(".vault-ai-intermediate-results-container") as HTMLElement;
-    
+
     if (currentIntermediateResults && currentIntermediateResults.length > 0) {
       if (!resultsContainer) {
         // Create results container if it doesn't exist
@@ -3342,8 +3355,8 @@ class ChatView extends ItemView {
         extracted.type === "unknown"
           ? "Entity defined. Starting local search."
           : extracted.name
-          ? `Entity defined (${extracted.type}: ${extracted.name}). Starting local search.`
-          : `Entity defined (${extracted.type}). Starting local search.`;
+            ? `Entity defined (${extracted.type}: ${extracted.name}). Starting local search.`
+            : `Entity defined (${extracted.type}). Starting local search.`;
       this.chatHistory[assistantIndex].content = entityMsg;
       updateProgress("Entity extracted, searching vault...", 30);
 
@@ -3676,25 +3689,25 @@ class ChatView extends ItemView {
         (status: string, progress?: { message: string; percent: number }, intermediateResults?: string[]) => {
           // Build status message with progress and intermediate results
           let statusMessage = `📄 ${status}`;
-          
+
           if (progress) {
             statusMessage = `📄 ${progress.message}`;
           }
-          
+
           // Update the processing message in real-time
           this.chatHistory[messageIndex].content = statusMessage;
-          
+
           // Store progress and intermediate results for rendering (preserve if not provided)
           if (progress) {
             this.chatHistory[messageIndex].progress = progress;
           }
           // Don't clear progress if not provided - keep the last known progress
-          
+
           if (intermediateResults && intermediateResults.length > 0) {
             this.chatHistory[messageIndex].intermediateResults = intermediateResults;
           }
           // Don't clear intermediate results if not provided - keep the last known results
-          
+
           // Always update progress bar - it will use saved progress if new one is not provided
           this.updateProgressBar(messageIndex, progress, intermediateResults);
         }
@@ -3706,7 +3719,7 @@ class ChatView extends ItemView {
         description,
         reportData.filename
       );
-      
+
       // ✅ IMPORTANT: Save conversation after report generation to persist reportConversationId
       // The conversation.reportConversationId was updated in generateReport() if server returned one
       if (this.currentConversation) {

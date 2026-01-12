@@ -4,33 +4,33 @@
     "type": "split",
     "children": [
       {
-        "id": "a289e224bf54d8da",
+        "id": "887740758c7ec373",
         "type": "tabs",
         "children": [
           {
-            "id": "bdb1cf12b1a517ed",
-            "type": "leaf",
-            "state": {
-              "type": "vault-ai-chat-view",
-              "state": {},
-              "icon": "message-square",
-              "title": "OSINT Copilot"
-            }
-          }
-        ]
-      },
-      {
-        "id": "9501aaaaeab63b4a",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "241a73a4bdd90810",
+            "id": "a334ab16f9a98edd",
             "type": "leaf",
             "state": {
               "type": "graph_copilot-graph-view",
               "state": {},
               "icon": "git-fork",
               "title": "OSINTCopilot Graph"
+            }
+          }
+        ]
+      },
+      {
+        "id": "9041042ff2767717",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "62e59b6468539436",
+            "type": "leaf",
+            "state": {
+              "type": "vault-ai-chat-view",
+              "state": {},
+              "icon": "message-square",
+              "title": "OSINT Copilot"
             }
           }
         ]
@@ -208,8 +208,9 @@
       "osint-copilot:Location Map (Ctrl+click for new pane)": false
     }
   },
-  "active": "241a73a4bdd90810",
+  "active": "62e59b6468539436",
   "lastOpenFiles": [
+    "OSINTCopilot/Person/Vitaly Bondarenko_c70a637b.md",
     "OSINTCopilot/Location/Location_6c624f02.md",
     "OSINTCopilot/Location/Location_acdc51cf.md",
     "OSINTCopilot/Location/Location_bdbfb25d.md",
@@ -235,7 +236,6 @@
     "OSINTCopilot/Person/Sergey Goroshkov_7dc5e62c.md",
     "OSINTCopilot/Person/Andrey Dubovskov_a8d91521.md",
     "OSINTCopilot/Person/Alexander Bazvanov_c26cf10f.md",
-    "OSINTCopilot/Person/Petro Dalakov_5b9ec85f.md",
     "OSINTCopilot/Image",
     "OSINTCopilot/LegalEntity",
     "README.md~",
