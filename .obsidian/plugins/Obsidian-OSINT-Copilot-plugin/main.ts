@@ -1983,9 +1983,9 @@ class ChatView extends ItemView {
   osintSearchCountry: 'RU' | 'UA' | 'BY' | 'KZ' = 'RU';
   osintSearchMaxProviders: number = 3;
   osintSearchParallel: boolean = true;
-  // Entity generation is independent (can be enabled with any main mode, or alone for Entity-Only Mode)
-  entityGenerationMode: boolean = true;
-  entityGenerationToggle!: HTMLInputElement;
+  // Graph generation is independent (can be enabled with any main mode, or alone for Graph only Mode)
+  graphGenerationMode: boolean = true;
+  graphGenerationToggle!: HTMLInputElement;
   pollingIntervals: Map<string, number> = new Map();
   currentConversation: Conversation | null = null;
   sidebarVisible: boolean = true;
@@ -2027,16 +2027,16 @@ class ChatView extends ItemView {
       if (hasMainMode) {
         // Use the saved modes
         this.localSearchMode = conversation.localSearchMode || false;
-        this.entityGenerationMode = conversation.entityGenerationMode || false;
+        this.graphGenerationMode = conversation.graphGenerationMode || false;
       } else {
-        // No main mode set - default to Entity Generation mode
+        // No main mode set - default to Graph Generation mode
         this.localSearchMode = false;
-        this.entityGenerationMode = true;
+        this.graphGenerationMode = true;
       }
     } else {
-      // No conversation - default to Entity Generation mode
+      // No conversation - default to Graph Generation mode
       this.localSearchMode = false;
-      this.entityGenerationMode = true;
+      this.graphGenerationMode = true;
     }
   }
 
@@ -2070,14 +2070,14 @@ class ChatView extends ItemView {
       this.currentConversation = await this.plugin.conversationService.createConversation(
         this.chatHistory.length > 0 ? this.chatHistory[0].content : undefined,
         this.darkWebMode,
-        this.entityGenerationMode,
+        this.graphGenerationMode,
         this.reportGenerationMode
       );
     }
     this.currentConversation.messages = this.historyToConversationMessages();
     this.currentConversation.localSearchMode = this.localSearchMode;
     this.currentConversation.darkWebMode = this.darkWebMode;
-    this.currentConversation.entityGenerationMode = this.entityGenerationMode;
+    this.currentConversation.graphGenerationMode = this.graphGenerationMode;
     this.currentConversation.reportGenerationMode = this.reportGenerationMode;
     this.currentConversation.osintSearchMode = this.osintSearchMode;
     await this.plugin.conversationService.saveConversation(this.currentConversation);
@@ -2127,9 +2127,9 @@ class ChatView extends ItemView {
       await this.startNewConversation();
     });
 
-    // === Main Mode Selection Dropdown (Mutually Exclusive - can be "none" for Entity-Only Mode) ===
+    // === Main Mode Selection Dropdown (Mutually Exclusive - can be "none" for Graph only Mode) ===
     const modeSelectContainer = buttonGroup.createDiv("vault-ai-mode-select-container");
-    modeSelectContainer.setAttribute("title", "Select a mode, or choose 'Entity Generation' for entity extraction without AI chat");
+    modeSelectContainer.setAttribute("title", "Select a mode, or choose 'Graph Generation' for entity extraction without AI chat");
 
     const modeLabel = modeSelectContainer.createEl("label", {
       text: "Mode:",
@@ -2144,7 +2144,7 @@ class ChatView extends ItemView {
 
     // Add mode options
     const modeOptions = [
-      { value: "none", label: "🏷️ Entity Generation", mode: "none" },
+      { value: "none", label: "🏷️ Graph Generation", mode: "none" },
       { value: "local", label: "🔍 Local Search", mode: "localSearchMode" },
       { value: "darkweb", label: "🕵️ Dark Web", mode: "darkWebMode" },
       { value: "report", label: "📄 Companies&People", mode: "reportGenerationMode" },
@@ -2156,8 +2156,8 @@ class ChatView extends ItemView {
         text: option.label,
         value: option.value,
       });
-      // Set selected based on current mode - check Entity-Only first since it's the default
-      if (option.value === "none" && this.isEntityOnlyMode()) optEl.selected = true;
+      // Set selected based on current mode - check Graph only first since it's the default
+      if (option.value === "none" && this.isGraphOnlyMode()) optEl.selected = true;
       else if (option.value === "local" && this.localSearchMode) optEl.selected = true;
       else if (option.value === "darkweb" && this.darkWebMode) optEl.selected = true;
       else if (option.value === "report" && this.reportGenerationMode) optEl.selected = true;
@@ -2193,15 +2193,15 @@ class ChatView extends ItemView {
           new Notice("Leak Search Mode enabled");
           break;
         case "none":
-          // All modes off - Entity-Only Mode if entity generation is on
-          if (this.entityGenerationMode) {
-            new Notice("Entity-Only Mode enabled - extract entities from your text");
+          // All modes off - Graph only Mode if graph generation is on
+          if (this.graphGenerationMode) {
+            new Notice("Graph only Mode enabled - extract entities from your text");
           } else {
-            // Enable entity generation automatically for Entity Generation mode
-            this.entityGenerationMode = true;
-            this.entityGenerationToggle.checked = true;
-            this.updateEntityGenerationLabel();
-            new Notice("Entity-Only Mode enabled - extract entities from your text");
+            // Enable graph generation automatically for Graph Generation mode
+            this.graphGenerationMode = true;
+            this.graphGenerationToggle.checked = true;
+            this.updateGraphGenerationLabel();
+            new Notice("Graph only Mode enabled - extract entities from your text");
           }
           break;
       }
@@ -2211,36 +2211,36 @@ class ChatView extends ItemView {
       this.updateModeDisclaimer();
     });
 
-    // === Entity Generation Toggle (Independent - enables Entity-Only Mode when all main modes are off) ===
+    // === Graph Generation Toggle (Independent - enables Graph only Mode when all main modes are off) ===
     const entityGenContainer = buttonGroup.createDiv("vault-ai-entity-gen-toggle");
     entityGenContainer.addClass("vault-ai-toggle-container");
-    entityGenContainer.setAttribute("title", "Extract entities (works with any mode, or alone for Entity-Only Mode)");
+    entityGenContainer.setAttribute("title", "Extract entities (works with any mode, or alone for Graph only Mode)");
 
-    this.entityGenerationToggle = entityGenContainer.createEl("input", {
+    this.graphGenerationToggle = entityGenContainer.createEl("input", {
       type: "checkbox",
       cls: "vault-ai-entity-gen-checkbox",
     });
-    this.entityGenerationToggle.id = "entity-gen-mode-toggle";
-    this.entityGenerationToggle.checked = this.entityGenerationMode;
-    this.entityGenerationToggle.addEventListener("change", () => {
-      this.entityGenerationMode = this.entityGenerationToggle.checked;
-      this.updateEntityGenerationLabel();
+    this.graphGenerationToggle.id = "graph-gen-mode-toggle";
+    this.graphGenerationToggle.checked = this.graphGenerationMode;
+    this.graphGenerationToggle.addEventListener("change", () => {
+      this.graphGenerationMode = this.graphGenerationToggle.checked;
+      this.updateGraphGenerationLabel();
       this.updateInputPlaceholder();
       this.updateModeDisclaimer();
-      if (this.isEntityOnlyMode()) {
-        new Notice("Entity-Only Mode enabled - extract entities from your text");
-      } else if (this.entityGenerationMode) {
-        new Notice("Entity Generation enabled");
+      if (this.isGraphOnlyMode()) {
+        new Notice("Graph only Mode enabled - extract entities from your text");
+      } else if (this.graphGenerationMode) {
+        new Notice("Graph Generation enabled");
       } else {
-        new Notice("Entity Generation disabled");
+        new Notice("Graph Generation disabled");
       }
     });
 
     const entityGenLabel = entityGenContainer.createEl("label", {
-      text: this.getEntityGenLabelText(),
-      cls: this.entityGenerationMode ? "vault-ai-entity-gen-label active" : "vault-ai-entity-gen-label",
+      text: this.getGraphGenLabelText(),
+      cls: this.graphGenerationMode ? "vault-ai-entity-gen-label active" : "vault-ai-entity-gen-label",
     });
-    entityGenLabel.htmlFor = "entity-gen-mode-toggle";
+    entityGenLabel.htmlFor = "graph-gen-mode-toggle";
 
     // Messages container
     this.messagesContainer = chatArea.createDiv("vault-ai-chat-messages");
@@ -2283,34 +2283,34 @@ class ChatView extends ItemView {
    * Returns HTML string or null if no disclaimer needed.
    */
   private getModeDisclaimer(): string | null {
-    if (this.isEntityOnlyMode()) {
-      return "🏷️ <strong>Entity-Generation Mode:</strong> Your text will be analyzed to extract and create entities in the graph (people, companies, locations, etc.) without AI chat.";
+    if (this.isGraphOnlyMode()) {
+      return "🏷️ <strong>Graph Generation Mode:</strong> Your text will be analyzed to extract and create entities in the graph (people, companies, locations, etc.) without AI chat.";
     }
 
     if (this.osintSearchMode) {
-      if (this.entityGenerationMode) {
-        return "🔎 <strong>Leak Search + Entities:</strong> Search leaked databases and automatically create entities from the results.";
+      if (this.graphGenerationMode) {
+        return "🔎 <strong>Leak Search + Graph Gen:</strong> Search leaked databases and automatically create entities from the results.";
       }
       return "🔎 <strong>Leak Search:</strong> Search multiple leaked databases for information about people, emails, phones, and more.";
     }
 
     if (this.darkWebMode) {
-      if (this.entityGenerationMode) {
-        return "🕵️ <strong>Dark Web + Entities:</strong> Investigate dark web sources and automatically create entities from findings.";
+      if (this.graphGenerationMode) {
+        return "🕵️ <strong>Dark Web + Graph Gen:</strong> Investigate dark web sources and automatically create entities from findings.";
       }
       return "🕵️ <strong>Dark Web:</strong> Search dark web sources for leaked data and threat intelligence.";
     }
 
     if (this.reportGenerationMode) {
-      if (this.entityGenerationMode) {
-        return "📄 <strong>Persons&Companies + Entities:</strong> Generate comprehensive reports and automatically create entities from the content.";
+      if (this.graphGenerationMode) {
+        return "📄 <strong>Persons&Companies + Graph Gen:</strong> Generate comprehensive reports and automatically create entities from the content.";
       }
       return "📄 <strong>Persons&Companies:</strong> Generate detailed corporate intelligence reports about people and companies. Include data about sanctions and red flags";
     }
 
     if (this.localSearchMode) {
-      if (this.entityGenerationMode) {
-        return "🔍 <strong>Local Search + Entities:</strong> Search your vault and automatically create entities from AI responses.";
+      if (this.graphGenerationMode) {
+        return "🔍 <strong>Local Search + Graph Gen:</strong> Search your vault and automatically create entities from AI responses.";
       }
       return null; // Default mode, no disclaimer needed
     }
@@ -2389,21 +2389,21 @@ class ChatView extends ItemView {
     });
   }
 
-  // Check if Entity-Only Mode is active (entity generation ON, all main modes OFF)
-  isEntityOnlyMode(): boolean {
-    return this.entityGenerationMode && !this.localSearchMode && !this.darkWebMode && !this.reportGenerationMode && !this.osintSearchMode;
+  // Check if Graph only Mode is active (graph generation ON, all main modes OFF)
+  isGraphOnlyMode(): boolean {
+    return this.graphGenerationMode && !this.localSearchMode && !this.darkWebMode && !this.reportGenerationMode && !this.osintSearchMode;
   }
 
-  // Show notice when entering Entity-Only Mode
-  checkEntityOnlyMode() {
-    if (this.isEntityOnlyMode()) {
-      new Notice("Entity-Only Mode - enter text to extract entities");
+  // Show notice when entering Graph only Mode
+  checkGraphOnlyMode() {
+    if (this.isGraphOnlyMode()) {
+      new Notice("Graph only Mode - enter text to extract entities");
     }
   }
 
   // Get the appropriate input placeholder based on current mode
   getInputPlaceholder(): string {
-    if (this.isEntityOnlyMode()) {
+    if (this.isGraphOnlyMode()) {
       return "Enter text to extract entities...";
     } else if (this.osintSearchMode) {
       return "Enter OSINT search query (e.g., 'Find info about john@example.com')...";
@@ -2457,29 +2457,29 @@ class ChatView extends ItemView {
     }
   }
 
-  // Get the entity generation label text (shows Entity-Only when applicable)
-  getEntityGenLabelText(): string {
-    if (this.isEntityOnlyMode()) {
-      return "🏷️ Entity-Only (ON)";
-    } else if (this.entityGenerationMode) {
-      return "🏷️ Entity Generation (ON)";
+  // Get the graph generation label text (shows Graph only when applicable)
+  getGraphGenLabelText(): string {
+    if (this.isGraphOnlyMode()) {
+      return "🏷️ Graph only (ON)";
+    } else if (this.graphGenerationMode) {
+      return "🏷️ Graph Generation (ON)";
     } else {
-      return "🏷️ Entity Generation";
+      return "🏷️ Graph Generation";
     }
   }
 
-  updateEntityGenerationLabel() {
+  updateGraphGenerationLabel() {
     const container = this.containerEl.querySelector(".vault-ai-entity-gen-toggle");
     if (container) {
       const label = container.querySelector("label");
       if (label) {
-        label.textContent = this.getEntityGenLabelText();
-        label.className = this.entityGenerationMode ? "vault-ai-entity-gen-label active" : "vault-ai-entity-gen-label";
-        // Add special styling for Entity-Only Mode
-        if (this.isEntityOnlyMode()) {
-          container.addClass("entity-only-mode");
+        label.textContent = this.getGraphGenLabelText();
+        label.className = this.graphGenerationMode ? "vault-ai-entity-gen-label active" : "vault-ai-entity-gen-label";
+        // Add special styling for Graph only Mode
+        if (this.isGraphOnlyMode()) {
+          container.addClass("graph-only-mode");
         } else {
-          container.removeClass("entity-only-mode");
+          container.removeClass("graph-only-mode");
         }
       }
     }
@@ -2501,8 +2501,8 @@ class ChatView extends ItemView {
       }
     }
 
-    // Also update entity generation label (for Entity-Only Mode indicator)
-    this.updateEntityGenerationLabel();
+    // Also update graph generation label (for Graph only Mode indicator)
+    this.updateGraphGenerationLabel();
   }
 
   renderSidebar() {
@@ -2542,31 +2542,31 @@ class ChatView extends ItemView {
       const meta = convContent.createDiv("vault-ai-conversation-meta");
       const date = new Date(conv.updatedAt);
       meta.createEl("span", { text: this.formatDate(date), cls: "vault-ai-conversation-date" });
-      // Check if Entity-Only Mode (entity gen ON, all main modes OFF)
+      // Check if Graph only Mode (graph gen ON, all main modes OFF)
       const convOsintSearchMode = conv.osintSearchMode || false;
-      const isEntityOnly = conv.entityGenerationMode && !conv.localSearchMode && !conv.darkWebMode && !conv.reportGenerationMode && !convOsintSearchMode;
-      // Show main mode badge or Entity-Only badge
-      if (isEntityOnly) {
-        meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entityonly", title: "Entity-Only Mode" });
+      const isGraphOnly = conv.graphGenerationMode && !conv.localSearchMode && !conv.darkWebMode && !conv.reportGenerationMode && !convOsintSearchMode;
+      // Show main mode badge or Graph only badge
+      if (isGraphOnly) {
+        meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-graphonly", title: "Graph only Mode" });
       } else if (convOsintSearchMode) {
         meta.createEl("span", { text: "🔎", cls: "vault-ai-conversation-osint-search", title: "Leak Search Mode" });
-        if (conv.entityGenerationMode) {
-          meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entitygen", title: "Entity Generation" });
+        if (conv.graphGenerationMode) {
+          meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-graphgen", title: "Graph Generation" });
         }
       } else if (conv.darkWebMode) {
         meta.createEl("span", { text: "🕵️", cls: "vault-ai-conversation-darkweb", title: "Dark Web Mode" });
-        if (conv.entityGenerationMode) {
-          meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entitygen", title: "Entity Generation" });
+        if (conv.graphGenerationMode) {
+          meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-graphgen", title: "Graph Generation" });
         }
       } else if (conv.reportGenerationMode) {
         meta.createEl("span", { text: "📄", cls: "vault-ai-conversation-report", title: "Companies&People Generation Mode" });
-        if (conv.entityGenerationMode) {
-          meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entitygen", title: "Entity Generation" });
+        if (conv.graphGenerationMode) {
+          meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-graphgen", title: "Graph Generation" });
         }
       } else {
         meta.createEl("span", { text: "🔍", cls: "vault-ai-conversation-local-search", title: "Local Search Mode" });
-        if (conv.entityGenerationMode) {
-          meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-entitygen", title: "Entity Generation" });
+        if (conv.graphGenerationMode) {
+          meta.createEl("span", { text: "🏷️", cls: "vault-ai-conversation-graphgen", title: "Graph Generation" });
         }
       }
 
@@ -2622,7 +2622,7 @@ class ChatView extends ItemView {
       this.currentConversation = conversation;
       this.chatHistory = this.conversationMessagesToHistory(conversation.messages);
       this.darkWebMode = conversation.darkWebMode || false;
-      this.entityGenerationMode = conversation.entityGenerationMode || false;
+      this.graphGenerationMode = conversation.graphGenerationMode || false;
       this.reportGenerationMode = conversation.reportGenerationMode || false;
       this.osintSearchMode = conversation.osintSearchMode || false;
       // Use localSearchMode from conversation, or infer from other modes for backward compatibility
@@ -2643,10 +2643,10 @@ class ChatView extends ItemView {
     }
     this.currentConversation = null;
     this.chatHistory = [];
-    // Reset mode toggles for new conversation (Entity Generation Mode is default)
+    // Reset mode toggles for new conversation (Graph Generation Mode is default)
     this.localSearchMode = false;
     this.darkWebMode = false;
-    this.entityGenerationMode = true;
+    this.graphGenerationMode = true;
     this.reportGenerationMode = false;
     this.osintSearchMode = false;
     this.plugin.conversationService.setCurrentConversationId(null);
@@ -3067,9 +3067,9 @@ class ChatView extends ItemView {
     await this.saveCurrentConversation();
 
     // Route to appropriate handler based on mode
-    if (this.isEntityOnlyMode()) {
-      // Entity-Only Mode: Extract entities from user input without AI chat
-      await this.handleEntityOnlyMode(query);
+    if (this.isGraphOnlyMode()) {
+      // Graph only Mode: Extract entities from user input without AI chat
+      await this.handleGraphOnlyMode(query);
     } else if (this.osintSearchMode) {
       await this.handleOSINTSearch(query);
     } else if (this.darkWebMode) {
@@ -3086,10 +3086,10 @@ class ChatView extends ItemView {
   }
 
   /**
-   * Handle Entity-Only Mode: Extract entities from user input text without sending to AI.
-   * This mode is active when entityGenerationMode is ON and all main modes are OFF.
+   * Handle Graph only Mode: Extract entities from user input text without sending to AI.
+   * This mode is active when graphGenerationMode is ON and all main modes are OFF.
    */
-  async handleEntityOnlyMode(inputText: string) {
+  async handleGraphOnlyMode(inputText: string) {
     // Add processing placeholder with progress bar
     const messageIndex = this.chatHistory.length;
     this.chatHistory.push({
@@ -3142,7 +3142,7 @@ class ChatView extends ItemView {
       if (!result.success) {
         this.chatHistory[messageIndex].progress = undefined; // Clear progress bar
         this.chatHistory[messageIndex].content =
-          `🏷️ **Entity Extraction Failed**\n\n` +
+          `🏷️ **Graph Generation Failed**\n\n` +
           `**Input:** ${inputText.substring(0, 100)}${inputText.length > 100 ? '...' : ''}\n\n` +
           `**Error:** ${result.error || 'Unknown error'}`;
         this.renderMessages();
@@ -3152,7 +3152,7 @@ class ChatView extends ItemView {
       if (!result.operations || result.operations.length === 0) {
         this.chatHistory[messageIndex].progress = undefined; // Clear progress bar
         this.chatHistory[messageIndex].content =
-          `🏷️ **Entity Extraction Complete**\n\n` +
+          `🏷️ **Graph Generation Complete**\n\n` +
           `**Input:** ${inputText.substring(0, 200)}${inputText.length > 200 ? '...' : ''}\n\n` +
           `No entities detected in the provided text.`;
         this.renderMessages();
@@ -3175,11 +3175,11 @@ class ChatView extends ItemView {
       let entitiesProcessed = 0;
 
       // Debug: Log the full operations array
-      console.log('[EntityOnlyMode] Processing operations:', JSON.stringify(result.operations, null, 2));
+      console.log('[GraphOnlyMode] Processing operations:', JSON.stringify(result.operations, null, 2));
 
       for (const operation of result.operations) {
         // Debug: Log each operation
-        console.log('[EntityOnlyMode] Processing operation:', {
+        console.log('[GraphOnlyMode] Processing operation:', {
           action: operation.action,
           hasEntities: !!operation.entities,
           entitiesCount: operation.entities?.length || 0,
@@ -3226,12 +3226,12 @@ class ChatView extends ItemView {
                 }
               }
 
-              console.log('[EntityOnlyMode] Creating entity with type:', entityType);
+              console.log('[GraphOnlyMode] Creating entity with type:', entityType);
               const entity = await this.plugin.entityManager.createEntity(
                 entityType,
                 entityData.properties
               );
-              console.log('[EntityOnlyMode] Entity created successfully:', {
+              console.log('[GraphOnlyMode] Entity created successfully:', {
                 id: entity.id,
                 type: entity.type,
                 label: entity.label,
@@ -3245,7 +3245,7 @@ class ChatView extends ItemView {
                 filePath: entity.filePath || ''
               });
             } catch (entityError) {
-              console.error('[EntityOnlyMode] Failed to create entity:', entityError);
+              console.error('[GraphOnlyMode] Failed to create entity:', entityError);
               operationEntities.push(null);
             }
           }
@@ -3268,7 +3268,7 @@ class ChatView extends ItemView {
                   connectionsCreated++;
                 }
               } catch (connError) {
-                console.error('[EntityOnlyMode] Failed to create connection:', connError);
+                console.error('[GraphOnlyMode] Failed to create connection:', connError);
               }
             }
           }
@@ -3278,7 +3278,7 @@ class ChatView extends ItemView {
       updateProgress("Finalizing...", 98);
 
       // Build the result message with clickable links
-      let resultContent = `🏷️ **Entity Extraction Complete**\n\n`;
+      let resultContent = `🏷️ **Graph Generation Complete**\n\n`;
       resultContent += `**Input:** ${inputText.substring(0, 200)}${inputText.length > 200 ? '...' : ''}\n\n`;
 
       if (createdEntities.length > 0) {
@@ -3310,11 +3310,11 @@ class ChatView extends ItemView {
       const errorMsg = error instanceof Error ? error.message : String(error);
       this.chatHistory[messageIndex].progress = undefined; // Clear progress bar on error
       this.chatHistory[messageIndex].content =
-        `🏷️ **Entity Extraction Failed**\n\n` +
+        `🏷️ **Graph Generation Failed**\n\n` +
         `**Input:** ${inputText.substring(0, 100)}${inputText.length > 100 ? '...' : ''}\n\n` +
         `**Error:** ${errorMsg}`;
       this.renderMessages();
-      new Notice(`Entity extraction failed: ${errorMsg}`);
+      new Notice(`Graph generation failed: ${errorMsg}`);
     }
   }
 
@@ -3428,9 +3428,9 @@ class ChatView extends ItemView {
       this.chatHistory[assistantIndex].progress = undefined; // Clear progress bar
       this.renderMessages();
 
-      // Entity Generation Mode: Extract and create entities from the AI response
-      if (this.entityGenerationMode) {
-        await this.processEntityGeneration(assistantIndex, fullAnswer, query, finalContent);
+      // Graph Generation Mode: Extract and create entities from the AI response
+      if (this.graphGenerationMode) {
+        await this.processGraphGeneration(assistantIndex, fullAnswer, query, finalContent);
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -3444,10 +3444,10 @@ class ChatView extends ItemView {
   }
 
   /**
-   * Process entity generation from AI response text.
+   * Process graph generation from AI response text.
    * Calls the /api/process-text endpoint to extract entities and creates them via EntityManager.
    */
-  async processEntityGeneration(
+  async processGraphGeneration(
     assistantIndex: number,
     aiResponse: string,
     originalQuery: string,
@@ -3535,11 +3535,11 @@ class ChatView extends ItemView {
       let processedEntities = 0;
 
       // Debug: Log the full operations array
-      console.log('[EntityGeneration] Processing operations:', JSON.stringify(result.operations, null, 2));
+      console.log('[GraphGeneration] Processing operations:', JSON.stringify(result.operations, null, 2));
 
       for (const operation of result.operations) {
         // Debug: Log each operation
-        console.log('[EntityGeneration] Processing operation:', {
+        console.log('[GraphGeneration] Processing operation:', {
           action: operation.action,
           hasEntities: !!operation.entities,
           entitiesCount: operation.entities?.length || 0,
@@ -3558,7 +3558,7 @@ class ChatView extends ItemView {
             updateProgress(`Creating entity ${processedEntities}/${totalEntities}...`, entityProgress);
 
             // Debug: Log entity data
-            console.log('[EntityGeneration] Processing entity:', {
+            console.log('[GraphGeneration] Processing entity:', {
               type: entityData.type,
               properties: entityData.properties
             });
@@ -3567,7 +3567,7 @@ class ChatView extends ItemView {
               const entityType = entityData.type as EntityType;
               // Validate entity type
               if (!Object.values(EntityType).includes(entityType)) {
-                console.warn(`[EntityGeneration] Unknown entity type: ${entityData.type}. Valid types:`, Object.values(EntityType));
+                console.warn(`[GraphGeneration] Unknown entity type: ${entityData.type}. Valid types:`, Object.values(EntityType));
                 operationEntities.push(null);
                 continue;
               }
@@ -3580,18 +3580,18 @@ class ChatView extends ItemView {
               if (entityLabel) {
                 const nameValidation = validateEntityName(entityLabel, entityType);
                 if (!nameValidation.isValid) {
-                  console.warn(`[EntityGeneration] Skipping entity with generic name: "${entityLabel}" - ${nameValidation.error}`);
+                  console.warn(`[GraphGeneration] Skipping entity with generic name: "${entityLabel}" - ${nameValidation.error}`);
                   operationEntities.push(null);
                   continue;
                 }
               }
 
-              console.log('[EntityGeneration] Creating entity with type:', entityType);
+              console.log('[GraphGeneration] Creating entity with type:', entityType);
               const entity = await this.plugin.entityManager.createEntity(
                 entityType,
                 entityData.properties
               );
-              console.log('[EntityGeneration] Entity created successfully:', {
+              console.log('[GraphGeneration] Entity created successfully:', {
                 id: entity.id,
                 type: entity.type,
                 label: entity.label,
@@ -3605,7 +3605,7 @@ class ChatView extends ItemView {
                 filePath: entity.filePath || ''
               });
             } catch (entityError) {
-              console.error('[EntityGeneration] Failed to create entity:', entityError);
+              console.error('[GraphGeneration] Failed to create entity:', entityError);
               operationEntities.push(null);
             }
           }
@@ -3628,7 +3628,7 @@ class ChatView extends ItemView {
                   connectionsCreated++;
                 }
               } catch (connError) {
-                console.error('[EntityGeneration] Failed to create connection:', connError);
+                console.error('[GraphGeneration] Failed to create connection:', connError);
               }
             }
           }
@@ -3662,11 +3662,11 @@ class ChatView extends ItemView {
       this.renderMessages();
 
     } catch (error) {
-      console.error('[EntityGeneration] Error during entity generation:', error);
+      console.error('[GraphGeneration] Error during graph generation:', error);
       const errorMsg = error instanceof Error ? error.message : String(error);
       this.chatHistory[assistantIndex].progress = undefined; // Clear progress bar on error
       this.chatHistory[assistantIndex].content = currentContent +
-        `\n\n⚠️ Entity generation error: ${errorMsg}`;
+        `\n\n⚠️ Graph generation error: ${errorMsg}`;
       this.renderMessages();
     }
   }
@@ -3737,9 +3737,9 @@ class ChatView extends ItemView {
       this.chatHistory[messageIndex].reportFilePath = fileName; // Store report file path for button
       this.renderMessages();
 
-      // Entity Generation Mode: Extract and create entities from the report
-      if (this.entityGenerationMode) {
-        await this.processEntityGeneration(messageIndex, reportData.content, description, finalContent);
+      // Graph Generation Mode: Extract and create entities from the report
+      if (this.graphGenerationMode) {
+        await this.processGraphGeneration(messageIndex, reportData.content, description, finalContent);
       }
 
       // Open the report file
@@ -3850,18 +3850,18 @@ class ChatView extends ItemView {
       // Render the search results and get the content for entity extraction
       const searchResultsContent = this.renderOSINTSearchResults(messageIndex, query, result);
 
-      // Entity Generation Mode: Extract and create entities from search results
-      if (this.entityGenerationMode && result.results && result.results.length > 0) {
+      // Graph Generation Mode: Extract and create entities from search results
+      if (this.graphGenerationMode && result.results && result.results.length > 0) {
         try {
           // Convert search results to text for entity extraction
           const resultsText = this.formatOSINTResultsForEntityExtraction(query, result);
-          await this.processEntityGeneration(messageIndex, resultsText, query, searchResultsContent);
+          await this.processGraphGeneration(messageIndex, resultsText, query, searchResultsContent);
         } catch (entityError) {
           // Log error but don't fail the whole operation - search results are already displayed
-          console.error('[ChatView] Entity extraction from OSINT results failed:', entityError);
+          console.error('[ChatView] Graph generation from OSINT results failed:', entityError);
           const errorMsg = entityError instanceof Error ? entityError.message : String(entityError);
           this.chatHistory[messageIndex].content = searchResultsContent +
-            `\n\n⚠️ Entity extraction failed: ${errorMsg}`;
+            `\n\n⚠️ Graph generation failed: ${errorMsg}`;
           this.chatHistory[messageIndex].progress = undefined;
           this.renderMessages();
         }
@@ -4402,9 +4402,9 @@ class ChatView extends ItemView {
       };
       this.renderMessages();
 
-      // Entity Generation Mode: Extract and create entities from the dark web results
-      if (this.entityGenerationMode) {
-        await this.processEntityGeneration(messageIndex, reportContent, query, displayText);
+      // Graph Generation Mode: Extract and create entities from the dark web results
+      if (this.graphGenerationMode) {
+        await this.processGraphGeneration(messageIndex, reportContent, query, displayText);
       }
 
       // Open the saved file if it exists

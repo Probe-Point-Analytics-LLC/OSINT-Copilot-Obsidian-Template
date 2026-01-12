@@ -2,7 +2,7 @@
  * API Service for AI-powered entity extraction.
  *
  * HYBRID ARCHITECTURE:
- * - This service ONLY handles AI entity generation from text (requires API)
+ * - This service ONLY handles AI graph generation from text (requires API)
  * - All other features (entity CRUD, connections, graph, map) work locally
  * - Uses local API at http://localhost:5000 by default for development
  * - Can be configured to use remote API for production
@@ -195,14 +195,14 @@ export class GraphApiService {
             return null;
         } catch (error) {
             this.isOnline = false;
-            console.log('[GraphApiService] AI API unavailable - entity generation from text will not work');
+            console.log('[GraphApiService] AI API unavailable - graph generation from text will not work');
             return null;
         }
     }
 
     /**
      * Get the current online status.
-     * Note: This only affects AI entity generation. All other features work offline.
+     * Note: This only affects AI graph generation. All other features work offline.
      */
     getOnlineStatus(): boolean {
         return this.isOnline;
@@ -458,7 +458,7 @@ export class GraphApiService {
         if (!this.isOnline) {
             return {
                 success: false,
-                error: 'AI API is offline. Entity generation from text is not available.\n\nYou can still:\n• Create entities manually using the Graph View\n• Edit existing entities\n• Create connections between entities\n• View entities on the map'
+                error: 'AI API is offline. Graph generation from text is not available.\n\nYou can still:\n• Create entities manually using the Graph View\n• Edit existing entities\n• Create connections between entities\n• View entities on the map'
             };
         }
 

@@ -4,17 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "c9720936d02a9010",
+        "id": "3dd2e644f5359d44",
         "type": "tabs",
         "children": [
           {
-            "id": "8aba1e252dde8b61",
+            "id": "2cf8a67a683d9386",
             "type": "leaf",
             "state": {
-              "type": "graph_copilot-timeline-view",
+              "type": "vault-ai-chat-view",
               "state": {},
-              "icon": "calendar-clock",
-              "title": "OSINTCopilot Timeline"
+              "icon": "message-square",
+              "title": "OSINT Copilot"
             }
           }
         ]
@@ -192,7 +192,7 @@
       "osint-copilot:Location Map (Ctrl+click for new pane)": false
     }
   },
-  "active": "8aba1e252dde8b61",
+  "active": "2cf8a67a683d9386",
   "lastOpenFiles": [
     "OSINTCopilot/Location/Location_01988eba.md",
     "OSINTCopilot/Location/Location_6c624f02.md",
