@@ -4,22 +4,6 @@
     "type": "split",
     "children": [
       {
-        "id": "887740758c7ec373",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "a334ab16f9a98edd",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-graph-view",
-              "state": {},
-              "icon": "git-fork",
-              "title": "OSINTCopilot Graph"
-            }
-          }
-        ]
-      },
-      {
         "id": "9041042ff2767717",
         "type": "tabs",
         "children": [
