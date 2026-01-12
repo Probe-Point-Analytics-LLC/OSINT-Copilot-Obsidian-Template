@@ -318,11 +318,10 @@ export class MapView extends ItemView {
             crossOrigin: 'anonymous'
         });
 
-        // Fallback 1: OpenStreetMap DE (German mirror, often more reliable)
-        const osmDeLayer = L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-            crossOrigin: 'anonymous'
+        // Satellite Layer: Esri World Imagery
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+            maxZoom: 19
         });
 
         // Fallback 2: Carto Positron (light theme, no API key required)
@@ -347,7 +346,7 @@ export class MapView extends ItemView {
         // Add layer control for manual switching if needed
         const baseMaps = {
             "OpenStreetMap": osmLayer,
-            "OpenStreetMap DE": osmDeLayer,
+            "Satellite": satelliteLayer,
             "Carto Light": cartoLayer
         };
         L.control.layers(baseMaps).addTo(this.map);
