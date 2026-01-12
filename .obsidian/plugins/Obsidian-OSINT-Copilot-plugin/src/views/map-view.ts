@@ -2,7 +2,7 @@
  * Map View for visualizing Location entities using Leaflet.
  */
 
-import { App, ItemView, WorkspaceLeaf, Notice, Modal } from 'obsidian';
+import { App, ItemView, WorkspaceLeaf, Notice, Modal, Menu } from 'obsidian';
 import { Entity, EntityType, ENTITY_CONFIGS } from '../entities/types';
 import { EntityManager } from '../services/entity-manager';
 import { EntityCreationModal } from '../modals/entity-modal';
@@ -356,6 +356,36 @@ export class MapView extends ItemView {
         setTimeout(() => {
             this.map?.invalidateSize();
         }, 100);
+
+        // Add context menu for the map
+        this.map.on('contextmenu', (e: any) => {
+            const menu = new Menu();
+
+            menu.addItem((item) => {
+                item
+                    .setTitle('Create Location Here')
+                    .setIcon('map-pin')
+                    .onClick(() => {
+                        const modal = new EntityCreationModal(
+                            this.app,
+                            this.entityManager,
+                            EntityType.Location,
+                            (entityId) => {
+                                this.refresh();
+                            },
+                            {
+                                latitude: e.latlng.lat,
+                                longitude: e.latlng.lng
+                            }
+                        );
+                        modal.open();
+                    });
+            });
+
+
+
+            menu.showAtPosition({ x: e.originalEvent.clientX, y: e.originalEvent.clientY });
+        });
     }
 
     /**
@@ -493,6 +523,58 @@ export class MapView extends ItemView {
             }
         });
 
+        // Context menu handler
+        marker.on('contextmenu', (e: any) => {
+            const menu = new Menu();
+
+            menu.addItem((item) => {
+                item
+                    .setTitle('Open Note')
+                    .setIcon('file-text')
+                    .onClick(() => {
+                        this.entityManager.openEntityNote(location.id);
+                    });
+            });
+
+            menu.addItem((item) => {
+                item
+                    .setTitle('Edit')
+                    .setIcon('pencil')
+                    .onClick(() => {
+                        const entity = this.entityManager.getEntity(location.id);
+                        if (entity) {
+                            new EntityCreationModal(
+                                this.app,
+                                this.entityManager,
+                                entity.type as EntityType,
+                                () => {
+                                    this.refresh();
+                                },
+                                entity.properties,
+                                entity.id
+                            ).open();
+                        } else {
+                            new Notice('Entity not found');
+                        }
+                    });
+            });
+
+            menu.addItem((item) => {
+                item
+                    .setTitle('Focus')
+                    .setIcon('crosshair')
+                    .onClick(() => {
+                        this.map.setView(marker.getLatLng(), 16);
+                    });
+            });
+
+            menu.showAtPosition({ x: e.originalEvent.clientX, y: e.originalEvent.clientY });
+
+            // Prevent map context menu from firing
+            L.DomEvent.stopPropagation(e);
+        });
+
+
         // Double-click to open note
         marker.on('dblclick', () => {
             this.entityManager.openEntityNote(location.id);
@@ -507,7 +589,7 @@ export class MapView extends ItemView {
     private createPopupContent(location: MapLocation): string {
         let content = `<div style="min-width: 150px;">`;
         content += `<strong>${location.label}</strong>`;
-        
+
         if (location.address) {
             content += `<br><small>${location.address}</small>`;
         }
@@ -515,7 +597,7 @@ export class MapView extends ItemView {
             const parts = [location.city, location.country].filter(Boolean);
             content += `<br><small>${parts.join(', ')}</small>`;
         }
-        
+
         content += `<br><small style="color: #888;">
             ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}
         </small>`;
@@ -523,7 +605,7 @@ export class MapView extends ItemView {
             Double-click to open note
         </a>`;
         content += `</div>`;
-        
+
         return content;
     }
 
@@ -600,7 +682,7 @@ export class MapView extends ItemView {
             const isLocationOrAddress = entity.type === EntityType.Location || entity.type === 'Address';
             const hasNoCoords = !entity.properties.latitude || !entity.properties.longitude;
             const hasAddress = entity.properties.address || entity.properties.street ||
-                             entity.properties.full || entity.properties.city || entity.properties.country;
+                entity.properties.full || entity.properties.city || entity.properties.country;
             return isLocationOrAddress && hasNoCoords && hasAddress;
         });
 
@@ -681,7 +763,7 @@ class GeolocateMissingModal extends Modal {
             info.createEl('br');
 
             const address = entity.properties.address || entity.properties.street ||
-                          entity.properties.full || entity.properties.city || entity.properties.country;
+                entity.properties.full || entity.properties.city || entity.properties.country;
             info.createEl('small', {
                 text: String(address),
                 cls: 'text-muted'

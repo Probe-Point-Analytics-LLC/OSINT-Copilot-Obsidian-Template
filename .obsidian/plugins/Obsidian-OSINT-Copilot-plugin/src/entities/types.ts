@@ -47,7 +47,7 @@ export const FTM_ENTITY_TYPES: FTMEntityType[] = [
     'Company',
     'Organization',
     'Event',
-    'Address',
+    // 'Address', // Removed as per user request
     'Vehicle',
     'BankAccount',
     'CryptoWallet',
@@ -164,8 +164,8 @@ export const ENTITY_CONFIGS: Record<EntityType, EntityConfig> = {
     },
     [EntityType.Location]: {
         color: "#FF5722",
-        properties: ["address", "city", "state", "country", "postal_code", "latitude", "longitude", "location_type"],
-        labelField: "address",
+        properties: ["name", "address", "city", "state", "country", "postal_code", "latitude", "longitude", "location_type"],
+        labelField: "name",
         description: "A physical location or address"
     },
     [EntityType.Company]: {
@@ -243,7 +243,7 @@ export const ENTITY_ICONS: Record<string, string> = {
     // FTM entity types (only non-duplicate ones)
     'LegalEntity': "⚖️",
     'Organization': "🏛️",
-    'Address': "📍",
+    // 'Address': "📍", // Removed
     'BankAccount': "🏦",
     'CryptoWallet': "₿",
     'UserAccount': "👥",
@@ -436,7 +436,7 @@ const GENERIC_ENTITY_NAMES = new Set([
     'Username', 'Vehicle', 'Website', 'Evidence', 'Image', 'Text',
 
     // FTM entity types
-    'LegalEntity', 'Organization', 'Address', 'BankAccount', 'CryptoWallet',
+    'LegalEntity', 'Organization', /* 'Address', */ 'BankAccount', 'CryptoWallet',
     'UserAccount', 'Document', 'RealEstate', 'Sanction', 'Passport',
     'Ownership', 'Employment', 'Directorship',
 
@@ -450,7 +450,7 @@ const GENERIC_ENTITY_NAMES = new Set([
     'person', 'people', 'event', 'events', 'location', 'locations',
     'company', 'companies', 'organization', 'organizations',
     'email', 'emails', 'phone', 'phones', 'vehicle', 'vehicles',
-    'website', 'websites', 'document', 'documents', 'address', 'addresses',
+    'website', 'websites', 'document', 'documents', /* 'address', 'addresses', */
 
     // Very generic terms
     'Entity', 'entity', 'Item', 'item', 'Object', 'object',

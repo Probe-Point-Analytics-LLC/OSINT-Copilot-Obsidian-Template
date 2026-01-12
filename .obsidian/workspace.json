@@ -4,17 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "9041042ff2767717",
+        "id": "c9720936d02a9010",
         "type": "tabs",
         "children": [
           {
-            "id": "62e59b6468539436",
+            "id": "8aba1e252dde8b61",
             "type": "leaf",
             "state": {
-              "type": "vault-ai-chat-view",
+              "type": "graph_copilot-timeline-view",
               "state": {},
-              "icon": "message-square",
-              "title": "OSINT Copilot"
+              "icon": "calendar-clock",
+              "title": "OSINTCopilot Timeline"
             }
           }
         ]
@@ -192,13 +192,13 @@
       "osint-copilot:Location Map (Ctrl+click for new pane)": false
     }
   },
-  "active": "62e59b6468539436",
+  "active": "8aba1e252dde8b61",
   "lastOpenFiles": [
-    "OSINTCopilot/Person/Vitaly Bondarenko_c70a637b.md",
+    "OSINTCopilot/Location/Location_01988eba.md",
     "OSINTCopilot/Location/Location_6c624f02.md",
+    "OSINTCopilot/Person/Vitaly Bondarenko_c70a637b.md",
     "OSINTCopilot/Location/Location_acdc51cf.md",
     "OSINTCopilot/Location/Location_bdbfb25d.md",
-    "OSINTCopilot/Location/Location_01988eba.md",
     "OSINTCopilot/Location/Bauman Moscow State Technical University_c449aeb5.md",
     "OSINTCopilot/Company/Technicheskiye materialy_7b5c590e.md",
     "OSINTCopilot/Company/Ksenon_1aea55a8.md",

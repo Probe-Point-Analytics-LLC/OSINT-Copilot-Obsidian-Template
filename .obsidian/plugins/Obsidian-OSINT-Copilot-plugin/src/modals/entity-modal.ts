@@ -44,13 +44,16 @@ export class EntityCreationModal extends Modal {
         app: App,
         entityManager: EntityManager,
         entityType: EntityType,
-        onEntityCreated?: (entityId: string) => void
+        onEntityCreated?: (entityId: string) => void,
+        initialProperties: Record<string, any> = {},
+        private entityId?: string
     ) {
         super(app);
         this.entityManager = entityManager;
         this.entityType = entityType;
         this.onEntityCreated = onEntityCreated || null;
         this.geocodingService = new GeocodingService();
+        this.properties = { ...initialProperties };
     }
 
     onOpen() {
@@ -61,7 +64,8 @@ export class EntityCreationModal extends Modal {
         const config = ENTITY_CONFIGS[this.entityType];
 
         // Title
-        contentEl.createEl('h2', { text: `Create ${this.entityType}` });
+        const action = this.entityId ? 'Edit' : 'Create';
+        contentEl.createEl('h2', { text: `${action} ${this.entityType}` });
         contentEl.createEl('p', {
             text: config.description,
             cls: 'graph_copilot-entity-modal-description'
@@ -107,7 +111,7 @@ export class EntityCreationModal extends Modal {
         const buttonContainer = contentEl.createDiv({ cls: 'graph_copilot-entity-modal-buttons' });
 
         const createBtn = buttonContainer.createEl('button', {
-            text: 'Create Entity',
+            text: this.entityId ? 'Update Entity' : 'Create Entity',
             cls: 'mod-cta'
         });
         createBtn.onclick = () => this.handleCreate();
@@ -124,7 +128,7 @@ export class EntityCreationModal extends Modal {
 
         // Geocode button
         this.geocodeBtn = geocodeSection.createEl('button', {
-            text: '📍 Geocode Address',
+            text: 'Put on Map',
             cls: 'graph_copilot-geocode-btn'
         });
 
@@ -249,7 +253,7 @@ export class EntityCreationModal extends Modal {
             // Reset button state
             if (this.geocodeBtn) {
                 this.geocodeBtn.disabled = false;
-                this.geocodeBtn.textContent = '📍 Geocode Address';
+                this.geocodeBtn.textContent = 'Put on Map';
             }
         }
     }
@@ -352,7 +356,13 @@ export class EntityCreationModal extends Modal {
             };
 
             // Initialize state
-            updateButtonState(false);
+            const initialValue = this.properties[propertyName] !== undefined
+                ? this.properties[propertyName]
+                : (!this.entityId && propertyName === 'add_to_timeline');
+
+            (input as HTMLInputElement).checked = initialValue;
+            this.properties[propertyName] = initialValue;
+            updateButtonState(initialValue);
 
             // Toggle on click
             toggleBtn.addEventListener('click', () => {
@@ -380,6 +390,11 @@ export class EntityCreationModal extends Modal {
                 type: 'text',
                 placeholder: `Enter ${this.formatPropertyName(propertyName).toLowerCase()}...`
             }) as HTMLInputElement;
+        }
+
+        // Set initial value if present in properties
+        if (this.properties[propertyName] !== undefined) {
+            (input as HTMLInputElement).value = String(this.properties[propertyName]);
         }
 
         input.id = `entity-${propertyName}`;
@@ -435,15 +450,23 @@ export class EntityCreationModal extends Modal {
         }
 
         try {
-            // Skip auto-geocoding for manual creation - user should click the Geocode button explicitly
-            const entity = await this.entityManager.createEntity(
-                this.entityType,
-                this.properties,
-                { skipAutoGeocode: true }
-            );
-            new Notice(`Created ${this.entityType}: ${entity.label}`);
+            let entity;
+            if (this.entityId) {
+                // Update existing entity
+                entity = await this.entityManager.updateEntity(this.entityId, this.properties);
+                new Notice(`Updated ${this.entityType}: ${entity?.label}`);
+            } else {
+                // Create new entity
+                // Skip auto-geocoding for manual creation - user should click the Geocode button explicitly
+                entity = await this.entityManager.createEntity(
+                    this.entityType,
+                    this.properties,
+                    { skipAutoGeocode: true }
+                );
+                new Notice(`Created ${this.entityType}: ${entity.label}`);
+            }
 
-            if (this.onEntityCreated) {
+            if (this.onEntityCreated && entity) {
                 this.onEntityCreated(entity.id);
             }
 
@@ -586,7 +609,7 @@ export class EntityTypeSelectorModal extends Modal {
         }
 
         // Cancel button
-        const cancelBtn = contentEl.createEl('button', { 
+        const cancelBtn = contentEl.createEl('button', {
             text: 'Cancel',
             cls: 'graph_copilot-entity-cancel-btn'
         });
@@ -1123,7 +1146,7 @@ export class EntityEditModal extends Modal {
 
         // Geocode button
         this.geocodeBtn = geocodeSection.createEl('button', {
-            text: '📍 Geocode Address',
+            text: 'Put on Map',
             cls: 'graph_copilot-geocode-btn'
         });
 
@@ -2813,8 +2836,8 @@ export class FTMIntervalCreationModal extends Modal {
         const preselectedId = (propertyName === 'person' || propertyName === 'owner' || propertyName === 'employee' || propertyName === 'director')
             ? this.sourceEntityId
             : (propertyName === 'associate' || propertyName === 'asset' || propertyName === 'employer' || propertyName === 'organization')
-            ? this.targetEntityId
-            : null;
+                ? this.targetEntityId
+                : null;
 
         placeholderOption.selected = !preselectedId;
 
