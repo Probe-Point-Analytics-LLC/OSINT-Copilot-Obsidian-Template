@@ -386,8 +386,44 @@
   background-color: var(--background-modifier-hover);
 }
 
+
+
+.vault-ai-upload-btn {
+  font-size: 1.2em;
+  padding: 0 10px !important;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.vault-ai-upload-btn:hover {
+  color: var(--text-normal);
+}
+
+/* Drag overlay */
+.vault-ai-drag-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+}
+
+.vault-ai-drag-overlay.active {
+  display: flex;
+}
+
 .vault-ai-chat-input {
   position: relative;
+  /* Context for absolute overlay */
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1748,6 +1784,7 @@
 .leaflet-safari .leaflet-tile-container {
   width: 1600px;
   height: 1600px;
+  transform-origin: 0 0;
   -webkit-transform-origin: 0 0
 }
 
@@ -1818,6 +1855,8 @@
 }
 
 .leaflet-overlay-pane svg {
+  user-select: none;
+  -webkit-user-select: none;
   -moz-user-select: none
 }
 
@@ -2306,7 +2345,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 }
 
 .leaflet-oldie .leaflet-popup-content-wrapper {
-  -ms-zoom: 1
+  zoom: 1;
+  -webkit-zoom: 1;
+  -ms-zoom: 1;
 }
 
 .leaflet-oldie .leaflet-popup-tip {
