@@ -1,3 +1,4 @@
+
 /**
  * Timeline View for visualizing Event entities with dates.
  */
@@ -39,7 +40,7 @@ export class TimelineView extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'OSINTCopilot Timeline';
+        return 'OSINTCopilot timeline';
     }
 
     getIcon(): string {
@@ -73,30 +74,30 @@ export class TimelineView extends ItemView {
     private applyStyles(): void {
         if (!this.timelineContainer) return;
 
-        this.timelineContainer.style.cssText = `
-            width: 100%;
-            height: calc(100% - 50px);
-            overflow-x: auto;
-            overflow-y: auto;
-            padding: 20px;
-            box-sizing: border-box;
-        `;
+        this.timelineContainer.setCssProps({
+            width: '100%',
+            height: 'calc(100% - 50px)',
+            'overflow-x': 'auto',
+            'overflow-y': 'auto',
+            padding: '20px',
+            'box-sizing': 'border-box'
+        });
     }
 
     /**
      * Create the toolbar.
      */
     private createToolbar(toolbar: HTMLElement): void {
-        toolbar.style.cssText = `
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background: var(--background-secondary);
-            border-bottom: 1px solid var(--background-modifier-border);
-        `;
+        toolbar.setCssProps({
+            display: 'flex',
+            gap: '10px',
+            padding: '10px',
+            background: 'var(--background-secondary)',
+            'border-bottom': '1px solid var(--background-modifier-border)'
+        });
 
         // Add Event button
-        const addBtn = toolbar.createEl('button', { text: '+ Add Event' });
+        const addBtn = toolbar.createEl('button', { text: '+ add event' });
         addBtn.addClass('graph_copilot-add-entity-btn');
         addBtn.onclick = () => this.openEventCreator();
 
@@ -104,20 +105,27 @@ export class TimelineView extends ItemView {
         toolbar.createDiv({ cls: 'graph_copilot-toolbar-separator' });
 
         // Refresh button
-        const refreshBtn = toolbar.createEl('button', { text: '↻ Refresh' });
-        refreshBtn.onclick = async () => {
-            refreshBtn.disabled = true;
-            refreshBtn.textContent = '↻ Loading...';
-            await this.refresh();
-            refreshBtn.disabled = false;
-            refreshBtn.textContent = '↻ Refresh';
+        const refreshBtn = toolbar.createEl('button', { text: '↻ refresh' });
+        refreshBtn.onclick = () => {
+            (async () => {
+                refreshBtn.disabled = true;
+                refreshBtn.textContent = '↻ loading...';
+                await this.refresh();
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '↻ refresh';
+            })();
         };
 
         // Filter label
-        toolbar.createEl('span', {
-            text: 'Shows events with "Add to Timeline" enabled',
+        const filterSpan = toolbar.createEl('span', {
+            text: 'Shows events with "add to timeline" enabled',
             cls: 'graph_copilot-timeline-info'
-        }).style.cssText = 'margin-left: auto; color: var(--text-muted); font-size: 12px;';
+        });
+        filterSpan.setCssProps({
+            'margin-left': 'auto',
+            color: 'var(--text-muted)',
+            'font-size': '12px'
+        });
     }
 
     /**
@@ -169,10 +177,10 @@ export class TimelineView extends ItemView {
             // Only include events that are explicitly added to the timeline
             if (!entity.properties.add_to_timeline) continue;
 
-            const startDate = this.parseDate(entity.properties.start_date);
+            const startDate = this.parseDate(entity.properties.start_date as string | undefined);
             if (!startDate) continue;
 
-            const endDate = this.parseDate(entity.properties.end_date);
+            const endDate = this.parseDate(entity.properties.end_date as string | undefined);
 
             events.push({
                 id: entity.id,
@@ -229,37 +237,43 @@ export class TimelineView extends ItemView {
 
         if (this.events.length === 0) {
             const emptyEl = this.timelineContainer.createDiv({ cls: 'graph_copilot-timeline-empty' });
-            emptyEl.style.cssText = 'text-align: center; padding: 40px; color: var(--text-muted);';
+            emptyEl.setCssProps({
+                'text-align': 'center',
+                padding: '40px',
+                color: 'var(--text-muted)'
+            });
 
-            emptyEl.createEl('p', {
+            const p1 = emptyEl.createEl('p', {
                 text: 'No events added to the timeline yet.'
-            }).style.marginBottom = '10px';
+            });
+            p1.setCssProps({ 'margin-bottom': '10px' });
 
-            emptyEl.createEl('p', {
-                text: 'To add events: Create an Event entity with a start date, then check the "Add to Timeline" checkbox.'
-            }).style.fontSize = '12px';
+            const p2 = emptyEl.createEl('p', {
+                text: 'To add events: create an event entity with a start date, then check the "add to timeline" checkbox.'
+            });
+            p2.setCssProps({ 'font-size': '12px' });
             return;
         }
 
         // Create timeline wrapper
         const wrapper = this.timelineContainer.createDiv({ cls: 'graph_copilot-timeline-wrapper' });
-        wrapper.style.cssText = `
-            position: relative;
-            min-height: 100%;
-            padding-left: 200px;
-        `;
+        wrapper.setCssProps({
+            position: 'relative',
+            'min-height': '100%',
+            'padding-left': '200px'
+        });
 
         // Create the timeline line
         const line = wrapper.createDiv({ cls: 'graph_copilot-timeline-line' });
-        line.style.cssText = `
-            position: absolute;
-            left: 180px;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--interactive-accent);
-            border-radius: 2px;
-        `;
+        line.setCssProps({
+            position: 'absolute',
+            left: '180px',
+            top: '0',
+            bottom: '0',
+            width: '4px',
+            background: 'var(--interactive-accent)',
+            'border-radius': '2px'
+        });
 
         // Render each event
         this.events.forEach((event, index) => {
@@ -272,95 +286,99 @@ export class TimelineView extends ItemView {
      */
     private renderEvent(container: HTMLElement, event: TimelineEvent, index: number): void {
         const eventEl = container.createDiv({ cls: 'graph_copilot-timeline-event' });
-        eventEl.style.cssText = `
-            position: relative;
-            margin-bottom: 30px;
-            padding-left: 40px;
-        `;
+        eventEl.setCssProps({
+            position: 'relative',
+            'margin-bottom': '30px',
+            'padding-left': '40px'
+        });
 
         // Event dot
         const dot = eventEl.createDiv({ cls: 'graph_copilot-timeline-dot' });
-        dot.style.cssText = `
-            position: absolute;
-            left: -12px;
-            top: 5px;
-            width: 20px;
-            height: 20px;
-            background: ${event.color};
-            border-radius: 50%;
-            border: 3px solid var(--background-primary);
-            box-shadow: 0 0 0 2px ${event.color};
-        `;
+        dot.setCssProps({
+            position: 'absolute',
+            left: '-12px',
+            top: '5px',
+            width: '20px',
+            height: '20px',
+            background: event.color,
+            'border-radius': '50%',
+            border: '3px solid var(--background-primary)',
+            'box-shadow': `0 0 0 2px ${event.color}`
+        });
 
         // Date label
         const dateLabel = eventEl.createDiv({ cls: 'graph_copilot-timeline-date' });
-        dateLabel.style.cssText = `
-            position: absolute;
-            left: -180px;
-            top: 0;
-            width: 150px;
-            text-align: right;
-            font-size: 12px;
-            color: var(--text-muted);
-        `;
+        dateLabel.setCssProps({
+            position: 'absolute',
+            left: '-180px',
+            top: '0',
+            width: '150px',
+            'text-align': 'right',
+            'font-size': '12px',
+            color: 'var(--text-muted)'
+        });
         dateLabel.textContent = this.formatDate(event.start);
 
         // Event card
         const card = eventEl.createDiv({ cls: 'graph_copilot-timeline-card' });
-        card.style.cssText = `
-            background: var(--background-secondary);
-            border-left: 4px solid ${event.color};
-            padding: 15px;
-            border-radius: 0 8px 8px 0;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        `;
+        card.setCssProps({
+            background: 'var(--background-secondary)',
+            'border-left': `4px solid ${event.color}`,
+            padding: '15px',
+            'border-radius': '0 8px 8px 0',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            cursor: 'pointer'
+        });
 
         // Card header with title and remove button
         const cardHeader = card.createDiv({ cls: 'graph_copilot-timeline-card-header' });
-        cardHeader.style.cssText = `
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-        `;
+        cardHeader.setCssProps({
+            display: 'flex',
+            'justify-content': 'space-between',
+            'align-items': 'flex-start',
+            gap: '10px'
+        });
 
         // Event title
         const title = cardHeader.createEl('h4', { text: event.label });
-        title.style.cssText = `
-            margin: 0;
-            color: var(--text-normal);
-            flex: 1;
-        `;
+        title.setCssProps({
+            margin: '0',
+            color: 'var(--text-normal)',
+            flex: '1'
+        });
 
         // Remove from Timeline button
         const removeBtn = cardHeader.createEl('button', {
-            text: '✕ Remove',
+            text: '✕ remove',
             cls: 'graph_copilot-timeline-remove-btn'
         });
-        removeBtn.style.cssText = `
-            background: transparent;
-            border: 1px solid var(--text-muted);
-            color: var(--text-muted);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        `;
-        removeBtn.title = 'Remove from Timeline';
+        removeBtn.setCssProps({
+            background: 'transparent',
+            border: '1px solid var(--text-muted)',
+            color: 'var(--text-muted)',
+            padding: '2px 8px',
+            'border-radius': '4px',
+            'font-size': '11px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            'white-space': 'nowrap'
+        });
+        removeBtn.title = 'Remove from timeline';
 
         // Remove button hover effects
         removeBtn.onmouseenter = () => {
-            removeBtn.style.background = 'var(--background-modifier-error)';
-            removeBtn.style.borderColor = 'var(--background-modifier-error)';
-            removeBtn.style.color = 'white';
+            removeBtn.setCssProps({
+                background: 'var(--background-modifier-error)',
+                'border-color': 'var(--background-modifier-error)',
+                color: 'white'
+            });
         };
         removeBtn.onmouseleave = () => {
-            removeBtn.style.background = 'transparent';
-            removeBtn.style.borderColor = 'var(--text-muted)';
-            removeBtn.style.color = 'var(--text-muted)';
+            removeBtn.setCssProps({
+                background: 'transparent',
+                'border-color': 'var(--text-muted)',
+                color: 'var(--text-muted)'
+            });
         };
 
         // Remove button click handler
@@ -371,11 +389,11 @@ export class TimelineView extends ItemView {
 
         // Time range
         const timeRange = card.createDiv({ cls: 'graph_copilot-timeline-time' });
-        timeRange.style.cssText = `
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 5px;
-        `;
+        timeRange.setCssProps({
+            'font-size': '12px',
+            color: 'var(--text-muted)',
+            'margin-top': '5px'
+        });
 
         let timeText = this.formatTime(event.start);
         if (event.end) {
@@ -385,12 +403,16 @@ export class TimelineView extends ItemView {
 
         // Hover effects for card
         card.onmouseenter = () => {
-            card.style.transform = 'translateX(5px)';
-            card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            card.setCssProps({
+                transform: 'translateX(5px)',
+                'box-shadow': '0 4px 12px rgba(0,0,0,0.2)'
+            });
         };
         card.onmouseleave = () => {
-            card.style.transform = 'translateX(0)';
-            card.style.boxShadow = 'none';
+            card.setCssProps({
+                transform: 'translateX(0)',
+                'box-shadow': 'none'
+            });
         };
 
         // Click handler for card (opens entity note)

@@ -53,7 +53,7 @@ export interface DetectedEntity {
 export interface AISearchResponse {
     query: string;
     detected_entities: DetectedEntity[];
-    results: Record<string, any>[];
+    results: Record<string, unknown>[];
     total_results: number;
     status: 'success' | 'error' | 'no_results';
     status_message: string;
@@ -195,7 +195,7 @@ export class GraphApiService {
             return null;
         } catch (error) {
             this.isOnline = false;
-            console.log('[GraphApiService] AI API unavailable - graph generation from text will not work');
+            console.debug('[GraphApiService] AI API unavailable - graph generation from text will not work');
             return null;
         }
     }
@@ -216,7 +216,7 @@ export class GraphApiService {
         ok: boolean;
         status: number;
         text: () => Promise<string>;
-        json: () => Promise<any>;
+        json: () => Promise<unknown>;
     } {
         return {
             ok: response.status >= 200 && response.status < 300,
@@ -239,7 +239,7 @@ export class GraphApiService {
         url: string,
         options: RequestInit,
         timeoutMs: number = 30000
-    ): Promise<{ ok: boolean; status: number; text: () => Promise<string>; json: () => Promise<any> }> {
+    ): Promise<{ ok: boolean; status: number; text: () => Promise<string>; json: () => Promise<unknown> }> {
         // Create a timeout promise
         const timeoutPromise = new Promise<never>((_, reject) => {
             setTimeout(() => {
@@ -462,7 +462,7 @@ export class GraphApiService {
             };
         }
 
-        console.log('[GraphApiService] Processing text with AI:', text.substring(0, 100) + '...');
+        console.debug('[GraphApiService] Processing text with AI:', text.substring(0, 100) + '...');
 
         const { maxRetries, baseTimeoutMs } = this.retryConfig;
         let currentTimeout = baseTimeoutMs;
@@ -475,10 +475,10 @@ export class GraphApiService {
                 // Increase timeout if we had a timeout error on previous attempt
                 if (hadTimeoutError) {
                     currentTimeout = this.calculateTimeout(currentTimeout, true);
-                    console.log(`[GraphApiService] Increased timeout to ${currentTimeout}ms after timeout error`);
+                    console.debug(`[GraphApiService] Increased timeout to ${currentTimeout}ms after timeout error`);
                 }
 
-                console.log(`[GraphApiService] Attempt ${attempt}/${maxRetries} with ${currentTimeout}ms timeout`);
+                console.debug(`[GraphApiService] Attempt ${attempt}/${maxRetries} with ${currentTimeout}ms timeout`);
 
                 const response = await this.fetchWithTimeout(
                     `${this.baseUrl}/api/process-text`,
@@ -535,7 +535,7 @@ export class GraphApiService {
                     if (attempt < maxRetries) {
                         const delayMs = this.calculateBackoffDelay(attempt);
                         const reason = this.getErrorReason(lastError, response.status);
-                        console.log(`[GraphApiService] Retrying in ${Math.round(delayMs)}ms (reason: ${reason})...`);
+                        console.debug(`[GraphApiService] Retrying in ${Math.round(delayMs)}ms (reason: ${reason})...`);
 
                         // Notify caller about retry
                         if (onRetry) {
@@ -548,8 +548,8 @@ export class GraphApiService {
                 } else {
                     // Success!
                     const result = await response.json();
-                    console.log('[GraphApiService] AI processing successful:', result);
-                    return result;
+                    console.debug('[GraphApiService] AI processing successful:', result);
+                    return result as ProcessTextResponse;
                 }
             } catch (error) {
                 console.error(`[GraphApiService] Process text failed (attempt ${attempt}/${maxRetries}):`, error);
@@ -564,7 +564,7 @@ export class GraphApiService {
                 if (this.isRetryableError(error) && attempt < maxRetries) {
                     const delayMs = this.calculateBackoffDelay(attempt);
                     const reason = this.getErrorReason(error, lastStatusCode);
-                    console.log(`[GraphApiService] ${reason} error, retrying in ${Math.round(delayMs)}ms...`);
+                    console.debug(`[GraphApiService] ${reason} error, retrying in ${Math.round(delayMs)}ms...`);
 
                     // Notify caller about retry
                     if (onRetry) {
@@ -626,7 +626,7 @@ export class GraphApiService {
             throw new Error('License key required for Leak Search. Configure in Settings → OSINT Copilot → API Key.');
         }
 
-        console.log('[GraphApiService] AI Search request:', request.query.substring(0, 100));
+        console.debug('[GraphApiService] AI Search request:', request.query.substring(0, 100));
 
         const { maxRetries } = this.retryConfig;
         // Use longer timeout for multi-provider search (3 minutes)
@@ -636,7 +636,7 @@ export class GraphApiService {
 
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                console.log(`[GraphApiService] AI Search attempt ${attempt}/${maxRetries}`);
+                console.debug(`[GraphApiService] AI Search attempt ${attempt}/${maxRetries}`);
 
                 const response = await this.fetchWithTimeout(
                     `${this.baseUrl}/api/bot-aggregator/ai-search`,
@@ -673,7 +673,7 @@ export class GraphApiService {
                     if (attempt < maxRetries) {
                         const delayMs = this.calculateBackoffDelay(attempt);
                         const reason = this.getErrorReason(lastError, response.status);
-                        console.log(`[GraphApiService] AI Search retrying in ${Math.round(delayMs)}ms (reason: ${reason})...`);
+                        console.debug(`[GraphApiService] AI Search retrying in ${Math.round(delayMs)}ms (reason: ${reason})...`);
 
                         if (onRetry) {
                             onRetry(attempt, maxRetries, reason, delayMs);
@@ -684,8 +684,8 @@ export class GraphApiService {
                     }
                 } else {
                     // Success!
-                    const result: AISearchResponse = await response.json();
-                    console.log('[GraphApiService] AI Search successful:', result.total_results, 'results');
+                    const result = await response.json() as AISearchResponse;
+                    console.debug('[GraphApiService] AI Search successful:', result.total_results, 'results');
                     return result;
                 }
             } catch (error) {
@@ -705,7 +705,7 @@ export class GraphApiService {
                 if (this.isRetryableError(error) && attempt < maxRetries) {
                     const delayMs = this.calculateBackoffDelay(attempt);
                     const reason = this.getErrorReason(error, lastStatusCode);
-                    console.log(`[GraphApiService] AI Search ${reason} error, retrying in ${Math.round(delayMs)}ms...`);
+                    console.debug(`[GraphApiService] AI Search ${reason} error, retrying in ${Math.round(delayMs)}ms...`);
 
                     if (onRetry) {
                         onRetry(attempt, maxRetries, reason, delayMs);

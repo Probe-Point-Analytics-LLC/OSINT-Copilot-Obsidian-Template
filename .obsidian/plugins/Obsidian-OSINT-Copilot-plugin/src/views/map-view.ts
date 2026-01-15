@@ -1,3 +1,4 @@
+
 /**
  * Map View for visualizing Location entities using Leaflet.
  */
@@ -9,147 +10,13 @@ import { EntityCreationModal } from '../modals/entity-modal';
 import { GeocodingService, GeocodingError } from '../services/geocoding-service';
 
 // Leaflet types (simplified for bundling)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const L: any;
 
 export const MAP_VIEW_TYPE = 'graph_copilot-map-view';
 
 // Leaflet CSS inlined to avoid CSP issues with external stylesheets
-const LEAFLET_CSS = `
-/* Leaflet CSS v1.9.4 - Inlined for CSP compliance */
-.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0}
-.leaflet-container{overflow:hidden}
-.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-user-drag:none}
-.leaflet-tile::selection{background:transparent}
-.leaflet-safari .leaflet-tile{image-rendering:-webkit-optimize-contrast}
-.leaflet-safari .leaflet-tile-container{width:1600px;height:1600px;-webkit-transform-origin:0 0}
-.leaflet-marker-icon,.leaflet-marker-shadow{display:block}
-.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}
-.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-shadow-pane img,.leaflet-container .leaflet-tile-pane img,.leaflet-container img.leaflet-image-layer,.leaflet-container .leaflet-tile{max-width:none!important;max-height:none!important;width:auto;padding:0}
-.leaflet-container img.leaflet-tile{mix-blend-mode:plus-lighter}
-.leaflet-container.leaflet-touch-zoom{-ms-touch-action:pan-x pan-y;touch-action:pan-x pan-y}
-.leaflet-container.leaflet-touch-drag{-ms-touch-action:pinch-zoom;touch-action:none;touch-action:pinch-zoom}
-.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom{-ms-touch-action:none;touch-action:none}
-.leaflet-container{-webkit-tap-highlight-color:transparent}
-.leaflet-container a{-webkit-tap-highlight-color:rgba(51,181,229,.4)}
-.leaflet-tile{filter:inherit;visibility:hidden}
-.leaflet-tile-loaded{visibility:inherit}
-.leaflet-zoom-box{width:0;height:0;-moz-box-sizing:border-box;box-sizing:border-box;z-index:800}
-.leaflet-overlay-pane svg{-moz-user-select:none}
-.leaflet-pane{z-index:400}
-.leaflet-tile-pane{z-index:200}
-.leaflet-overlay-pane{z-index:400}
-.leaflet-shadow-pane{z-index:500}
-.leaflet-marker-pane{z-index:600}
-.leaflet-tooltip-pane{z-index:650}
-.leaflet-popup-pane{z-index:700}
-.leaflet-map-pane canvas{z-index:100}
-.leaflet-map-pane svg{z-index:200}
-.leaflet-vml-shape{width:1px;height:1px}
-.lvml{behavior:url(#default#VML);display:inline-block;position:absolute}
-.leaflet-control{position:relative;z-index:800;pointer-events:visiblePainted;pointer-events:auto}
-.leaflet-top,.leaflet-bottom{position:absolute;z-index:1000;pointer-events:none}
-.leaflet-top{top:0}
-.leaflet-right{right:0}
-.leaflet-bottom{bottom:0}
-.leaflet-left{left:0}
-.leaflet-control{float:left;clear:both}
-.leaflet-right .leaflet-control{float:right}
-.leaflet-top .leaflet-control{margin-top:10px}
-.leaflet-bottom .leaflet-control{margin-bottom:10px}
-.leaflet-left .leaflet-control{margin-left:10px}
-.leaflet-right .leaflet-control{margin-right:10px}
-.leaflet-fade-anim .leaflet-popup{opacity:0;-webkit-transition:opacity .2s linear;-moz-transition:opacity .2s linear;transition:opacity .2s linear}
-.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}
-.leaflet-zoom-animated{-webkit-transform-origin:0 0;-ms-transform-origin:0 0;transform-origin:0 0}
-svg.leaflet-zoom-animated{will-change:transform}
-.leaflet-zoom-anim .leaflet-zoom-animated{-webkit-transition:-webkit-transform .25s cubic-bezier(0,0,.25,1);-moz-transition:-moz-transform .25s cubic-bezier(0,0,.25,1);transition:transform .25s cubic-bezier(0,0,.25,1)}
-.leaflet-zoom-anim .leaflet-tile,.leaflet-pan-anim .leaflet-tile{-webkit-transition:none;-moz-transition:none;transition:none}
-.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}
-.leaflet-interactive{cursor:pointer}
-.leaflet-grab{cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}
-.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}
-.leaflet-popup-pane,.leaflet-control{cursor:auto}
-.leaflet-dragging .leaflet-grab,.leaflet-dragging .leaflet-grab .leaflet-interactive,.leaflet-dragging .leaflet-marker-draggable{cursor:move;cursor:-webkit-grabbing;cursor:-moz-grabbing;cursor:grabbing}
-.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-image-layer,.leaflet-pane>svg path,.leaflet-tile-container{pointer-events:none}
-.leaflet-marker-icon.leaflet-interactive,.leaflet-image-layer.leaflet-interactive,.leaflet-pane>svg path.leaflet-interactive,svg.leaflet-image-layer.leaflet-interactive path{pointer-events:visiblePainted;pointer-events:auto}
-.leaflet-container{background:#ddd;outline-offset:1px}
-.leaflet-container a{color:#0078A8}
-.leaflet-zoom-box{border:2px dotted #38f;background:rgba(255,255,255,.5)}
-.leaflet-container{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;font-size:12px;font-size:.75rem;line-height:1.5}
-.leaflet-bar{box-shadow:0 1px 5px rgba(0,0,0,.65);border-radius:4px}
-.leaflet-bar a{background-color:#fff;border-bottom:1px solid #ccc;width:26px;height:26px;line-height:26px;display:block;text-align:center;text-decoration:none;color:#000}
-.leaflet-bar a,.leaflet-control-layers-toggle{background-position:50% 50%;background-repeat:no-repeat;display:block}
-.leaflet-bar a:hover,.leaflet-bar a:focus{background-color:#f4f4f4}
-.leaflet-bar a:first-child{border-top-left-radius:4px;border-top-right-radius:4px}
-.leaflet-bar a:last-child{border-bottom-left-radius:4px;border-bottom-right-radius:4px;border-bottom:none}
-.leaflet-bar a.leaflet-disabled{cursor:default;background-color:#f4f4f4;color:#bbb}
-.leaflet-touch .leaflet-bar a{width:30px;height:30px;line-height:30px}
-.leaflet-touch .leaflet-bar a:first-child{border-top-left-radius:2px;border-top-right-radius:2px}
-.leaflet-touch .leaflet-bar a:last-child{border-bottom-left-radius:2px;border-bottom-right-radius:2px}
-.leaflet-control-zoom-in,.leaflet-control-zoom-out{font:bold 18px 'Lucida Console',Monaco,monospace;text-indent:1px}
-.leaflet-touch .leaflet-control-zoom-in,.leaflet-touch .leaflet-control-zoom-out{font-size:22px}
-.leaflet-control-layers{box-shadow:0 1px 5px rgba(0,0,0,.4);background:#fff;border-radius:5px}
-.leaflet-control-layers-toggle{width:36px;height:36px}
-.leaflet-touch .leaflet-control-layers-toggle{width:44px;height:44px}
-.leaflet-control-layers .leaflet-control-layers-list,.leaflet-control-layers-expanded .leaflet-control-layers-toggle{display:none}
-.leaflet-control-layers-expanded .leaflet-control-layers-list{display:block;position:relative}
-.leaflet-control-layers-expanded{padding:6px 10px 6px 6px;color:#333;background:#fff}
-.leaflet-control-layers-scrollbar{overflow-y:scroll;overflow-x:hidden;padding-right:5px}
-.leaflet-control-layers-selector{margin-top:2px;position:relative;top:1px}
-.leaflet-control-layers label{display:block;font-size:13px;font-size:1.08333em}
-.leaflet-control-layers-separator{height:0;border-top:1px solid #ddd;margin:5px -10px 5px -6px}
-.leaflet-container .leaflet-control-attribution{background:#fff;background:rgba(255,255,255,.8);margin:0}
-.leaflet-control-attribution,.leaflet-control-scale-line{padding:0 5px;color:#333;line-height:1.4}
-.leaflet-control-attribution a{text-decoration:none}
-.leaflet-control-attribution a:hover,.leaflet-control-attribution a:focus{text-decoration:underline}
-.leaflet-attribution-flag{display:inline!important;vertical-align:baseline!important;width:1em;height:.6669em}
-.leaflet-left .leaflet-control-scale{margin-left:5px}
-.leaflet-bottom .leaflet-control-scale{margin-bottom:5px}
-.leaflet-control-scale-line{border:2px solid #777;border-top:none;line-height:1.1;padding:2px 5px 1px;white-space:nowrap;-moz-box-sizing:border-box;box-sizing:border-box;background:rgba(255,255,255,.8);text-shadow:1px 1px #fff}
-.leaflet-control-scale-line:not(:first-child){border-top:2px solid #777;border-bottom:none;margin-top:-2px}
-.leaflet-control-scale-line:not(:first-child):not(:last-child){border-bottom:2px solid #777}
-.leaflet-touch .leaflet-control-attribution,.leaflet-touch .leaflet-control-layers,.leaflet-touch .leaflet-bar{box-shadow:none}
-.leaflet-touch .leaflet-control-layers,.leaflet-touch .leaflet-bar{border:2px solid rgba(0,0,0,.2);background-clip:padding-box}
-.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}
-.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px}
-.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;font-size:1.08333em;min-height:1px}
-.leaflet-popup-content p{margin:17px 0;margin:1.3em 0}
-.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}
-.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;pointer-events:auto;-webkit-transform:rotate(45deg);-moz-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#333;box-shadow:0 3px 14px rgba(0,0,0,.4)}
-.leaflet-container a.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;text-decoration:none;background:transparent}
-.leaflet-container a.leaflet-popup-close-button:hover,.leaflet-container a.leaflet-popup-close-button:focus{color:#585858}
-.leaflet-popup-scrolled{overflow:auto}
-.leaflet-oldie .leaflet-popup-content-wrapper{-ms-zoom:1}
-.leaflet-oldie .leaflet-popup-tip{width:24px;margin:0 auto;-ms-filter:"progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";filter:progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678,M12=0.70710678,M21=-0.70710678,M22=0.70710678)}
-.leaflet-oldie .leaflet-control-zoom,.leaflet-oldie .leaflet-control-layers,.leaflet-oldie .leaflet-popup-content-wrapper,.leaflet-oldie .leaflet-popup-tip{border:1px solid #999}
-.leaflet-div-icon{background:#fff;border:1px solid #666}
-.leaflet-tooltip{position:absolute;padding:6px;background-color:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}
-.leaflet-tooltip.leaflet-interactive{cursor:pointer;pointer-events:auto}
-.leaflet-tooltip-top:before,.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{position:absolute;pointer-events:none;border:6px solid transparent;background:transparent;content:""}
-.leaflet-tooltip-bottom{margin-top:6px}
-.leaflet-tooltip-top{margin-top:-6px}
-.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}
-.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}
-.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;margin-left:-6px;border-bottom-color:#fff}
-.leaflet-tooltip-left{margin-left:-6px}
-.leaflet-tooltip-right{margin-left:6px}
-.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{top:50%;margin-top:-6px}
-.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}
-.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}
-@media print{.leaflet-control{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-
-/* Custom Layer Control Styles */
-.leaflet-control-layers-toggle {
-    background-size: cover;
-    border: 2px solid rgba(255,255,255,0.8);
-    background-color: #fff;
-    transition: background-image 0.2s ease;
-}
-.leaflet-retina .leaflet-control-layers-toggle {
-    background-size: cover;
-}
-`;
+// Leaflet CSS moved to styles.css
 
 interface MapLocation {
     id: string;
@@ -163,7 +30,9 @@ interface MapLocation {
 
 export class MapView extends ItemView {
     private entityManager: EntityManager;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private map: any = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private markers: Map<string, any> = new Map();
     private container: HTMLElement | null = null;
     private onLocationClick: ((entityId: string) => void) | null = null;
@@ -185,7 +54,7 @@ export class MapView extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'OSINTCopilot Map';
+        return 'OSINTCopilot map';
     }
 
     getIcon(): string {
@@ -204,10 +73,11 @@ export class MapView extends ItemView {
         // Create map container
         this.container = container.createDiv({ cls: 'graph_copilot-map-canvas' });
         this.container.id = 'graph_copilot-map-' + Date.now();
-        this.container.style.cssText = `
-            width: 100%;
-            height: calc(100% - 50px);
-        `;
+        this.container.id = 'graph_copilot-map-' + Date.now();
+        this.container.setCssProps({
+            width: '100%',
+            height: 'calc(100% - 50px)'
+        });
 
         // Load Leaflet and initialize
         await this.loadLeaflet();
@@ -220,6 +90,14 @@ export class MapView extends ItemView {
     }
 
     async onClose(): Promise<void> {
+        // Initialize handlers
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((this.map as any)._handlers) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (this.map as any)._handlers.forEach((handler: any) => {
+                handler.enable();
+            });
+        }
         if (this.map) {
             this.map.remove();
             this.map = null;
@@ -234,14 +112,7 @@ export class MapView extends ItemView {
         // Check if already loaded
         if (typeof L !== 'undefined') return;
 
-        // Inject CSS inline to avoid CSP issues with external stylesheets
-        // Only inject if not already present
-        if (!document.getElementById('leaflet-inline-css')) {
-            const style = document.createElement('style');
-            style.id = 'leaflet-inline-css';
-            style.textContent = LEAFLET_CSS;
-            document.head.appendChild(style);
-        }
+        // CSS is now loaded via styles.css
 
         // Load JS from CDN (scripts are allowed by Obsidian's CSP)
         return new Promise((resolve, reject) => {
@@ -257,16 +128,16 @@ export class MapView extends ItemView {
      * Create the toolbar.
      */
     private createToolbar(toolbar: HTMLElement): void {
-        toolbar.style.cssText = `
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background: var(--background-secondary);
-            border-bottom: 1px solid var(--background-modifier-border);
-        `;
+        toolbar.setCssProps({
+            display: 'flex',
+            gap: '10px',
+            padding: '10px',
+            background: 'var(--background-secondary)',
+            'border-bottom': '1px solid var(--background-modifier-border)'
+        });
 
         // Add Location button
-        const addBtn = toolbar.createEl('button', { text: '+ Add Location' });
+        const addBtn = toolbar.createEl('button', { text: '+ add location' });
         addBtn.addClass('graph_copilot-add-entity-btn');
         addBtn.onclick = () => this.openLocationCreator();
 
@@ -274,22 +145,27 @@ export class MapView extends ItemView {
         toolbar.createDiv({ cls: 'graph_copilot-toolbar-separator' });
 
         // Refresh button
-        const refreshBtn = toolbar.createEl('button', { text: '↻ Refresh' });
-        refreshBtn.onclick = async () => await this.refresh();
+        const refreshBtn = toolbar.createEl('button', { text: '↻ refresh' });
+        refreshBtn.onclick = () => { this.refresh(); };
 
         // Fit all button
-        const fitBtn = toolbar.createEl('button', { text: '⊡ Fit All' });
+        const fitBtn = toolbar.createEl('button', { text: '⊡ fit all' });
         fitBtn.onclick = () => this.fitAllMarkers();
 
         // Geolocate button
-        const geolocateBtn = toolbar.createEl('button', { text: '📍 Geolocate Missing' });
+        const geolocateBtn = toolbar.createEl('button', { text: '📍 geolocate missing' });
         geolocateBtn.onclick = () => this.showGeolocateMissingDialog();
 
         // Info label
-        toolbar.createEl('span', {
-            text: 'Map shows all Location entities with coordinates',
+        const infoSpan = toolbar.createEl('span', {
+            text: 'Map shows all location entities with coordinates',
             cls: 'graph_copilot-map-info'
-        }).style.cssText = 'margin-left: auto; color: var(--text-muted); font-size: 12px;';
+        });
+        infoSpan.setCssProps({
+            'margin-left': 'auto',
+            color: 'var(--text-muted)',
+            'font-size': '12px'
+        });
     }
 
     /**
@@ -345,7 +221,7 @@ export class MapView extends ItemView {
 
         // Try primary layer first, with error handling for fallbacks
         osmLayer.on('tileerror', () => {
-            console.log('OSM tiles failed, trying fallback...');
+            console.debug('OSM tiles failed, trying fallback...');
             if (!this.map.hasLayer(cartoLayer)) {
                 osmLayer.remove();
                 cartoLayer.addTo(this.map);
@@ -369,18 +245,19 @@ export class MapView extends ItemView {
                 // Use actual tiles as icons
                 if (layerName === 'Satellite') {
                     // Esri Satellite tile (rich green/terrain)
-                    container.style.backgroundImage = 'url("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/5/8")';
+                    container.setCssProps({ 'background-image': 'url("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/4/5/8")' });
                 } else if (layerName === 'Carto Light') {
                     // Carto Light tile (clean/grey)
-                    container.style.backgroundImage = 'url("https://a.basemaps.cartocdn.com/light_all/5/15/12.png")';
+                    container.setCssProps({ 'background-image': 'url("https://a.basemaps.cartocdn.com/light_all/5/15/12.png")' });
                 } else {
                     // Default OSM tile (standard map colors)
-                    container.style.backgroundImage = 'url("https://tile.openstreetmap.org/5/16/10.png")';
+                    container.setCssProps({ 'background-image': 'url("https://tile.openstreetmap.org/5/16/10.png")' });
                 }
             }
         };
 
         // Listen for layer changes
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.map.on('baselayerchange', (e: any) => {
             updateLayerControl(e.name);
         });
@@ -394,12 +271,13 @@ export class MapView extends ItemView {
         }, 100);
 
         // Add context menu for the map
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.map.on('contextmenu', (e: any) => {
             const menu = new Menu();
 
             menu.addItem((item) => {
                 item
-                    .setTitle('Create Location Here')
+                    .setTitle('Create location here')
                     .setIcon('map-pin')
                     .onClick(() => {
                         const modal = new EntityCreationModal(
@@ -407,7 +285,7 @@ export class MapView extends ItemView {
                             this.entityManager,
                             EntityType.Location,
                             (entityId) => {
-                                this.refresh();
+                                void this.refresh();
                             },
                             {
                                 latitude: e.latlng.lat,
@@ -428,13 +306,13 @@ export class MapView extends ItemView {
      * Refresh the map with current data.
      */
     async refresh(): Promise<void> {
-        console.log('[MapView] refresh() called, map exists:', !!this.map);
+        console.debug('[MapView] refresh() called, map exists:', !!this.map);
         if (!this.map) return;
 
         // Reload entities from notes to ensure we have the latest data
         try {
             await this.entityManager.loadEntitiesFromNotes();
-            console.log('[MapView] Entities reloaded from notes');
+            console.debug('[MapView] Entities reloaded from notes');
         } catch (error) {
             console.error('[MapView] Failed to reload entities:', error);
         }
@@ -447,18 +325,18 @@ export class MapView extends ItemView {
         const locationEntities = this.entityManager.getEntitiesByType(EntityType.Location);
         const addressEntities = this.entityManager.getAllEntities().filter(e => e.type === 'Address');
         const entities = [...locationEntities, ...addressEntities];
-        console.log('[MapView] Found Location and Address entities:', entities.length, entities);
+        console.debug('[MapView] Found Location and Address entities:', entities.length, entities);
 
         const locations = this.parseLocations(entities);
-        console.log('[MapView] Parsed locations with coordinates:', locations.length, locations);
+        console.debug('[MapView] Parsed locations with coordinates:', locations.length, locations);
 
         // Add markers
         locations.forEach(location => {
-            console.log('[MapView] Adding marker for:', location.label, 'at', location.lat, location.lng);
+            console.debug('[MapView] Adding marker for:', location.label, 'at', location.lat, location.lng);
             this.addMarker(location);
         });
 
-        console.log('[MapView] Total markers added:', this.markers.size);
+        console.debug('[MapView] Total markers added:', this.markers.size);
 
         // Fit bounds if we have markers
         if (locations.length > 0) {
@@ -473,16 +351,16 @@ export class MapView extends ItemView {
         const locations: MapLocation[] = [];
 
         for (const entity of entities) {
-            console.log('[MapView] Parsing entity:', entity.label, 'properties:', entity.properties);
-            const lat = this.parseCoordinate(entity.properties.latitude);
-            const lng = this.parseCoordinate(entity.properties.longitude);
-            console.log('[MapView] Parsed coordinates - lat:', lat, 'lng:', lng);
+            console.debug('[MapView] Parsing entity:', entity.label, 'properties:', entity.properties);
+            const lat = this.parseCoordinate(entity.properties.latitude as string | number | undefined);
+            const lng = this.parseCoordinate(entity.properties.longitude as string | number | undefined);
+            console.debug('[MapView] Parsed coordinates - lat:', lat, 'lng:', lng);
 
             if (lat !== null && lng !== null) {
                 // Handle both Location and Address entity types
                 const address = entity.type === 'Address'
-                    ? (entity.properties.street || entity.properties.full)
-                    : entity.properties.address;
+                    ? ((entity.properties.street || entity.properties.full) as string)
+                    : (entity.properties.address as string);
 
                 locations.push({
                     id: entity.id,
@@ -490,11 +368,11 @@ export class MapView extends ItemView {
                     lat,
                     lng,
                     address: address,
-                    city: entity.properties.city,
-                    country: entity.properties.country
+                    city: entity.properties.city as string,
+                    country: entity.properties.country as string
                 });
             } else {
-                console.log('[MapView] Skipping entity - missing coordinates');
+                console.debug('[MapView] Skipping entity - missing coordinates');
             }
         }
 
@@ -506,13 +384,13 @@ export class MapView extends ItemView {
      */
     private parseCoordinate(value: string | number | undefined): number | null {
         if (value === undefined || value === null || value === '') {
-            console.log('[MapView] parseCoordinate: value is empty/undefined:', value);
+            console.debug('[MapView] parseCoordinate: value is empty/undefined:', value);
             return null;
         }
 
         const num = typeof value === 'number' ? value : parseFloat(value);
         if (isNaN(num)) {
-            console.log('[MapView] parseCoordinate: value is NaN:', value);
+            console.debug('[MapView] parseCoordinate: value is NaN:', value);
             return null;
         }
 
@@ -560,12 +438,13 @@ export class MapView extends ItemView {
         });
 
         // Context menu handler
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         marker.on('contextmenu', (e: any) => {
             const menu = new Menu();
 
             menu.addItem((item) => {
                 item
-                    .setTitle('Open Note')
+                    .setTitle('Open note')
                     .setIcon('file-text')
                     .onClick(() => {
                         this.entityManager.openEntityNote(location.id);
@@ -665,8 +544,8 @@ export class MapView extends ItemView {
     addLocation(entity: Entity): void {
         if (entity.type !== EntityType.Location) return;
 
-        const lat = this.parseCoordinate(entity.properties.latitude);
-        const lng = this.parseCoordinate(entity.properties.longitude);
+        const lat = this.parseCoordinate(entity.properties.latitude as string | number | undefined);
+        const lng = this.parseCoordinate(entity.properties.longitude as string | number | undefined);
 
         if (lat !== null && lng !== null) {
             this.addMarker({
@@ -674,9 +553,9 @@ export class MapView extends ItemView {
                 label: entity.label,
                 lat,
                 lng,
-                address: entity.properties.address,
-                city: entity.properties.city,
-                country: entity.properties.country
+                address: entity.properties.address as string,
+                city: entity.properties.city as string,
+                country: entity.properties.country as string
             });
         }
     }
@@ -693,25 +572,39 @@ export class MapView extends ItemView {
     }
 
     /**
+     * Highlight a specific location.
+     */
+    highlightLocation(entityId: string): void {
+        const entity = this.entityManager.getEntity(entityId);
+        if (!entity || !this.map) return;
+
+        const marker = this.markers.get(entity.id);
+        if (marker) {
+            marker.openPopup();
+            this.map.setView(marker.getLatLng(), 15);
+        }
+    }
+
+    /**
      * Focus on a specific location.
      */
     focusLocation(entityId: string): void {
-        console.log('[MapView] focusLocation called for:', entityId);
-        console.log('[MapView] Available markers:', Array.from(this.markers.keys()));
+        console.debug('[MapView] focusLocation called for:', entityId);
+        console.debug('[MapView] Available markers:', Array.from(this.markers.keys()));
         const marker = this.markers.get(entityId);
         if (marker && this.map) {
-            console.log('[MapView] Found marker, focusing...');
+            console.debug('[MapView] Found marker, focusing...');
             this.map.setView(marker.getLatLng(), 15);
             marker.openPopup();
         } else {
-            console.log('[MapView] Marker not found for entity:', entityId);
+            console.debug('[MapView] Marker not found for entity:', entityId);
         }
     }
 
     /**
      * Show dialog to geolocate locations without coordinates.
      */
-    private async showGeolocateMissingDialog(): Promise<void> {
+    private showGeolocateMissingDialog(): void {
         // Get all Location and Address entities
         const allEntities = this.entityManager.getAllEntities();
         const locationsWithoutCoords = allEntities.filter(entity => {
@@ -769,30 +662,30 @@ class GeolocateMissingModal extends Modal {
         const { contentEl } = this;
         contentEl.empty();
 
-        contentEl.createEl('h2', { text: 'Geolocate Locations' });
+        contentEl.createEl('h2', { text: 'Geolocate locations' });
         contentEl.createEl('p', {
             text: `Found ${this.locations.length} location(s) without coordinates that can be geocoded.`
         });
 
         // Create a list of locations
         const listContainer = contentEl.createDiv({ cls: 'geolocate-list' });
-        listContainer.style.cssText = `
-            max-height: 400px;
-            overflow-y: auto;
-            margin: 20px 0;
-        `;
+        listContainer.setCssProps({
+            'max-height': '400px',
+            'overflow-y': 'auto',
+            margin: '20px 0'
+        });
 
         this.locations.forEach(entity => {
             const item = listContainer.createDiv({ cls: 'geolocate-item' });
-            item.style.cssText = `
-                padding: 10px;
-                margin: 5px 0;
-                border: 1px solid var(--background-modifier-border);
-                border-radius: 4px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            `;
+            item.setCssProps({
+                padding: '10px',
+                margin: '5px 0',
+                border: '1px solid var(--background-modifier-border)',
+                'border-radius': '4px',
+                display: 'flex',
+                'justify-content': 'space-between',
+                'align-items': 'center'
+            });
 
             const info = item.createDiv();
             info.createEl('strong', { text: entity.label });
@@ -805,7 +698,7 @@ class GeolocateMissingModal extends Modal {
                 cls: 'text-muted'
             });
 
-            const btn = item.createEl('button', { text: '📍 Geolocate' });
+            const btn = item.createEl('button', { text: '📍 geolocate' });
             btn.onclick = async () => {
                 btn.disabled = true;
                 btn.textContent = 'Geocoding...';
@@ -815,9 +708,14 @@ class GeolocateMissingModal extends Modal {
 
         // Buttons
         const buttonContainer = contentEl.createDiv({ cls: 'modal-button-container' });
-        buttonContainer.style.cssText = 'display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;';
+        buttonContainer.setCssProps({
+            display: 'flex',
+            'justify-content': 'flex-end',
+            gap: '10px',
+            'margin-top': '20px'
+        });
 
-        const geolocateAllBtn = buttonContainer.createEl('button', { text: 'Geolocate All' });
+        const geolocateAllBtn = buttonContainer.createEl('button', { text: 'Geolocate all' });
         geolocateAllBtn.onclick = async () => {
             geolocateAllBtn.disabled = true;
             await this.geolocateAll();
@@ -858,7 +756,7 @@ class GeolocateMissingModal extends Modal {
             );
 
             // Update entity
-            const updates: Record<string, any> = {
+            const updates: Record<string, unknown> = {
                 latitude: result.latitude,
                 longitude: result.longitude
             };
@@ -873,13 +771,13 @@ class GeolocateMissingModal extends Modal {
             await this.entityManager.updateEntity(entity.id, updates);
 
             // Update UI
-            btn.textContent = '✓ Done';
-            btn.style.color = 'var(--text-success)';
-            item.style.borderColor = 'var(--text-success)';
+            btn.textContent = '✓ done';
+            btn.setCssProps({ color: 'var(--text-success)' });
+            item.setCssProps({ 'border-color': 'var(--text-success)' });
 
         } catch (error) {
-            btn.textContent = '✗ Failed';
-            btn.style.color = 'var(--text-error)';
+            btn.textContent = '✗ failed';
+            btn.setCssProps({ color: 'var(--text-error)' });
             if (error instanceof GeocodingError) {
                 new Notice(`Failed to geocode ${entity.label}: ${error.message}`);
             } else {
@@ -921,7 +819,7 @@ class GeolocateMissingModal extends Modal {
                     }
                 );
 
-                const updates: Record<string, any> = {
+                const updates: Record<string, unknown> = {
                     latitude: result.latitude,
                     longitude: result.longitude
                 };
