@@ -23,6 +23,8 @@ notes: "The date reflects re-registration under Russian corporate laws, though G
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
+- [[Gazprom's Incorporation]] PRECEDED_BY [[Gazprom's Reduction in European Gas Deliveries]]
+- [[Gazprom's Incorporation]] PRECEDED_BY [[Sanctioning of Gazprombank]]
 
 ## Notes
 

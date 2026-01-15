@@ -23,6 +23,7 @@ notes: "This strategy shift was influenced by geopolitical tensions and sanction
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
+- [[Gazprom's Reduction in European Gas Deliveries]] CAUSED [[Gazprom's Executive Staff Reduction Plan]]
 
 ## Notes
 

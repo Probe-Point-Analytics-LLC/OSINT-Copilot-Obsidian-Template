@@ -17,6 +17,8 @@ notes: "Involved in oil-related activities"
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
+- [[Gazprom Neft]] RELATED_TO [[Wagner Group]]
+- [[Gazprom Neft]] PARTICIPATED_IN [[Establishment of Gazprom Neft-linked Security Organization]]
 
 ## Notes
 

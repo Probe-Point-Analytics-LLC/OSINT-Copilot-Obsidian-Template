@@ -17,6 +17,7 @@ notes: "Sanctioned in 2024 to limit Russia’s access to global financial system
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
+- [[Gazprombank]] PARTICIPATED_IN [[Sanctioning of Gazprombank]]
 
 ## Notes
 

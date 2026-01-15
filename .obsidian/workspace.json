@@ -54,8 +54,23 @@
               "icon": "lucide-file",
               "title": "Gazprom_Report_2026-01-15_01-50-34"
             }
+          },
+          {
+            "id": "19930330410188f8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Reports/Gazprom_Report_2026-01-15_02-19-35.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Gazprom_Report_2026-01-15_02-19-35"
+            }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -233,8 +248,10 @@
       "osint-copilot:Location map (Ctrl+click for new pane)": false
     }
   },
-  "active": "7353d1def065a43a",
+  "active": "19930330410188f8",
   "lastOpenFiles": [
+    "Reports/Gazprom_Report_2026-01-15_01-50-34.md",
+    "OSINTCopilot/Location/BOX 1255_c557c54c.md",
     "OSINTCopilot/Location/156A Moskovsky Avenue_58fd4124.md",
     "OSINTCopilot/Location/2-3 Lakhtinsky Avenue_ae1f1351.md",
     "OSINTCopilot/Location/16 Nametkina St._937d9132.md",
@@ -259,8 +276,6 @@
     "OSINTCopilot/Event/Establishment of Gazprom Neft-linked Security Organization_819987fa.md",
     "OSINTCopilot/Event/Shell Termination of Joint Ventures_38bf5172.md",
     "OSINTCopilot/Event/Stockholm Arbitration Tribunal Order_b252219c.md",
-    "OSINTCopilot/Event/Gazprom's Incorporation_d2880bae.md",
-    "Reports/Gazprom_Report_2026-01-15_02-19-35.md",
     "OSINTCopilot/Image",
     "OSINTCopilot/LegalEntity",
     "README.md~",

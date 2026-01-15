@@ -17,6 +17,8 @@ notes: "CEO of Gazprom, close associate of President Vladimir Putin"
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
+- [[Alexey Miller]] WORKS_AT [[Gazprom]]
+- [[Alexey Miller]] KNOWS [[Vladimir Putin]]
 
 ## Notes
 

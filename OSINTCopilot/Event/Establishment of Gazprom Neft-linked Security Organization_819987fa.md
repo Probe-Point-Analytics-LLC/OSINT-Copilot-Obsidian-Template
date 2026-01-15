@@ -23,6 +23,7 @@ notes: "This raised international concerns due to its strategic implications."
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
+- [[Establishment of Gazprom Neft-linked Security Organization]] RELATED_TO [[Shell Termination of Joint Ventures]]
 
 ## Notes
 

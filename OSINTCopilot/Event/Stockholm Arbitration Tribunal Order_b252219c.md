@@ -23,6 +23,7 @@ notes: "This was a major legal dispute involving Gazprom and Uniper."
 ## Relationships
 
 <!-- Add relationships using wikilinks: [[Entity Name]] RELATIONSHIP_TYPE [[Target Entity]] -->
+- [[Stockholm Arbitration Tribunal Order]] RELATED_TO [[Shell Termination of Joint Ventures]]
 
 ## Notes
 
