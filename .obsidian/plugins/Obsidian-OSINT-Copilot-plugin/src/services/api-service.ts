@@ -606,6 +606,113 @@ export class GraphApiService {
     }
 
     /**
+     * Extract text from an uploaded file via the backend API.
+     */
+    async extractTextFromFile(file: File): Promise<string> {
+        // Check API health
+        if (!this.isOnline) {
+            await this.checkHealth();
+            if (!this.isOnline) {
+                throw new Error('OSINT Copilot API is offline. File upload is not available.');
+            }
+        }
+
+        const reader = new FileReader();
+        const fileContentBase64 = await new Promise<string>((resolve, reject) => {
+            reader.onload = () => {
+                // Convert ArrayBuffer to Base64 string
+                const arrayBuffer = reader.result as ArrayBuffer;
+                const bytes = new Uint8Array(arrayBuffer);
+                let binary = '';
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                // Base64 encode the binary string
+                const base64String = window.btoa(binary);
+                resolve(base64String);
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Limit file size to 10MB
+        if (file.size > 10 * 1024 * 1024) {
+            throw new Error('File size exceeds 10MB limit.');
+        }
+
+        const response = await this.fetchWithTimeout(
+            `${this.baseUrl}/api/extract-text`,
+            {
+                method: 'POST',
+                headers: this.getHeaders(),
+                body: JSON.stringify({
+                    filename: file.name,
+                    content_base64: fileContentBase64,
+                }),
+            },
+            60000 // 60 second timeout
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const json = JSON.parse(errorText) as any;
+                throw new Error(json.error || errorText);
+            } catch {
+                throw new Error(`Server error (${response.status}): ${errorText}`);
+            }
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const json = await response.json() as any;
+
+        if (json.success) {
+            console.debug(`[GraphApiService] Text extracted from file ${file.name} (source: ${json.source_type || 'unknown'})`);
+            return json.text;
+        } else {
+            throw new Error(json.error || 'Failed to extract text from file.');
+        }
+    }
+
+    /**
+     * Extract text from a URL via the backend API.
+     */
+    async extractTextFromUrl(url: string): Promise<string> {
+        if (!this.isOnline) {
+            await this.checkHealth();
+            if (!this.isOnline) throw new Error('OSINT Copilot API is offline.');
+        }
+
+        const response = await this.fetchWithTimeout(
+            `${this.baseUrl}/api/extract-text`,
+            {
+                method: 'POST',
+                headers: this.getHeaders(),
+                body: JSON.stringify({ url })
+            },
+            60000
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const json = JSON.parse(errorText) as any;
+                throw new Error(json.error || errorText);
+            } catch {
+                throw new Error(`Server error (${response.status})`);
+            }
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const json = await response.json() as any;
+        if (json.success) return json.text;
+        throw new Error(json.error || 'Failed to extract text from URL');
+    }
+
+    /**
      * AI-powered OSINT search that automatically detects entity types,
      * selects appropriate providers, and aggregates results.
      *

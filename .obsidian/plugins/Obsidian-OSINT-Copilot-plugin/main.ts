@@ -2011,6 +2011,8 @@ class ChatView extends ItemView {
   pollingIntervals: Map<string, number> = new Map();
   currentConversation: Conversation | null = null;
   sidebarVisible: boolean = true;
+  uploadButtonEl!: HTMLElement;
+  dragOverlay!: HTMLElement;
 
   constructor(leaf: WorkspaceLeaf, plugin: VaultAIPlugin) {
     super(leaf);
@@ -2231,6 +2233,7 @@ class ChatView extends ItemView {
       this.updateAllModeLabels();
       this.updateInputPlaceholder();
       this.updateModeDisclaimer();
+      this.updateUploadButtonVisibility();
     });
 
     // === Graph Generation Toggle (Independent - enables Graph only Mode when all main modes are off) ===
@@ -2249,6 +2252,7 @@ class ChatView extends ItemView {
       this.updateGraphGenerationLabel();
       this.updateInputPlaceholder();
       this.updateModeDisclaimer();
+      this.updateUploadButtonVisibility();
       if (this.isGraphOnlyMode()) {
         new Notice("Graph only mode enabled - extract entities from your text");
       } else if (this.graphGenerationMode) {
@@ -2282,6 +2286,63 @@ class ChatView extends ItemView {
       placeholder: this.getInputPlaceholder(),
     });
     this.inputEl.rows = 3;
+
+    // File upload for Graph Generation mode
+    const fileInput = inputContainer.createEl("input", {
+      type: "file",
+      cls: "vault-ai-file-upload",
+      attr: {
+        "accept": ".md,.txt,.pdf,.docx,.doc",
+        "style": "display: none;"
+      }
+    });
+    fileInput.addEventListener("change", (e) => void this.handleFileUpload(e));
+
+    this.uploadButtonEl = inputContainer.createEl("button", {
+      text: "📎",
+      cls: "vault-ai-upload-btn",
+      attr: {
+        "aria-label": "Upload file for graph generation",
+        "title": "Upload file for graph generation (.md, .txt, .pdf, .docx)"
+      }
+    });
+    // Only show in Graph Generation mode (or Graph Only mode)
+    this.updateUploadButtonVisibility();
+    this.uploadButtonEl.addEventListener("click", () => fileInput.click());
+
+    // Drag and Drop Overlay
+    this.dragOverlay = inputContainer.createDiv("vault-ai-drag-overlay");
+    this.dragOverlay.createDiv({ text: "Drop file to extract text", cls: "vault-ai-drag-text" });
+
+    // Drag events on the input container
+    inputContainer.addEventListener("dragenter", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (this.graphGenerationMode) this.dragOverlay.addClass("active");
+    });
+
+    inputContainer.addEventListener("dragleave", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!inputContainer.contains(e.relatedTarget as Node)) {
+        this.dragOverlay.removeClass("active");
+      }
+    });
+
+    inputContainer.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    inputContainer.addEventListener("drop", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.dragOverlay.removeClass("active");
+
+      if (this.graphGenerationMode && e.dataTransfer && e.dataTransfer.files.length > 0) {
+        this.handleDroppedFile(e.dataTransfer.files[0]);
+      }
+    });
 
     const sendBtn = inputContainer.createEl("button", { text: this.osintSearchMode ? "Search" : "Send" });
     sendBtn.addEventListener("click", () => this.handleSend());
@@ -2338,6 +2399,123 @@ class ChatView extends ItemView {
     }
 
     return null;
+  }
+
+  updateUploadButtonVisibility() {
+    if (this.uploadButtonEl) {
+      // Show only if Graph Generation is enabled
+      this.uploadButtonEl.style.display = this.graphGenerationMode ? "block" : "none";
+    }
+  }
+
+  async handleFileUpload(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+
+    const file = target.files[0];
+
+    // Clear input to allow re-uploading same file
+    target.value = '';
+
+    try {
+      // Show loading state
+      const originalPlaceholder = this.inputEl.placeholder;
+      this.inputEl.placeholder = `Extracting text from ${file.name}...`;
+      this.inputEl.disabled = true;
+
+      new Notice(`Extracting text from ${file.name}...`);
+
+      const text = await this.plugin.graphApiService.extractTextFromFile(file);
+
+      // Populate input
+      const currentText = this.inputEl.value;
+      if (currentText) {
+        this.inputEl.value = currentText + "\n\n" + text;
+      } else {
+        this.inputEl.value = text;
+      }
+
+      new Notice(`Text extracted from ${file.name}`);
+
+    } catch (error) {
+      console.error("File upload error:", error);
+      new Notice(`Error processing file: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      // Restore UI
+      this.inputEl.disabled = false;
+      this.updateInputPlaceholder();
+      this.inputEl.focus();
+    }
+  }
+
+  async handleDroppedFile(file: File) {
+    if (!file) return;
+
+    const allowedExtensions = ['.md', '.txt', '.pdf', '.docx', '.doc'];
+    const ext = "." + file.name.split('.').pop()?.toLowerCase();
+
+    if (!allowedExtensions.includes(ext)) {
+      new Notice(`File type ${ext} not supported. Use .md, .txt, .pdf, .docx`);
+      return;
+    }
+
+    try {
+      // Reuse upload logic - create a synthetic event or just call extraction directly
+      const originalPlaceholder = this.inputEl.placeholder;
+      this.inputEl.placeholder = `Extracting text from ${file.name}...`;
+      this.inputEl.disabled = true;
+
+      new Notice(`Extracting text from ${file.name}...`);
+
+      const text = await this.plugin.graphApiService.extractTextFromFile(file);
+
+      const currentText = this.inputEl.value;
+      if (currentText) {
+        this.inputEl.value = currentText + "\n\n" + text;
+      } else {
+        this.inputEl.value = text;
+      }
+
+      new Notice(`Text extracted from ${file.name}`);
+
+    } catch (error) {
+      console.error("Drop file error:", error);
+      new Notice(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      this.inputEl.disabled = false;
+      this.updateInputPlaceholder();
+      this.inputEl.focus();
+    }
+  }
+
+  /**
+   * Check if input is a URL and extract text if so
+   */
+  async handleUrlExtraction(url: string): Promise<boolean> {
+    try {
+      if (!url.startsWith('http')) return false;
+
+      const originalPlaceholder = this.inputEl.placeholder;
+      this.inputEl.placeholder = "Extracting text from URL...";
+      this.inputEl.disabled = true;
+
+      new Notice(`Extracting text from URL: ${url}...`);
+
+      const text = await this.plugin.graphApiService.extractTextFromUrl(url);
+
+      this.inputEl.value = text;
+
+      new Notice(`Text extracted from URL`);
+      return true; // Return true to indicate URL was handled and text replaced
+    } catch (error) {
+      console.error("URL extraction error:", error);
+      new Notice(`Error extracting URL: ${error instanceof Error ? error.message : String(error)}`);
+      return false; // Return false to indicate failure/not handled
+    } finally {
+      this.inputEl.disabled = false;
+      this.updateInputPlaceholder();
+      this.inputEl.focus();
+    }
   }
 
   /**
@@ -3059,17 +3237,24 @@ class ChatView extends ItemView {
       });
     }
     // Don't remove results container if no new results - keep the last known results
-
-    // Scroll to bottom
-    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
   }
 
   async handleSend() {
-    const query = this.inputEl.value.trim();
-    if (!query) {
-      new Notice("Please enter a question.");
-      return;
+    const value = this.inputEl.value.trim();
+    if (!value) return;
+
+    // Check for URL in Graph Generation Mode
+    if (this.isGraphOnlyMode() && value.startsWith('http')) {
+      const isUrlHandled = await this.handleUrlExtraction(value);
+      if (isUrlHandled) {
+        this.inputEl.value = ""; // Clear input if URL was handled
+        await this.saveCurrentConversation(); // Save conversation after URL handling
+        return; // Stop normal flow if URL was handled
+      }
+      // If not handled (returned false), continue normal flow
     }
+
+    this.inputEl.value = "";
 
     if (!this.plugin.isAuthenticated()) {
       new Notice("License key required for AI features. Please configure your license key in settings.");
@@ -3077,13 +3262,7 @@ class ChatView extends ItemView {
     }
 
     // Add user message
-    this.chatHistory.push({
-      role: "user",
-      content: query,
-    });
-
-    // Clear input
-    this.inputEl.value = "";
+    this.chatHistory.push({ role: "user", content: value });
 
     // Save conversation after user message
     await this.saveCurrentConversation();
@@ -3091,16 +3270,16 @@ class ChatView extends ItemView {
     // Route to appropriate handler based on mode
     if (this.isGraphOnlyMode()) {
       // Graph only Mode: Extract entities from user input without AI chat
-      await this.handleGraphOnlyMode(query);
+      await this.handleGraphOnlyMode(value);
     } else if (this.osintSearchMode) {
-      await this.handleOSINTSearch(query);
+      await this.handleOSINTSearch(value);
     } else if (this.darkWebMode) {
-      await this.handleDarkWebInvestigation(query);
+      await this.handleDarkWebInvestigation(value);
     } else if (this.reportGenerationMode) {
-      await this.handleReportGeneration(query);
+      await this.handleReportGeneration(value);
     } else {
       // Default: Local Search Mode (normal chat)
-      await this.handleNormalChat(query);
+      await this.handleNormalChat(value);
     }
 
     // Save conversation after assistant response
@@ -3138,7 +3317,7 @@ class ChatView extends ItemView {
         const delaySeconds = Math.round(nextDelayMs / 1000);
         let reasonText = 'Network interrupted';
         if (reason === 'timeout') {
-          reasonText = 'Request timed out';
+          reasonText = 'Request takes longer than usual, please wait';
         } else if (reason === 'network') {
           reasonText = 'Network connection lost';
         } else if (reason.startsWith('server-error')) {
@@ -3499,7 +3678,7 @@ class ChatView extends ItemView {
         const delaySeconds = Math.round(nextDelayMs / 1000);
         let reasonText = 'Network interrupted';
         if (reason === 'timeout') {
-          reasonText = 'Request timed out';
+          reasonText = 'Request takes longer than usual, please wait';
         } else if (reason === 'network') {
           reasonText = 'Network connection lost';
         } else if (reason.startsWith('server-error')) {
@@ -3851,7 +4030,7 @@ class ChatView extends ItemView {
         const delaySeconds = Math.round(nextDelayMs / 1000);
         let reasonText = 'Network interrupted';
         if (reason === 'timeout') {
-          reasonText = 'Request timed out';
+          reasonText = 'Request takes longer than usual, please wait';
         } else if (reason === 'network') {
           reasonText = 'Network connection lost';
         } else if (reason.startsWith('server-error')) {
