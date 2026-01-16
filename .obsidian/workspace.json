@@ -4,11 +4,23 @@
     "type": "split",
     "children": [
       {
-        "id": "98d4b107e1c83297",
+        "id": "25a798219f9fe96c",
         "type": "tabs",
         "children": [
           {
-            "id": "7353d1def065a43a",
+            "id": "002431eec19658e0",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "Inert_gases_report_final.pdf"
+              },
+              "icon": "lucide-file-text",
+              "title": "Inert_gases_report_final"
+            }
+          },
+          {
+            "id": "f7bd453d8842f786",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
@@ -16,61 +28,9 @@
               "icon": "message-square",
               "title": "Osint copilot"
             }
-          },
-          {
-            "id": "64e9bd063f605ffc",
-            "type": "leaf",
-            "state": {
-              "type": "graph_copilot-graph-view",
-              "state": {},
-              "icon": "git-fork",
-              "title": "OSINTCopilot graph"
-            }
-          },
-          {
-            "id": "ecc0ed4f0bf4c2ae",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Reports/Gazprom_Report_2026-01-15_01-47-57.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Gazprom_Report_2026-01-15_01-47-57"
-            }
-          },
-          {
-            "id": "3d40c3f6c54b7495",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Reports/Gazprom_Report_2026-01-15_01-50-34.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Gazprom_Report_2026-01-15_01-50-34"
-            }
-          },
-          {
-            "id": "19930330410188f8",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Reports/Gazprom_Report_2026-01-15_02-19-35.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Gazprom_Report_2026-01-15_02-19-35"
-            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -127,7 +87,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 296.5
+    "width": 200
   },
   "right": {
     "id": "5cdd0121b0d64c3d",
@@ -239,43 +199,41 @@
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
       "bases:Create new base": false,
-      "osint-copilot:OSINT Copilot Chat (Ctrl+click for new pane)": false,
-      "osint-copilot:Entity Graph (Ctrl+click for new pane)": false,
       "osint-copilot:Timeline (Ctrl+click for new pane)": false,
-      "osint-copilot:Location Map (Ctrl+click for new pane)": false,
       "osint-copilot:OSINT Copilot chat (Ctrl+click for new pane)": false,
       "osint-copilot:Entity graph (Ctrl+click for new pane)": false,
       "osint-copilot:Location map (Ctrl+click for new pane)": false
     }
   },
-  "active": "19930330410188f8",
+  "active": "f7bd453d8842f786",
   "lastOpenFiles": [
-    "Reports/Gazprom_Report_2026-01-15_01-50-34.md",
-    "OSINTCopilot/Location/BOX 1255_c557c54c.md",
-    "OSINTCopilot/Location/156A Moskovsky Avenue_58fd4124.md",
-    "OSINTCopilot/Location/2-3 Lakhtinsky Avenue_ae1f1351.md",
-    "OSINTCopilot/Location/16 Nametkina St._937d9132.md",
-    "OSINTCopilot/Company/Wagner Group_c007db61.md",
-    "OSINTCopilot/Company/Shell_b6508c61.md",
-    "OSINTCopilot/Company/Uniper_f29e4df6.md",
-    "OSINTCopilot/Company/Gazprom Neft_b5f0c409.md",
-    "OSINTCopilot/Company/Gazprombank_c996d6f1.md",
-    "OSINTCopilot/Company/Red Star Belgrade_c95c64dd.md",
-    "OSINTCopilot/Company/FC Schalke 04_66815ec3.md",
-    "OSINTCopilot/Company/FC Zenit Saint Petersburg_ef71754c.md",
-    "OSINTCopilot/Company/EuRoPol Gaz S.A._d7f8a45c.md",
-    "OSINTCopilot/Company/GAZPROM GAZNADZOR, OOO_3ea1dea3.md",
-    "OSINTCopilot/Company/GAZPROM PROMGAZ, AO_3b147bcb.md",
-    "OSINTCopilot/Company/Gazprom Burenie, OOO_95f7ca77.md",
-    "OSINTCopilot/Company/Gazprom_59a0e710.md",
-    "OSINTCopilot/Person/Vladimir Putin_554dd47d.md",
-    "OSINTCopilot/Person/Alexey Miller_a0c87282.md",
-    "OSINTCopilot/Event/Gazprom's Executive Staff Reduction Plan_a80b8337.md",
-    "OSINTCopilot/Event/Gazprom's Reduction in European Gas Deliveries_7b482e74.md",
-    "OSINTCopilot/Event/Sanctioning of Gazprombank_ced86485.md",
-    "OSINTCopilot/Event/Establishment of Gazprom Neft-linked Security Organization_819987fa.md",
-    "OSINTCopilot/Event/Shell Termination of Joint Ventures_38bf5172.md",
-    "OSINTCopilot/Event/Stockholm Arbitration Tribunal Order_b252219c.md",
+    "OSINTCopilot/Location/Location_f2290561.md",
+    "OSINTCopilot/Location/Location_3bb5088b.md",
+    "OSINTCopilot/Location/Location_8f2b4ee4.md",
+    "OSINTCopilot/Location/Location_82a2afda.md",
+    "OSINTCopilot/Location/Location_11a68165.md",
+    "OSINTCopilot/Location/Location_55f45b84.md",
+    "OSINTCopilot/Location/Location_59772607.md",
+    "OSINTCopilot/Location/Znamenka Street 19_294e440f.md",
+    "OSINTCopilot/Company/Main Computation Centre of the Armed Forces of Russia (GVC)_fa9df0d2.md",
+    "OSINTCopilot/Company/Der Spiegel_6958ffc6.md",
+    "OSINTCopilot/Company/The Insider_8f19b8cc.md",
+    "OSINTCopilot/Company/Bellingcat_33283d47.md",
+    "OSINTCopilot/Person/Vladimir Vorobyev_a380f730.md",
+    "OSINTCopilot/Person/Ekaterina Chugunova_14413dfd.md",
+    "OSINTCopilot/Person/Ivan Popov_13ecb812.md",
+    "OSINTCopilot/Person/Artem Vedenov_1059d6a2.md",
+    "OSINTCopilot/Person/Sergey Ilyin_e8fef86b.md",
+    "OSINTCopilot/Person/Yuriy Nikonov_24db02bd.md",
+    "OSINTCopilot/Person/Andrey Ivanyutin_84dfc173.md",
+    "OSINTCopilot/Person/Olga Chesnokova_7f5e324f.md",
+    "OSINTCopilot/Person/Alexey Mikhaylov_06fc6f6d.md",
+    "OSINTCopilot/Person/Matvey Lyubavin_d7bc4f73.md",
+    "OSINTCopilot/Person/Evgeniy Kapshuk_85f6426b.md",
+    "OSINTCopilot/Person/Anton Timoshinov_370ed1b0.md",
+    "OSINTCopilot/Person/Robert Baranov_720bde29.md",
+    "OSINTCopilot/Person/Igor Bagnyuk_f53bfddf.md",
+    "Inert_gases_report_final.pdf",
     "OSINTCopilot/Image",
     "OSINTCopilot/LegalEntity",
     "README.md~",
@@ -284,7 +242,6 @@
     "Reports/Incident_2026-001_IOC_Analysis_2026-01-03.md~",
     "Reports/APT29_Threat_Actor_Profile_2026-01-03.md~",
     "EXAMPLE_QUERIES.md~",
-    "OSINTCopilot/Address",
-    "LICENSE"
+    "OSINTCopilot/Address"
   ]
 }

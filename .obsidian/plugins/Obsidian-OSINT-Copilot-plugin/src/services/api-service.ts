@@ -459,6 +459,7 @@ export class GraphApiService {
     /**
      * Extract text from a file via the backend API.
      * Supports .md, .txt, .pdf, .docx, .doc
+     * Includes retry logic with exponential backoff for timeouts and rate limits.
      */
     async extractTextFromFile(file: File): Promise<string> {
         // Check file size (limit to 10MB to avoid backend issues)
@@ -475,44 +476,92 @@ export class GraphApiService {
                     const result = reader.result as string;
                     // result is a data URL like "data:application/pdf;base64,JVBERi0x..."
 
-                    if (!this.isOnline) {
-                        // If API is invalid, try to check health first
-                        await this.checkHealth();
-                        if (!this.isOnline) {
-                            throw new Error('OSINT Copilot API is offline. Cannot process file.');
-                        }
-                    }
+                    // Skip health check - just try the extraction directly.
+                    // If the API is truly unavailable, the retry logic will catch it.
+                    // This avoids blocking on health check timeouts.
 
-                    const response = await this.fetchWithTimeout(
-                        `${this.baseUrl}/api/extract-text`,
-                        {
-                            method: 'POST',
-                            headers: this.getHeaders(),
-                            body: JSON.stringify({
-                                filename: file.name,
-                                content_base64: result
-                            })
-                        },
-                        60000 // 60s timeout for file processing
-                    );
+                    // Retry logic for file extraction
+                    const maxRetries = 3;
+                    const baseTimeout = 120000; // 120s timeout for file processing
+                    let lastError: unknown = null;
 
-                    if (!response.ok) {
-                        const errorText = await response.text();
+                    for (let attempt = 1; attempt <= maxRetries; attempt++) {
                         try {
-                            const errorJson = JSON.parse(errorText);
-                            throw new Error(errorJson.error || errorText);
-                        } catch {
-                            throw new Error(`Server error (${response.status}): ${errorText}`);
+                            console.debug(`[GraphApiService] File extraction attempt ${attempt}/${maxRetries}: ${file.name}`);
+
+                            const response = await this.fetchWithTimeout(
+                                `${this.baseUrl}/api/extract-text`,
+                                {
+                                    method: 'POST',
+                                    headers: this.getHeaders(),
+                                    body: JSON.stringify({
+                                        filename: file.name,
+                                        content_base64: result
+                                    })
+                                },
+                                baseTimeout
+                            );
+
+                            if (!response.ok) {
+                                const errorText = await response.text();
+
+                                // Handle rate limiting with retry
+                                if (response.status === 429 && attempt < maxRetries) {
+                                    const delayMs = this.calculateBackoffDelay(attempt);
+                                    console.debug(`[GraphApiService] Rate limited, retrying in ${delayMs}ms...`);
+                                    await new Promise(r => setTimeout(r, delayMs));
+                                    continue;
+                                }
+
+                                // Handle 5xx errors with retry
+                                if (response.status >= 500 && attempt < maxRetries) {
+                                    const delayMs = this.calculateBackoffDelay(attempt);
+                                    console.debug(`[GraphApiService] Server error, retrying in ${delayMs}ms...`);
+                                    await new Promise(r => setTimeout(r, delayMs));
+                                    continue;
+                                }
+
+                                try {
+                                    const errorJson = JSON.parse(errorText);
+                                    throw new Error(errorJson.error || errorText);
+                                } catch {
+                                    throw new Error(`Server error (${response.status}): ${errorText}`);
+                                }
+                            }
+
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            const json = await response.json() as any;
+                            if (json.success) {
+                                resolve(json.text);
+                                return;
+                            } else {
+                                throw new Error(json.error || 'Failed to extract text');
+                            }
+                        } catch (error) {
+                            lastError = error;
+
+                            // Retry on timeout errors
+                            if (this.isTimeoutError(error) && attempt < maxRetries) {
+                                const delayMs = this.calculateBackoffDelay(attempt);
+                                console.debug(`[GraphApiService] Timeout, retrying in ${delayMs}ms...`);
+                                await new Promise(r => setTimeout(r, delayMs));
+                                continue;
+                            }
+
+                            // Retry on network errors
+                            if (this.isNetworkError(error) && attempt < maxRetries) {
+                                const delayMs = this.calculateBackoffDelay(attempt);
+                                console.debug(`[GraphApiService] Network error, retrying in ${delayMs}ms...`);
+                                await new Promise(r => setTimeout(r, delayMs));
+                                continue;
+                            }
+
+                            throw error;
                         }
                     }
 
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const json = await response.json() as any;
-                    if (json.success) {
-                        resolve(json.text);
-                    } else {
-                        throw new Error(json.error || 'Failed to extract text');
-                    }
+                    // All retries exhausted
+                    throw lastError || new Error('Failed to extract text after retries');
 
                 } catch (error) {
                     reject(error);

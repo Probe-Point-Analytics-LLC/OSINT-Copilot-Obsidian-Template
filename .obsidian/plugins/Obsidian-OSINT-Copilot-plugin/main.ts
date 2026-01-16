@@ -2010,11 +2010,17 @@ class ChatView extends ItemView {
   // Graph generation is independent (can be enabled with any main mode, or alone for Graph only Mode)
   graphGenerationMode: boolean = true;
   graphGenerationToggle!: HTMLInputElement;
+  entityGenContainer!: HTMLElement;  // Container for the toggle - hidden when Graph mode selected
   pollingIntervals: Map<string, number> = new Map();
   currentConversation: Conversation | null = null;
   sidebarVisible: boolean = true;
   uploadButtonEl!: HTMLElement;
+  urlButtonEl!: HTMLElement; // URL extraction button
   dragOverlay!: HTMLElement;
+  // Attached files display
+  attachmentsContainer!: HTMLElement;
+  // Stores attached files - content is extracted only when sending
+  attachedFiles: { file: TFile | File; extracted: boolean; content?: string }[] = [];
 
   constructor(leaf: WorkspaceLeaf, plugin: VaultAIPlugin) {
     super(leaf);
@@ -2238,14 +2244,16 @@ class ChatView extends ItemView {
       this.updateInputPlaceholder();
       this.updateModeDisclaimer();
       this.updateUploadButtonVisibility();
+      this.updateUrlButtonVisibility();
+      this.updateGraphToggleVisibility();
     });
 
     // === Graph Generation Toggle (Independent - enables Graph only Mode when all main modes are off) ===
-    const entityGenContainer = buttonGroup.createDiv("vault-ai-entity-gen-toggle");
-    entityGenContainer.addClass("vault-ai-toggle-container");
-    entityGenContainer.setAttribute("title", "Extract entities (works with any mode, or alone for graph only mode)");
+    this.entityGenContainer = buttonGroup.createDiv("vault-ai-entity-gen-toggle");
+    this.entityGenContainer.addClass("vault-ai-toggle-container");
+    this.entityGenContainer.setAttribute("title", "Extract entities (works with any mode, or alone for graph only mode)");
 
-    this.graphGenerationToggle = entityGenContainer.createEl("input", {
+    this.graphGenerationToggle = this.entityGenContainer.createEl("input", {
       type: "checkbox",
       cls: "vault-ai-entity-gen-checkbox",
     });
@@ -2258,6 +2266,7 @@ class ChatView extends ItemView {
       this.updateInputPlaceholder();
       this.updateModeDisclaimer();
       this.updateUploadButtonVisibility();
+      this.updateUrlButtonVisibility();
       if (this.isGraphOnlyMode()) {
         new Notice("Graph only mode enabled - extract entities from your text");
       } else if (this.graphGenerationMode) {
@@ -2267,11 +2276,14 @@ class ChatView extends ItemView {
       }
     });
 
-    const entityGenLabel = entityGenContainer.createEl("label", {
+    const entityGenLabel = this.entityGenContainer.createEl("label", {
       text: this.getGraphGenLabelText(),
       cls: this.graphGenerationMode ? "vault-ai-entity-gen-label active" : "vault-ai-entity-gen-label",
     });
     entityGenLabel.htmlFor = "graph-gen-mode-toggle";
+
+    // Hide toggle if Graph Generation mode is selected from dropdown
+    this.updateGraphToggleVisibility();
 
     // Messages container
     this.messagesContainer = chatArea.createDiv("vault-ai-chat-messages");
@@ -2317,18 +2329,42 @@ class ChatView extends ItemView {
     this.updateUploadButtonVisibility();
     this.uploadButtonEl.addEventListener("click", () => fileInput.click());
 
+    // URL extraction button - opens modal for pasting URL
+    this.urlButtonEl = inputContainer.createEl("button", {
+      text: "🔗",
+      cls: "vault-ai-url-btn",
+      attr: {
+        "aria-label": "Extract from URL",
+        "title": "Extract content from web URL for graph generation"
+      }
+    });
+    this.urlButtonEl.addEventListener("click", () => this.showUrlInputModal());
+    // Visibility controlled together with upload button
+    this.updateUrlButtonVisibility();
+
+    // Attachments container - shows attached files below input
+    this.attachmentsContainer = inputContainer.createDiv("vault-ai-attachments");
+    this.attachedFiles = []; // Reset on render
+
     // Drag and Drop Overlay
     this.dragOverlay = inputContainer.createDiv("vault-ai-drag-overlay");
     this.dragOverlay.createDiv({ text: "Drop file to extract text", cls: "vault-ai-drag-text" });
 
-    // Drag events on the input container
+    // Drag events on the input container - only enabled in Graph Only mode
     inputContainer.addEventListener("dragenter", (e) => {
+      if (!this.isGraphOnlyMode()) return;  // Only allow drag in Graph Only mode
       e.preventDefault();
       e.stopPropagation();
-      this.dragOverlay.addClass("active");
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'copy';
+      }
+      if (!this.dragOverlay.hasClass("active")) {
+        this.dragOverlay.addClass("active");
+      }
     });
 
     inputContainer.addEventListener("dragleave", (e) => {
+      if (!this.isGraphOnlyMode()) return;
       e.preventDefault();
       e.stopPropagation();
       if (!inputContainer.contains(e.relatedTarget as Node)) {
@@ -2337,10 +2373,14 @@ class ChatView extends ItemView {
     });
 
     inputContainer.addEventListener("dragover", (e) => {
+      if (!this.isGraphOnlyMode()) return;  // Only allow drag in Graph Only mode
       e.preventDefault();
       e.stopPropagation();
       if (e.dataTransfer) {
         e.dataTransfer.dropEffect = 'copy';
+      }
+      if (!this.dragOverlay.hasClass("active")) {
+        this.dragOverlay.addClass("active");
       }
     });
 
@@ -2348,6 +2388,12 @@ class ChatView extends ItemView {
       e.preventDefault();
       e.stopPropagation();
       this.dragOverlay.removeClass("active");
+
+      // Only process drops in Graph Only mode
+      if (!this.isGraphOnlyMode()) {
+        new Notice("File drop only available in Graph Generation mode");
+        return;
+      }
 
       // Handle external files (OS drag and drop)
       if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
@@ -2379,7 +2425,10 @@ class ChatView extends ItemView {
       }
     });
 
-    const sendBtn = inputContainer.createEl("button", { text: this.osintSearchMode ? "Search" : "Send" });
+    const sendBtn = inputContainer.createEl("button", {
+      text: this.osintSearchMode ? "Search" : "Send",
+      cls: "vault-ai-send-btn"
+    });
     sendBtn.addEventListener("click", () => void this.handleSend());
 
     // Handle Enter key (Shift+Enter for new line)
@@ -2474,8 +2523,193 @@ class ChatView extends ItemView {
 
   updateUploadButtonVisibility() {
     if (this.uploadButtonEl) {
-      // Always show upload button to allow adding file content to chat in any mode
-      this.uploadButtonEl.style.display = "block";
+      // Only show upload button in Graph Generation mode (Graph Only mode)
+      if (this.isGraphOnlyMode()) {
+        this.uploadButtonEl.style.display = "block";
+      } else {
+        this.uploadButtonEl.style.display = "none";
+      }
+    }
+  }
+
+  updateUrlButtonVisibility() {
+    if (this.urlButtonEl) {
+      // Only show URL button in Graph Generation mode (Graph Only mode)
+      if (this.isGraphOnlyMode()) {
+        this.urlButtonEl.style.display = "block";
+      } else {
+        this.urlButtonEl.style.display = "none";
+      }
+    }
+  }
+
+  /**
+   * Show modal for URL input to extract content from webpage.
+   * Extracted content is sent directly to graph generation.
+   */
+  showUrlInputModal() {
+    // Create modal overlay
+    const overlay = document.createElement("div");
+    overlay.className = "vault-ai-modal-overlay";
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    `;
+
+    // Create modal
+    const modal = document.createElement("div");
+    modal.className = "vault-ai-url-modal";
+    modal.style.cssText = `
+      background: var(--background-primary);
+      border-radius: 8px;
+      padding: 20px;
+      min-width: 400px;
+      max-width: 600px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    `;
+
+    modal.innerHTML = `
+      <h3 style="margin-top: 0; margin-bottom: 15px;">🔗 Extract from URL</h3>
+      <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.9em;">
+        Paste a URL to extract article content and generate entities.
+      </p>
+      <input type="url" id="url-input" placeholder="https://medium.com/@author/article..." 
+        style="width: 100%; padding: 10px; border: 1px solid var(--background-modifier-border); border-radius: 4px; background: var(--background-secondary); color: var(--text-normal); margin-bottom: 15px;" />
+      <div id="url-status" style="color: var(--text-muted); margin-bottom: 15px; min-height: 20px;"></div>
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button id="url-cancel" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; background: var(--background-modifier-border);">Cancel</button>
+        <button id="url-extract" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; background: var(--interactive-accent); color: white;">Extract & Generate</button>
+      </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const urlInput = modal.querySelector("#url-input") as HTMLInputElement;
+    const statusEl = modal.querySelector("#url-status") as HTMLElement;
+    const cancelBtn = modal.querySelector("#url-cancel") as HTMLButtonElement;
+    const extractBtn = modal.querySelector("#url-extract") as HTMLButtonElement;
+
+    // Focus input
+    urlInput.focus();
+
+    // Close modal function
+    const closeModal = () => {
+      overlay.remove();
+    };
+
+    // Cancel button
+    cancelBtn.addEventListener("click", closeModal);
+
+    // Click outside to close
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal();
+    });
+
+    // Escape key to close
+    const escHandler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeModal();
+        document.removeEventListener("keydown", escHandler);
+      }
+    };
+    document.addEventListener("keydown", escHandler);
+
+    // Extract button
+    extractBtn.addEventListener("click", async () => {
+      const url = urlInput.value.trim();
+
+      if (!url) {
+        statusEl.textContent = "❌ Please enter a URL";
+        statusEl.style.color = "var(--text-error)";
+        return;
+      }
+
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        statusEl.textContent = "❌ URL must start with http:// or https://";
+        statusEl.style.color = "var(--text-error)";
+        return;
+      }
+
+      // Disable buttons and show loading
+      extractBtn.disabled = true;
+      cancelBtn.disabled = true;
+      extractBtn.textContent = "Extracting...";
+      statusEl.textContent = "🔗 Fetching content from URL...";
+      statusEl.style.color = "var(--text-muted)";
+
+      try {
+        // Extract text from URL
+        const extractedText = await this.plugin.graphApiService.extractTextFromUrl(url);
+
+        if (!extractedText || extractedText.trim().length === 0) {
+          throw new Error("No content could be extracted from this URL");
+        }
+
+        // Close modal
+        closeModal();
+
+        // Show user message in chat with just the URL
+        const displayUrl = url.length > 60 ? url.substring(0, 60) + "..." : url;
+        this.chatHistory.push({ role: "user", content: `🔗 ${displayUrl}` });
+        await this.renderMessages();
+
+        // Send extracted content directly to graph generation
+        new Notice(`Extracted content from URL. Processing entities...`);
+        await this.handleGraphOnlyMode(extractedText);
+
+        // Save conversation
+        await this.saveCurrentConversation();
+
+      } catch (error) {
+        console.error("URL extraction error:", error);
+        const errorMsg = error instanceof Error ? error.message : String(error);
+
+        if (errorMsg.includes("timeout") || errorMsg.includes("timed out")) {
+          statusEl.textContent = "❌ Request timed out. Try a simpler page.";
+        } else if (errorMsg.includes("429")) {
+          statusEl.textContent = "❌ Server busy. Please wait and try again.";
+        } else {
+          statusEl.textContent = `❌ ${errorMsg}`;
+        }
+        statusEl.style.color = "var(--text-error)";
+
+        // Re-enable buttons
+        extractBtn.disabled = false;
+        cancelBtn.disabled = false;
+        extractBtn.textContent = "Extract & Generate";
+      }
+    });
+
+    // Enter key to submit
+    urlInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        extractBtn.click();
+      }
+    });
+  }
+
+  /**
+   * Hide/show the Graph Generation toggle based on mode selection.
+   * When "Graph Generation" is selected from the dropdown, the toggle is redundant.
+   */
+  updateGraphToggleVisibility() {
+    if (this.entityGenContainer) {
+      // Hide toggle when Graph Generation mode is selected from dropdown (value="none")
+      // Show toggle for other modes (so user can optionally enable graph gen alongside main mode)
+      if (this.modeDropdown && this.modeDropdown.value === "none") {
+        this.entityGenContainer.style.display = "none";
+      } else {
+        this.entityGenContainer.style.display = "flex";
+      }
     }
   }
 
@@ -2488,35 +2722,18 @@ class ChatView extends ItemView {
     // Clear input to allow re-uploading same file
     target.value = '';
 
-    try {
-      // Show loading state
-      const originalPlaceholder = this.inputEl.placeholder;
-      this.inputEl.placeholder = `Extracting text from ${file.name}...`;
-      this.inputEl.disabled = true;
-
-      new Notice(`Extracting text from ${file.name}...`);
-
-      const text = await this.plugin.graphApiService.extractTextFromFile(file);
-
-      // Populate input
-      const currentText = this.inputEl.value;
-      if (currentText) {
-        this.inputEl.value = currentText + "\n\n" + text;
-      } else {
-        this.inputEl.value = text;
-      }
-
-      new Notice(`Text extracted from ${file.name}`);
-
-    } catch (error) {
-      console.error("File upload error:", error);
-      new Notice(`Error processing file: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      // Restore UI
-      this.inputEl.disabled = false;
-      this.updateInputPlaceholder();
-      this.inputEl.focus();
+    // Validate file type
+    const allowedExtensions = ['.md', '.txt', '.pdf', '.docx', '.doc'];
+    const ext = "." + file.name.split('.').pop()?.toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      new Notice(`File type ${ext} not supported. Use .md, .txt, .pdf, .docx`);
+      return;
     }
+
+    // Store file for deferred extraction - do NOT extract now
+    this.attachedFiles.push({ file, extracted: false });
+    this.renderAttachments();
+    new Notice(`Attached: ${file.name}`);
   }
 
   async handleDroppedFile(file: File) {
@@ -2562,36 +2779,58 @@ class ChatView extends ItemView {
       return;
     }
 
-    try {
-      this.inputEl.placeholder = `Processing ${file.name}...`;
-      this.inputEl.disabled = true;
-      new Notice(`Processing ${file.name}...`);
+    // Store file for deferred extraction - do NOT extract now
+    this.attachedFiles.push({ file, extracted: false });
+    this.renderAttachments();
+    new Notice(`Attached: ${file.name}`);
+  }
 
-      let text = "";
+  /**
+   * Render the attached files display.
+   */
+  private renderAttachments() {
+    this.attachmentsContainer.empty();
 
-      // For text files, read directly
-      if (['md', 'txt'].includes(file.extension)) {
-        text = await this.app.vault.read(file);
+    if (this.attachedFiles.length === 0) {
+      return;
+    }
+
+    for (let i = 0; i < this.attachedFiles.length; i++) {
+      const attachment = this.attachedFiles[i];
+      const attachmentEl = this.attachmentsContainer.createDiv("vault-ai-attachment-item");
+
+      // File icon and name
+      const fileInfo = attachmentEl.createDiv("vault-ai-attachment-info");
+      fileInfo.createSpan({ text: "📄 ", cls: "vault-ai-attachment-icon" });
+      fileInfo.createSpan({ text: attachment.file.name, cls: "vault-ai-attachment-name" });
+
+      // Preview snippet or pending extraction message
+      if (attachment.extracted && attachment.content) {
+        const preview = attachment.content.substring(0, 100).replace(/\n/g, ' ').trim();
+        if (preview) {
+          attachmentEl.createDiv({
+            text: preview + (attachment.content.length > 100 ? '...' : ''),
+            cls: "vault-ai-attachment-preview"
+          });
+        }
       } else {
-        // For binary files (PDF, DOCX), read as binary and send to API
-        const arrayBuffer = await this.app.vault.readBinary(file);
-        // Create a synthetic File object to reuse API method
-        const blob = new Blob([arrayBuffer]);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const syntheticFile = new File([blob], file.name, { type: 'application/octet-stream' });
-        text = await this.plugin.graphApiService.extractTextFromFile(syntheticFile);
+        // Show pending message for deferred extraction
+        attachmentEl.createDiv({
+          text: "📋 Ready to extract on send",
+          cls: "vault-ai-attachment-preview"
+        });
       }
 
-      this.appendExtractedText(text);
-      new Notice(`Text extracted from ${file.name}`);
-
-    } catch (error) {
-      console.error("Internal file drop error:", error);
-      new Notice(`Error: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      this.inputEl.disabled = false;
-      this.updateInputPlaceholder();
-      this.inputEl.focus();
+      // Remove button
+      const removeBtn = attachmentEl.createEl("button", {
+        text: "✕",
+        cls: "vault-ai-attachment-remove",
+        attr: { "aria-label": "Remove attachment", "title": "Remove attachment" }
+      });
+      removeBtn.addEventListener("click", () => {
+        this.attachedFiles.splice(i, 1);
+        this.renderAttachments();
+      });
     }
   }
 
@@ -2782,7 +3021,7 @@ class ChatView extends ItemView {
     }
 
     // Also update the send button text based on mode
-    const sendBtn = inputContainer.querySelector("button");
+    const sendBtn = inputContainer.querySelector(".vault-ai-send-btn");
     if (sendBtn) {
       sendBtn.textContent = this.osintSearchMode ? "Search" : "Send";
     }
@@ -3386,7 +3625,7 @@ class ChatView extends ItemView {
 
   async handleSend() {
     const value = this.inputEl.value.trim();
-    if (!value) return;
+    if (!value && this.attachedFiles.length === 0) return;
 
     // Check for URL in Graph Generation Mode
     if (this.isGraphOnlyMode() && value.startsWith('http')) {
@@ -3406,27 +3645,146 @@ class ChatView extends ItemView {
       return;
     }
 
+    // Build processed value - keep file content separate from chat display
+    let displayValue = value; // What user sees in chat
+    let processingValue = value; // What gets sent to graph generation (includes file content)
+    const processedFileNames: string[] = []; // Track file names for display
 
+    if (this.attachedFiles.length > 0) {
+      // Store files for processing, then clear UI immediately for better feedback
+      const filesToProcess = [...this.attachedFiles];
+      this.attachedFiles = [];
+      this.renderAttachments(); // Clear attachment chips immediately
 
-    // Add user message
-    this.chatHistory.push({ role: "user", content: value });
+      // Show extraction progress in a placeholder message
+      const fileCount = filesToProcess.length;
+      const extractionMsgIndex = this.chatHistory.length;
+      this.chatHistory.push({
+        role: "assistant",
+        content: `📄 Extracting text from ${fileCount} file${fileCount > 1 ? 's' : ''}...`
+      });
+      await this.renderMessages();
+
+      // Extract text from attached files NOW (deferred extraction)
+      const extractedContents: string[] = [];
+      let extractedCount = 0;
+      let failedCount = 0;
+
+      // Process files sequentially to avoid rate limits
+      for (const attachment of filesToProcess) {
+        const fileName = attachment.file.name;
+
+        // Update progress message
+        this.chatHistory[extractionMsgIndex].content =
+          `📄 Extracting text (${extractedCount + 1}/${fileCount}): ${fileName}...`;
+        await this.renderMessages();
+
+        try {
+          let text = "";
+
+          if (attachment.extracted && attachment.content) {
+            // Already extracted
+            text = attachment.content;
+          } else if (attachment.file instanceof TFile) {
+            // TFile from Obsidian vault - read directly for text files, API for binary
+            const ext = attachment.file.extension;
+            if (['md', 'txt'].includes(ext)) {
+              text = await this.app.vault.read(attachment.file);
+            } else {
+              // Show special message for PDF/binary files
+              this.chatHistory[extractionMsgIndex].content =
+                `📄 Processing ${fileName}... (this may take a moment for large files)`;
+              await this.renderMessages();
+
+              const arrayBuffer = await this.app.vault.readBinary(attachment.file);
+              const blob = new Blob([arrayBuffer]);
+              const syntheticFile = new File([blob], attachment.file.name, { type: 'application/octet-stream' });
+              text = await this.plugin.graphApiService.extractTextFromFile(syntheticFile);
+            }
+          } else {
+            // Native File object from upload button
+            const ext = fileName.split('.').pop()?.toLowerCase() || '';
+            if (!['md', 'txt'].includes(ext)) {
+              this.chatHistory[extractionMsgIndex].content =
+                `📄 Processing ${fileName}... (this may take a moment for large files)`;
+              await this.renderMessages();
+            }
+            text = await this.plugin.graphApiService.extractTextFromFile(attachment.file);
+          }
+
+          extractedContents.push(`\n\n--- Content from ${fileName} ---\n${text}`);
+          processedFileNames.push(fileName);
+          extractedCount++;
+
+        } catch (error) {
+          failedCount++;
+          console.error(`Error extracting ${fileName}:`, error);
+
+          // Provide user-friendly error message based on error type
+          let userMessage = `Could not extract text from ${fileName}`;
+          const errorStr = error instanceof Error ? error.message : String(error);
+
+          if (errorStr.includes('timed out') || errorStr.includes('timeout') || errorStr.includes('AbortError')) {
+            userMessage = `${fileName}: File too large or server busy. Try a smaller file.`;
+          } else if (errorStr.includes('429') || errorStr.includes('Too Many Requests')) {
+            userMessage = `${fileName}: Server busy (rate limited). Please wait and try again.`;
+          } else if (errorStr.includes('too large')) {
+            userMessage = `${fileName}: ${errorStr}`;
+          }
+
+          new Notice(userMessage, 5000);
+        }
+      }
+
+      // Update or remove the extraction message
+      if (extractedCount > 0) {
+        // Remove the extraction progress message
+        this.chatHistory.splice(extractionMsgIndex, 1);
+      } else {
+        // All failed - show error message
+        this.chatHistory[extractionMsgIndex].content =
+          `❌ Failed to extract text from ${failedCount} file${failedCount > 1 ? 's' : ''}. Please try again.`;
+        await this.renderMessages();
+        return;
+      }
+
+      // Add extracted content ONLY to processingValue (not displayed in chat)
+      processingValue = processingValue + extractedContents.join('\n');
+
+      // For display, just show file names (not the content)
+      if (processedFileNames.length > 0) {
+        const fileList = processedFileNames.map(f => `📎 ${f}`).join('\n');
+        displayValue = displayValue ? `${displayValue}\n\n${fileList}` : fileList;
+      }
+
+      // Show success notice if any files were processed
+      if (extractedCount > 0 && failedCount === 0) {
+        new Notice(`Extracted text from ${extractedCount} file${extractedCount > 1 ? 's' : ''}`);
+      } else if (extractedCount > 0 && failedCount > 0) {
+        new Notice(`Extracted ${extractedCount} file${extractedCount > 1 ? 's' : ''}, ${failedCount} failed`);
+      }
+    }
+
+    // Add user message to chat (shows file names, NOT content)
+    this.chatHistory.push({ role: "user", content: displayValue });
 
     // Save conversation after user message
     await this.saveCurrentConversation();
 
     // Route to appropriate handler based on mode
+    // Pass processingValue (includes file content) to handlers, not displayValue
     if (this.isGraphOnlyMode()) {
       // Graph only Mode: Extract entities from user input without AI chat
-      await this.handleGraphOnlyMode(value);
+      await this.handleGraphOnlyMode(processingValue);
     } else if (this.osintSearchMode) {
-      await this.handleOSINTSearch(value);
+      await this.handleOSINTSearch(processingValue);
     } else if (this.darkWebMode) {
-      await this.handleDarkWebInvestigation(value);
+      await this.handleDarkWebInvestigation(processingValue);
     } else if (this.reportGenerationMode) {
-      await this.handleReportGeneration(value);
+      await this.handleReportGeneration(processingValue);
     } else {
       // Default: Local Search Mode (normal chat)
-      await this.handleNormalChat(value);
+      await this.handleNormalChat(processingValue);
     }
 
     // Save conversation after assistant response
