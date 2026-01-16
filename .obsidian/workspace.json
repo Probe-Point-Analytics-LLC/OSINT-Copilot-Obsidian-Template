@@ -20,7 +20,7 @@
             }
           },
           {
-            "id": "f7bd453d8842f786",
+            "id": "2edfe6e49e19cdbb",
             "type": "leaf",
             "state": {
               "type": "vault-ai-chat-view",
@@ -205,7 +205,7 @@
       "osint-copilot:Location map (Ctrl+click for new pane)": false
     }
   },
-  "active": "f7bd453d8842f786",
+  "active": "2edfe6e49e19cdbb",
   "lastOpenFiles": [
     "OSINTCopilot/Location/Location_f2290561.md",
     "OSINTCopilot/Location/Location_3bb5088b.md",

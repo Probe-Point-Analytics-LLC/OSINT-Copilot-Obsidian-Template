@@ -2317,7 +2317,15 @@ class ChatView extends ItemView {
     });
     fileInput.addEventListener("change", (e) => void this.handleFileUpload(e));
 
-    this.uploadButtonEl = inputContainer.createEl("button", {
+    // Attachments container - shows attached files below input
+    this.attachmentsContainer = inputContainer.createDiv("vault-ai-attachments");
+    this.attachedFiles = []; // Reset on render
+
+    // Action Row for Buttons (Upload, URL, Send)
+    const actionRow = inputContainer.createDiv("vault-ai-action-row");
+
+    // Upload Button
+    this.uploadButtonEl = actionRow.createEl("button", {
       text: "📎",
       cls: "vault-ai-upload-btn",
       attr: {
@@ -2329,8 +2337,8 @@ class ChatView extends ItemView {
     this.updateUploadButtonVisibility();
     this.uploadButtonEl.addEventListener("click", () => fileInput.click());
 
-    // URL extraction button - opens modal for pasting URL
-    this.urlButtonEl = inputContainer.createEl("button", {
+    // URL Button
+    this.urlButtonEl = actionRow.createEl("button", {
       text: "🔗",
       cls: "vault-ai-url-btn",
       attr: {
@@ -2339,12 +2347,18 @@ class ChatView extends ItemView {
       }
     });
     this.urlButtonEl.addEventListener("click", () => this.showUrlInputModal());
-    // Visibility controlled together with upload button
     this.updateUrlButtonVisibility();
 
-    // Attachments container - shows attached files below input
-    this.attachmentsContainer = inputContainer.createDiv("vault-ai-attachments");
-    this.attachedFiles = []; // Reset on render
+    // Spacer to push Send button to the right
+    const spacer = actionRow.createDiv("vault-ai-action-spacer");
+    spacer.style.flexGrow = "1";
+
+    // Send Button
+    const sendBtn = actionRow.createEl("button", {
+      text: this.osintSearchMode ? "Search" : "Send",
+      cls: "vault-ai-send-btn"
+    });
+    sendBtn.addEventListener("click", () => void this.handleSend());
 
     // Drag and Drop Overlay
     this.dragOverlay = inputContainer.createDiv("vault-ai-drag-overlay");
@@ -2424,12 +2438,6 @@ class ChatView extends ItemView {
         }
       }
     });
-
-    const sendBtn = inputContainer.createEl("button", {
-      text: this.osintSearchMode ? "Search" : "Send",
-      cls: "vault-ai-send-btn"
-    });
-    sendBtn.addEventListener("click", () => void this.handleSend());
 
     // Handle Enter key (Shift+Enter for new line)
     this.inputEl.addEventListener("keydown", (e) => {

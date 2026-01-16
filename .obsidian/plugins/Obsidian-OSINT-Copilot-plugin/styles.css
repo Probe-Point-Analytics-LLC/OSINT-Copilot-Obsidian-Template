@@ -519,8 +519,58 @@
 }
 
 .vault-ai-chat-input button {
-  align-self: flex-end;
+  /* align-self: flex-end; Removed to allow action row alignment */
   padding: 8px 20px;
+}
+
+.vault-ai-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.vault-ai-action-row button {
+  padding: 6px 12px;
+  /* Uniform padding */
+  height: 36px;
+  /* Uniform height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  /* Minimum width for icon buttons */
+}
+
+/* Specific button styles */
+.vault-ai-upload-btn,
+.vault-ai-url-btn {
+  font-size: 1.2em;
+  background: transparent;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+
+.vault-ai-upload-btn:hover,
+.vault-ai-url-btn:hover {
+  color: var(--text-normal);
+  background-color: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+}
+
+.vault-ai-send-btn {
+  background-color: var(--interactive-accent) !important;
+  color: var(--text-on-accent) !important;
+  font-weight: 600;
+}
+
+.vault-ai-send-btn:hover {
+  background-color: var(--interactive-accent-hover) !important;
+}
+
+.vault-ai-action-spacer {
+  flex-grow: 1;
 }
 
 /* DarkWeb Investigation Message Styles */
