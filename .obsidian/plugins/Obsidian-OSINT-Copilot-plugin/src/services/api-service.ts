@@ -85,8 +85,8 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
     maxRetries: 7,              // Increased from 3 to 7 for better resilience
     baseDelayMs: 1000,          // Start with 1 second delay
     maxDelayMs: 32000,          // Cap at 32 seconds max delay
-    baseTimeoutMs: 60000,       // 60 second base timeout (increased from 45s)
-    maxTimeoutMs: 300000,       // 5 minute max timeout to match server settings
+    baseTimeoutMs: 300000,       // 5 minute base timeout (5x increase from 60s)
+    maxTimeoutMs: 1500000,       // 25 minute max timeout (5x increase)
     timeoutMultiplierOnTimeout: 1.5  // Increase timeout by 50% after timeout error
 };
 
