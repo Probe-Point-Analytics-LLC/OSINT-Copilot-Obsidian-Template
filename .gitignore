@@ -1,0 +1,57 @@
+# Obsidian workspace and cache files
+
+
+# OSINT Copilot Plugin - Sensitive Data
+# IMPORTANT: This file contains API keys and should NEVER be committed
+**/data.json
+!**/data.json.template
+
+
+# Plugin development files (if you're developing the plugin)
+.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/.git/
+.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/node_modules/
+
+# Trash
+.trash/
+.agent/
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+
+# Personal investigation data (uncomment if you want to keep investigations private)
+# Reports/
+# OSINTCopilot/
+
+# Node modules (if developing the plugin)
+node_modules/
+
+/.obsidian/plugins/Obsidian-OSINT-Copilot-plugin/node_modules/
