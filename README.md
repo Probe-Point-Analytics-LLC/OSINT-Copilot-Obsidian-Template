@@ -48,6 +48,24 @@ This template provides a **pre-configured Obsidian vault** with:
 
 ---
 
+## 🔰 New to Obsidian? (2-minute orientation)
+
+OSINT Copilot takes advantage of Obsidian, a powerful local-first knowledge base. Here is a quick primer:
+
+| Term | What it means |
+|---|---|
+| Vault | The folder on your computer where your notes live. Obsidian reads/writes files inside this folder. |
+| Note | A Markdown (`.md`) file in your vault. |
+| Community plugins | Optional add-ons you can install in Obsidian to add features (like OSINT Copilot). |
+| Command Palette | A search box in Obsidian that lets you run commands. |
+
+Where to find things in Obsidian:
+- **Settings**: click the gear icon (usually bottom-left).
+- **Community plugins**: Settings -> Community plugins.
+- **Command Palette**: press `Ctrl + P` (Windows/Linux) or `Cmd + P` (macOS).
+
+---
+
 ## ✨ Features Overview
 
 The OSINT Copilot plugin transforms Obsidian into a powerful threat intelligence workspace:
