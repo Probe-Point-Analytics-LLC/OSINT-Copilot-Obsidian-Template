@@ -47,7 +47,7 @@ import { TimelineView, TIMELINE_VIEW_TYPE } from './src/views/timeline-view';
 import { MapView, MAP_VIEW_TYPE } from './src/views/map-view';
 import { ConfirmModal } from './src/modals/confirm-modal';
 import { CustomTypesService } from './src/services/custom-types-service';
-import { OrchestrationService } from './src/services/orchestration-service';
+import { OrchestrationService, OrchestrationPlan } from './src/services/orchestration-service';
 import { UpdaterService } from './src/services/updater-service';
 
 // ============================================================================
@@ -149,6 +149,8 @@ const DEFAULT_SETTINGS: VaultAISettings = {
 
   orchestrationPrompt: `You are the OSINT Copilot Orchestrator. You are not a passive chatbot; you are an active investigative partner. Your primary directive is to synthesize global intelligence with local knowledge, mapping everything into a structured Knowledge Graph.
 
+MANDATORY GRAPH RULE: Every investigative finding MUST be mapped to the Knowledge Graph. Do not skip extraction.
+
 The Reasoning Loop (Think Before You Act):
 1. IDENTIFY the entities involved.
 2. AUDIT existing context (Current Graph nodes, Open Files, Chat History).
@@ -175,7 +177,8 @@ If the user provides a Link or File, prioritize it as "Ground Truth" and use EXT
 Investigative Creativity & Continuity:
 - Bridge the Gap: If you find an email in OSINT_SEARCH, suggest checking DARK_WEB for associated passwords.
 - Contextual Recall: Answer questions about the existing graph. Read the CURRENT GRAPH STATE below.
-- Narrative Investigation: Stay in the "investigator" persona.`,
+- Narrative Investigation: Stay in the "investigator" persona.
+- PLANNING PROTOCOL: If any tools are needed, you MUST propose a plan first and set is_proposal=true. Do NOT execute tools until the user confirms or gives feedback.`,
   orchestrationProvider: 'osint-copilot',
   orchestrationLocalUrl: 'http://localhost:11434/v1',
   orchestrationApiKey: '',
@@ -2193,6 +2196,8 @@ export interface ChatHistoryItem {
   connectionsCreated?: number; // Number of relationships created
   reportFilePath?: string; // For report generation - path to the generated report file
   usedEntities?: { id: string, label: string, type: string }[]; // Pinpointed graph entities
+  proposedModifications?: string[]; // Round 4: For persistent orchestration tool results
+  proposedPlan?: OrchestrationPlan; // Round 8: Interactive Investigation Planning
 }
 
 export class ChatView extends ItemView {
@@ -2291,7 +2296,9 @@ export class ChatView extends ItemView {
       status: m.status,
       progress: m.progress as { message: string, percent: number } | undefined,
       reportFilePath: m.reportFilePath,
-      usedEntities: m.usedEntities
+      usedEntities: m.usedEntities,
+      proposedModifications: m.proposedModifications,
+      proposedPlan: m.proposedPlan as OrchestrationPlan
     }));
   }
 
@@ -2305,7 +2312,9 @@ export class ChatView extends ItemView {
       status: h.status,
       progress: h.progress,
       reportFilePath: h.reportFilePath,
-      usedEntities: h.usedEntities
+      usedEntities: h.usedEntities,
+      proposedModifications: h.proposedModifications,
+      proposedPlan: h.proposedPlan
     }));
   }
 
@@ -3760,6 +3769,115 @@ export class ChatView extends ItemView {
         `;
       }
 
+      // Round 8: Show Proposed Investigation Plan (HITL)
+      if (item.role === "assistant" && item.proposedPlan && item.proposedPlan.isProposal) {
+        this.renderProposedPlan(item, i, messageDiv);
+      }
+
+      // Round 4: Show proposed graph modifications (persistent box)
+      if (item.role === "assistant" && item.proposedModifications && item.proposedModifications.length > 0) {
+        const proposedDiv = messageDiv.createDiv("vault-ai-proposed-modifications");
+        proposedDiv.style.cssText = `
+          margin-top: 12px;
+          padding: 12px;
+          background: var(--background-secondary-alt);
+          border: 1px solid var(--background-modifier-border-hover);
+          border-radius: 8px;
+          border-left: 4px solid var(--interactive-accent);
+        `;
+
+        proposedDiv.createEl("h4", {
+          text: "📊 Proposed Graph Changes",
+          cls: "vault-ai-proposed-title"
+        }).style.marginTop = "0";
+
+        proposedDiv.createEl("p", {
+          text: "Review and apply the following graph modifications:",
+          cls: "vault-ai-proposed-subtitle"
+        }).style.fontSize = "small";
+
+        const listContainer = proposedDiv.createDiv("vault-ai-proposed-list");
+        listContainer.style.marginBottom = "12px";
+
+        const selectedIndices: number[] = [];
+
+        item.proposedModifications.forEach((cmd, idx) => {
+          const row = listContainer.createDiv();
+          row.style.cssText = `
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 6px;
+            padding: 4px;
+            border-bottom: 1px solid var(--background-modifier-border);
+          `;
+
+          const cb = row.createEl("input");
+          cb.type = "checkbox";
+          cb.checked = true;
+          selectedIndices.push(idx);
+          cb.style.marginTop = "4px";
+
+          const label = row.createEl("span");
+          label.style.fontSize = "13px";
+
+          let labelText = `❓ ${cmd}`;
+          try {
+            if (cmd.startsWith("@@create_entity")) {
+              const data = JSON.parse(cmd.replace("@@create_entity", "").trim());
+              labelText = `➕ Create ${data.type}: **${data.label || 'Entity'}**`;
+            } else if (cmd.startsWith("@@delete_entity")) {
+              const data = JSON.parse(cmd.replace("@@delete_entity", "").trim());
+              const name = this.plugin.entityManager.getEntity(data.id)?.label || `ID: ${data.id}`;
+              labelText = `🗑️ Delete Entity: **${name}**`;
+            } else if (cmd.startsWith("@@create_link")) {
+              const data = JSON.parse(cmd.replace("@@create_link", "").trim());
+              labelText = `🔗 Connect: [**${data.from}**] ──(${data.relationship})──> [**${data.to}**]`;
+            } else if (cmd.startsWith("@@delete_link")) {
+              const data = JSON.parse(cmd.replace("@@delete_link", "").trim());
+              labelText = `✂️ Delete Link (ID: ${data.id})`;
+            }
+          } catch (e) { labelText = `⚠️ Raw: ${cmd}`; }
+
+          const parts = labelText.split(/(\*\*.*?\*\*)/g);
+          parts.forEach(p => {
+            if (p.startsWith('**') && p.endsWith('**')) {
+              label.createEl('strong', { text: p.substring(2, p.length - 2) });
+            } else {
+              label.appendChild(document.createTextNode(p));
+            }
+          });
+
+          cb.addEventListener("change", () => {
+            if (cb.checked) selectedIndices.push(idx);
+            else {
+              const iIdx = selectedIndices.indexOf(idx);
+              if (iIdx > -1) selectedIndices.splice(iIdx, 1);
+            }
+          });
+        });
+
+        const actionRow = proposedDiv.createDiv();
+        actionRow.style.display = "flex";
+        actionRow.style.gap = "10px";
+
+        const applyBtn = actionRow.createEl("button", {
+          text: "Apply Selected Changes",
+          cls: "mod-cta"
+        });
+        applyBtn.addEventListener("click", () => {
+          void this.applyProposedModifications(i, selectedIndices);
+        });
+
+        const dismissBtn = actionRow.createEl("button", {
+          text: "Dismiss"
+        });
+        dismissBtn.addEventListener("click", () => {
+          this.chatHistory[i].proposedModifications = undefined;
+          this.renderMessages();
+        });
+      }
+
       // Show "Open Companies&People" button for report generation messages
       if (item.role === "assistant" && item.reportFilePath) {
         const reportButtonContainer = messageDiv.createDiv("vault-ai-report-button-container");
@@ -4211,7 +4329,7 @@ export class ChatView extends ItemView {
         .slice(0, assistantIndex) // All messages before this current pending assistant response
         .map(msg => ({ role: msg.role, content: msg.content }));
 
-      const finalResponse = await this.plugin.orchestrationService.processRequest(
+      const result = await this.plugin.orchestrationService.processRequest(
         query,
         attachmentsContext,
         currentGraphState, // Also pass the graph state
@@ -4221,7 +4339,9 @@ export class ChatView extends ItemView {
 
       this.activeAbortControllers.delete(assistantIndex);
 
-      this.chatHistory[assistantIndex].content = finalResponse || "Done.";
+      this.chatHistory[assistantIndex].content = result.finalResponse || "Done.";
+      this.chatHistory[assistantIndex].proposedModifications = result.proposedCommands;
+      this.chatHistory[assistantIndex].proposedPlan = result.proposedPlan;
       this.chatHistory[assistantIndex].progress = undefined;
       await this.renderMessages();
 
@@ -4233,6 +4353,95 @@ export class ChatView extends ItemView {
       this.chatHistory[assistantIndex].content = `Orchestration Error: ${errorMsg}`;
       this.chatHistory[assistantIndex].progress = undefined;
       await this.renderMessages();
+    }
+  }
+
+  async applyProposedModifications(index: number, selectedIndices: number[]) {
+    const item = this.chatHistory[index];
+    if (!item.proposedModifications) return;
+
+    const cmdsToExecute = item.proposedModifications.filter((_, idx) => selectedIndices.includes(idx));
+    if (cmdsToExecute.length === 0) return;
+
+    await this.plugin.orchestrationService.executeGraphModifications(cmdsToExecute);
+    item.proposedModifications = undefined; // Clear after applying
+    await this.renderMessages();
+    await this.saveCurrentConversation();
+  }
+
+  private renderProposedPlan(item: ChatHistoryItem, index: number, messageDiv: HTMLElement) {
+    if (!item.proposedPlan) return;
+
+    const plan = item.proposedPlan;
+    const planDiv = messageDiv.createDiv("vault-ai-proposed-plan");
+    planDiv.style.cssText = `
+      margin-top: 15px;
+      padding: 15px;
+      background: var(--background-secondary-alt);
+      border: 1px solid var(--interactive-accent);
+      border-radius: 8px;
+      border-left: 5px solid var(--interactive-accent);
+    `;
+
+    planDiv.createEl("h4", {
+      text: "⚡ Review Investigation Plan",
+      cls: "vault-ai-plan-title"
+    }).style.marginTop = "0";
+
+    if (plan.planSummary) {
+      const summaryDiv = planDiv.createDiv("vault-ai-plan-summary");
+      MarkdownRenderer.render(this.app, plan.planSummary, summaryDiv, "", this);
+    }
+
+    const toolList = planDiv.createEl("ul", { cls: "vault-ai-plan-tools" });
+    toolList.style.fontSize = "small";
+    if (plan.toolsToCall && plan.toolsToCall.length > 0) {
+      plan.toolsToCall.forEach((tool: string) => {
+        toolList.createEl("li", { text: `🔍 Module: ${tool.replace('_', ' ')}` });
+      });
+    }
+
+    const actionRow = planDiv.createDiv();
+    actionRow.style.display = "flex";
+    actionRow.style.gap = "12px";
+    actionRow.style.marginTop = "15px";
+
+    const executeBtn = actionRow.createEl("button", {
+      text: "🚀 Run Investigation",
+      cls: "mod-cta"
+    });
+    executeBtn.addEventListener("click", () => {
+      void this.executeProposedPlan(index);
+    });
+
+    const hint = planDiv.createEl("small", {
+      text: "Reply to this message to add modules or refine the plan.",
+      cls: "vault-ai-plan-hint"
+    });
+    hint.style.cssText = `
+      display: block;
+      margin-top: 10px;
+      color: var(--text-muted);
+      font-style: italic;
+    `;
+  }
+
+  private async executeProposedPlan(index: number) {
+    const item = this.chatHistory[index];
+    if (!item.proposedPlan) return;
+
+    // 1. Update the item to show it's executing
+    item.proposedPlan.isProposal = false; // Mark as "Approved"
+    item.content = "🚀 *Executing investigation plan...*";
+    item.progress = { message: "Launching investigative modules...", percent: 20 };
+    await this.renderMessages();
+
+    // 2. Trigger the orchestration service with a special "Proceed" query
+    // BUT we use the original reasoning/plan context by sending the history
+    try {
+      await this.handleOrchestrationAgent("Proceed with the investigation plan as proposed.", "");
+    } catch (e) {
+      console.error("Execution failed:", e);
     }
   }
 

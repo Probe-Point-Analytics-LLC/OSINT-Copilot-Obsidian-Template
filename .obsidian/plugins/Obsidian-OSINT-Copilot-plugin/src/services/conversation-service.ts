@@ -13,6 +13,8 @@ export interface ConversationMessage {
   progress?: unknown;
   reportFilePath?: string; // Path to generated report file
   usedEntities?: { id: string, label: string, type: string }[]; // Pinpointed graph entities
+  proposedModifications?: string[]; // Round 4: For persistent orchestration tool results
+  proposedPlan?: any; // Round 8: Interactive Investigation Planning state
 }
 
 export interface ConversationMetadata {
