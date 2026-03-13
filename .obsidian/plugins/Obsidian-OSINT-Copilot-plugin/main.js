@@ -2311,6 +2311,8 @@ var EntityManager = class {
     if (baseFolder instanceof import_obsidian2.TFolder) {
       for (const child of baseFolder.children) {
         if (child instanceof import_obsidian2.TFolder) {
+          if (child.name === "Connections")
+            continue;
           for (const file of child.children) {
             if (file instanceof import_obsidian2.TFile && file.extension === "md") {
               const entity = await this.parseEntityFromNote(file);
