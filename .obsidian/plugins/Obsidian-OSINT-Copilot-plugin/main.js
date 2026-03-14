@@ -3484,12 +3484,12 @@ var DEFAULT_RETRY_CONFIG = {
   // Start with 1 second delay
   maxDelayMs: 1e4,
   // Cap at 10 seconds max delay
-  baseTimeoutMs: 12e4,
-  // 120 second timeout
-  maxTimeoutMs: 12e4,
-  // 120 second max timeout
-  timeoutMultiplierOnTimeout: 1
-  // Don't increase timeout
+  baseTimeoutMs: 3e5,
+  // 300 second timeout (5 minutes)
+  maxTimeoutMs: 6e5,
+  // 600 second max timeout (10 minutes)
+  timeoutMultiplierOnTimeout: 1.5
+  // Increase timeout by 50% on each timeout retry
 };
 var GraphApiService = class {
   constructor(baseUrl = "https://api.osint-copilot.com", apiKey = "") {
@@ -15335,6 +15335,7 @@ ${fileList}` : fileList;
    * This mode is active when graphGenerationMode is ON and all main modes are OFF.
    */
   async handleGraphOnlyMode(inputText) {
+    console.log(`[OSINT Copilot] Starting handleGraphOnlyMode (Input snippet: ${inputText.substring(0, 50)}...)`);
     const messageIndex = this.chatHistory.length;
     this.chatHistory.push({
       role: "assistant",
@@ -15367,8 +15368,10 @@ ${fileList}` : fileList;
       updateProgress("Sending text to AI for entity extraction...", 30);
       const onChunkProgress = (chunkIndex, totalChunks, message) => {
         const chunkPercent = 30 + Math.round(chunkIndex / totalChunks * 20);
+        console.log(`[OSINT Copilot] Extraction Progress: ${message}`);
         updateProgress(`\u{1F4E6} ${message}`, chunkPercent);
       };
+      console.log(`[OSINT Copilot] Calling graphApiService.processTextInChunks (Text length: ${inputText.length})...`);
       const result = await this.plugin.graphApiService.processTextInChunks(
         inputText,
         existingEntities,
@@ -15376,6 +15379,7 @@ ${fileList}` : fileList;
         onChunkProgress,
         onRetry
       );
+      console.log(`[OSINT Copilot] Extraction API Result:`, result.success ? "Success" : "Failed", result.error || "");
       updateProgress("Processing API response...", 50);
       if (!result.success) {
         this.chatHistory[messageIndex].progress = void 0;
@@ -15397,50 +15401,44 @@ No entities detected in the provided text.`;
         await this.renderMessages();
         return;
       }
-      let totalEntities = 0;
-      for (const op of result.operations) {
-        if (op.action === "create" && op.entities) {
-          totalEntities += op.entities.length;
-        }
-      }
-      const checkboxItems = [];
+      const proposedCommands = [];
       for (let opIdx = 0; opIdx < result.operations.length; opIdx++) {
         const operation = result.operations[opIdx];
+        const opEntities = operation.entities || [];
         if (operation.action === "create" && operation.entities) {
-          for (let entIdx = 0; entIdx < operation.entities.length; entIdx++) {
-            const ent = operation.entities[entIdx];
+          for (const ent of operation.entities) {
             const name = ent.properties?.name || ent.properties?.title || ent.properties?.label || ent.label || "Unknown";
-            checkboxItems.push({
-              label: `\u2795 Create ${ent.type || "Entity"}: **${name}**`,
-              value: `ent_${opIdx}_${entIdx}`,
-              checked: true
-            });
+            proposedCommands.push(`@@create_entity ${JSON.stringify({
+              type: ent.type,
+              properties: ent.properties,
+              label: name
+            })}`);
           }
         }
         if (operation.connections) {
-          for (let connIdx = 0; connIdx < operation.connections.length; connIdx++) {
-            const conn = operation.connections[connIdx];
-            let fromName = conn.from_label || `Index ${conn.from}`;
-            let toName = conn.to_label || `Index ${conn.to}`;
-            if (operation.entities) {
-              if (!conn.from_label && operation.entities[conn.from]) {
-                const ent = operation.entities[conn.from];
-                fromName = ent.properties?.name || ent.properties?.title || ent.properties?.label || ent.label || `Index ${conn.from}`;
-              }
-              if (!conn.to_label && operation.entities[conn.to]) {
-                const ent = operation.entities[conn.to];
-                toName = ent.properties?.name || ent.properties?.title || ent.properties?.label || ent.label || `Index ${conn.to}`;
-              }
+          for (const conn of operation.connections) {
+            let fromLabel = conn.from_label;
+            let toLabel = conn.to_label;
+            if (!fromLabel && opEntities[conn.from]) {
+              const ent = opEntities[conn.from];
+              fromLabel = ent.properties?.name || ent.properties?.title || ent.properties?.label || ent.label;
             }
-            checkboxItems.push({
-              label: `\u{1F517} Connect: [**${fromName}**] \u2500\u2500(${conn.relationship})\u2500\u2500> [**${toName}**]`,
-              value: `conn_${opIdx}_${connIdx}`,
-              checked: true
-            });
+            if (!toLabel && opEntities[conn.to]) {
+              const ent = opEntities[conn.to];
+              toLabel = ent.properties?.name || ent.properties?.title || ent.properties?.label || ent.label;
+            }
+            if (fromLabel && toLabel) {
+              proposedCommands.push(`@@create_link ${JSON.stringify({
+                from: fromLabel,
+                to: toLabel,
+                relationship: conn.relationship
+              })}`);
+            }
           }
         }
       }
-      if (checkboxItems.length === 0) {
+      console.log(`[OSINT Copilot] Generated ${proposedCommands.length} graph commands for proposal list.`);
+      if (proposedCommands.length === 0) {
         this.chatHistory[messageIndex].progress = void 0;
         this.chatHistory[messageIndex].content = `\u{1F3F7}\uFE0F **Graph Generation Complete**
 
@@ -15450,180 +15448,32 @@ No valid entities or relationships proposed.`;
         await this.renderMessages();
         return;
       }
-      updateProgress("Waiting for user confirmation...", 55);
-      const confirmedValues = await new Promise((resolve) => {
-        new ConfirmModal(
-          this.app,
-          "Confirm Graph Modifications",
-          `The AI extracted the following entities and relationships from the text. Uncheck any you wish to discard:`,
-          (selectedValues) => resolve(selectedValues),
-          () => resolve(void 0),
-          false,
-          checkboxItems
-        ).open();
-      });
-      if (!confirmedValues) {
-        this.chatHistory[messageIndex].progress = void 0;
-        this.chatHistory[messageIndex].content = `\u{1F3F7}\uFE0F **Graph Generation Cancelled**
-
-No changes were made to your vault.`;
-        await this.renderMessages();
-        return;
-      }
-      const allowedEntities = new Set(confirmedValues.filter((v) => v.startsWith("ent_")));
-      const allowedConnections = new Set(confirmedValues.filter((v) => v.startsWith("conn_")));
-      updateProgress(`Creating approved entities...`, 60);
-      const createdEntities = [];
-      let connectionsCreated = 0;
-      let entitiesProcessed = 0;
-      const globalEntitiesMap = /* @__PURE__ */ new Map();
-      const entityLabelMap = /* @__PURE__ */ new Map();
-      let globalIndexOffset = 0;
-      console.debug("[GraphOnlyMode] Processing operations:", JSON.stringify(result.operations, null, 2));
-      for (let opIdx = 0; opIdx < result.operations.length; opIdx++) {
-        const operation = result.operations[opIdx];
-        console.debug("[GraphOnlyMode] Processing operation:", {
-          action: operation.action,
-          hasEntities: !!operation.entities,
-          entitiesCount: operation.entities?.length || 0,
-          hasConnections: !!operation.connections,
-          connectionsCount: operation.connections?.length || 0
-        });
-        const operationEntities = [];
-        if (operation.action === "create" && operation.entities) {
-          for (let i = 0; i < operation.entities.length; i++) {
-            const entityData = operation.entities[i];
-            if (!allowedEntities.has(`ent_${opIdx}_${i}`)) {
-              operationEntities.push(null);
-              continue;
-            }
-            entitiesProcessed++;
-            const entityProgress = 55 + Math.round(entitiesProcessed / totalEntities * 35);
-            updateProgress(`Creating entity ${entitiesProcessed}/${totalEntities}...`, entityProgress);
-            console.debug("[EntityOnlyMode] Processing entity:", {
-              type: entityData.type,
-              properties: entityData.properties
-            });
-            try {
-              const entityType = entityData.type;
-              if (!Object.values(EntityType).includes(entityType)) {
-                console.warn(`[EntityOnlyMode] Unknown entity type: ${entityData.type}. Valid types:`, Object.values(EntityType));
-                operationEntities.push(null);
-                continue;
-              }
-              const config = ENTITY_CONFIGS[entityType];
-              const labelField = config?.labelField;
-              const entityLabel = labelField ? entityData.properties[labelField] : null;
-              if (entityLabel) {
-                const nameValidation = validateEntityName(entityLabel, entityType);
-                if (!nameValidation.isValid) {
-                  console.warn(`[EntityOnlyMode] Skipping entity with generic name: "${entityLabel}" - ${nameValidation.error}`);
-                  operationEntities.push(null);
-                  continue;
-                }
-              }
-              console.debug("[GraphOnlyMode] Creating entity with type:", entityType);
-              const entity = await this.plugin.entityManager.createEntity(
-                entityType,
-                entityData.properties
-              );
-              console.debug("[GraphOnlyMode] Entity created successfully:", {
-                id: entity.id,
-                type: entity.type,
-                label: entity.label,
-                filePath: entity.filePath
-              });
-              operationEntities.push(entity);
-              const globalIdx = globalIndexOffset + i;
-              globalEntitiesMap.set(globalIdx, entity);
-              entityLabelMap.set(`${entity.type}:${entity.label.toLowerCase()}`, entity);
-              createdEntities.push({
-                id: entity.id,
-                type: entity.type,
-                label: entity.label,
-                filePath: entity.filePath || ""
-              });
-            } catch (entityError) {
-              console.error("[GraphOnlyMode] Failed to create entity:", entityError);
-              operationEntities.push(null);
-            }
-          }
-          globalIndexOffset += operation.entities.length;
-        }
-        if (operation.connections && operation.connections.length > 0) {
-          updateProgress("Creating relationships...", 92);
-          for (let connIdx = 0; connIdx < operation.connections.length; connIdx++) {
-            const conn = operation.connections[connIdx];
-            if (!allowedConnections.has(`conn_${opIdx}_${connIdx}`)) {
-              continue;
-            }
-            try {
-              let fromEntity;
-              let toEntity;
-              fromEntity = operationEntities[conn.from] ?? void 0;
-              toEntity = operationEntities[conn.to] ?? void 0;
-              if (!fromEntity && conn.from >= 0)
-                fromEntity = globalEntitiesMap.get(conn.from);
-              if (!toEntity && conn.to >= 0)
-                toEntity = globalEntitiesMap.get(conn.to);
-              if (!fromEntity && conn.from_label) {
-                fromEntity = entityLabelMap.get(`${conn.from_type}:${conn.from_label.toLowerCase()}`) || this.plugin.entityManager.findEntityByLabel(conn.from_label);
-              }
-              if (!toEntity && conn.to_label) {
-                toEntity = entityLabelMap.get(`${conn.to_type}:${conn.to_label.toLowerCase()}`) || this.plugin.entityManager.findEntityByLabel(conn.to_label);
-              }
-              if (fromEntity && toEntity) {
-                await this.plugin.entityManager.createConnection(
-                  fromEntity.id,
-                  toEntity.id,
-                  conn.relationship
-                );
-                connectionsCreated++;
-              }
-            } catch (connError) {
-              console.error("[GraphOnlyMode] Failed to create connection:", connError);
-            }
-          }
-        }
-      }
-      updateProgress("Finalizing...", 98);
-      let resultContent = `\u{1F3F7}\uFE0F **Graph Generation Complete**
-
-`;
-      resultContent += `**Input:** ${inputText.substring(0, 200)}${inputText.length > 200 ? "..." : ""}
-
-`;
-      if (createdEntities.length > 0) {
-        this.chatHistory[messageIndex].createdEntities = createdEntities;
-        this.chatHistory[messageIndex].connectionsCreated = connectionsCreated;
-        resultContent += `**Entities Created (${createdEntities.length}):**`;
-        if (connectionsCreated > 0) {
-          resultContent += `
-**Relationships Created:** ${connectionsCreated}`;
-        }
-      } else {
-        resultContent += `No new entities were created (may already exist or types not recognized).`;
-      }
       this.chatHistory[messageIndex].progress = void 0;
-      this.chatHistory[messageIndex].content = resultContent;
+      this.chatHistory[messageIndex].content = `\u{1F3F7}\uFE0F **Extraction complete.** I've extracted ${proposedCommands.length} potential graph modifications from the text.
+
+**Input:** ${inputText.substring(0, 150)}${inputText.length > 150 ? "..." : ""}
+
+Please review and apply the changes below:`;
+      this.chatHistory[messageIndex].proposedModifications = proposedCommands;
       await this.renderMessages();
-      if (createdEntities.length > 0) {
-        const noticeMsg = connectionsCreated > 0 ? `Created ${createdEntities.length} entities and ${connectionsCreated} relationships` : `Created ${createdEntities.length} entities`;
-        new import_obsidian14.Notice(noticeMsg);
-      }
+      await this.saveCurrentConversation();
     } catch (error) {
-      this.activeAbortControllers.delete(messageIndex);
+      if (typeof messageIndex !== "undefined") {
+        this.activeAbortControllers.delete(messageIndex);
+      }
       const errorMsg = error instanceof Error ? error.message : String(error);
       if (errorMsg === "Cancelled by user" || errorMsg.includes("Aborted") || errorMsg.includes("Request was cancelled")) {
         return;
       }
-      this.chatHistory[messageIndex].progress = void 0;
-      this.chatHistory[messageIndex].content = `\u{1F3F7}\uFE0F **Graph Generation Failed**
+      if (typeof messageIndex !== "undefined" && this.chatHistory[messageIndex]) {
+        this.chatHistory[messageIndex].progress = void 0;
+        this.chatHistory[messageIndex].content = `\u{1F3F7}\uFE0F **Graph Generation Failed**
 
 **Input:** ${inputText.substring(0, 100)}${inputText.length > 100 ? "..." : ""}
 
 **Error:** ${errorMsg}`;
-      await this.renderMessages();
+        await this.renderMessages();
+      }
       new import_obsidian14.Notice(`Graph generation failed: ${errorMsg}`);
     }
   }

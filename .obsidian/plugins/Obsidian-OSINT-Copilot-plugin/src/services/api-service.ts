@@ -85,9 +85,9 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
     maxRetries: 3,              // Reduced retries since we have proper timeouts now
     baseDelayMs: 1000,          // Start with 1 second delay
     maxDelayMs: 10000,          // Cap at 10 seconds max delay
-    baseTimeoutMs: 120000,      // 120 second timeout
-    maxTimeoutMs: 120000,       // 120 second max timeout
-    timeoutMultiplierOnTimeout: 1.0  // Don't increase timeout
+    baseTimeoutMs: 300000,      // 300 second timeout (5 minutes)
+    maxTimeoutMs: 600000,       // 600 second max timeout (10 minutes)
+    timeoutMultiplierOnTimeout: 1.5  // Increase timeout by 50% on each timeout retry
 };
 
 // Local interface to avoid circular dependency with main.ts
