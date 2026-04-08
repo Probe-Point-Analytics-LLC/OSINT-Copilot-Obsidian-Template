@@ -171,14 +171,14 @@ export const ENTITY_CONFIGS: Record<EntityType, EntityConfig> = {
     },
     [EntityType.Event]: {
         color: "#F22416",
-        properties: ["name", "description", "start_date", "end_date", "add_to_timeline"],
+        properties: ["name", "description", "start_date", "end_date", "add_to_timeline", "outcome", "participants", "location_summary"],
         labelField: "name",
         description: "An event with date and time"
     },
     [EntityType.Location]: {
         color: "#FF5722",
-        properties: ["name", "address", "city", "state", "country", "postal_code", "latitude", "longitude", "location_type"],
-        labelField: "name",
+        properties: ["name", "address", "city", "state", "country", "postal_code", "latitude", "longitude", "location_type", "significance", "access_level"],
+        labelField: "address",
         description: "A physical location or address"
     },
     [EntityType.Company]: {
@@ -219,13 +219,13 @@ export const ENTITY_CONFIGS: Record<EntityType, EntityConfig> = {
     },
     [EntityType.Evidence]: {
         color: "#02bfd4",
-        properties: ["name", "description", "tampered"],
+        properties: ["name", "description", "tampered", "filePath"],
         labelField: "name",
         description: "Evidence in an investigation"
     },
     [EntityType.Image]: {
         color: "#E9B96E",
-        properties: ["title", "url", "description"],
+        properties: ["title", "url", "description", "filePath"],
         labelField: "title",
         description: "An image"
     },
